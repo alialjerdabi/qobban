@@ -802,17 +802,54 @@ html.is-loaded .loader { display: none; }
    ============================================================ */
 @view-transition { navigation: auto; }
 
+/* The plane the cards sit on. Scaling a page down reveals this behind it,
+   which is what sells "the page became an object". */
+html { background: #070707; }
+[data-theme="light"] { background: #DCDCD6; }
+
+/* Incoming page rides above the outgoing one. */
+::view-transition-new(root) { z-index: 1; }
+::view-transition-old(root) { z-index: 0; }
+
 ::view-transition-old(root) {
-  animation: pageOut 0.18s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: cardOut 0.26s cubic-bezier(0.4, 0, 1, 1) both;
 }
 ::view-transition-new(root) {
-  animation: pageIn 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cardIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-@keyframes pageOut { to { opacity: 0; } }
-@keyframes pageIn  { from { opacity: 0; transform: translateY(10px); } }
 
-/* The header is visually continuous between pages, so hold it still
-   while the body content cross-fades underneath it. */
+/* Forward: current page shrinks to a card and leaves left; next page
+   arrives from the right as a card and grows to fill. Exit is 62% of
+   the enter duration so the whole thing feels responsive, not draggy. */
+@keyframes cardOut {
+  from { transform: none; border-radius: 0; opacity: 1; }
+  to   { transform: translateX(-12%) scale(0.9); border-radius: 16px; opacity: 0; }
+}
+@keyframes cardIn {
+  from { transform: translateX(24%) scale(0.88); border-radius: 16px; opacity: 0; }
+  to   { transform: none; border-radius: 0; opacity: 1; }
+}
+
+/* Back/forward through history mirrors the direction, so the motion always
+   matches the mental model of where you're going. Set by qobban.js from
+   the navigation type. */
+html[data-nav="back"]::view-transition-old(root) { animation-name: cardOutBack; }
+html[data-nav="back"]::view-transition-new(root) { animation-name: cardInBack; }
+@keyframes cardOutBack {
+  from { transform: none; border-radius: 0; opacity: 1; }
+  to   { transform: translateX(12%) scale(0.9); border-radius: 16px; opacity: 0; }
+}
+@keyframes cardInBack {
+  from { transform: translateX(-24%) scale(0.88); border-radius: 16px; opacity: 0; }
+  to   { transform: none; border-radius: 0; opacity: 1; }
+}
+
+/* RTL reads right-to-left, so "forward" is the other way. */
+[dir="rtl"]::view-transition-old(root) { animation-name: cardOutBack; }
+[dir="rtl"]::view-transition-new(root) { animation-name: cardInBack; }
+
+/* The header is visually continuous between pages — hold it still so it
+   reads as one persistent frame while the content card swaps beneath. */
 .header { view-transition-name: site-header; }
 ::view-transition-group(site-header) { animation-duration: 0.01s; }
 

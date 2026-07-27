@@ -15,7 +15,7 @@ IMG = ROOT / "img"
 
 # Replace before launch, then re-run. Everything canonical derives from it.
 SITE = "https://qobban.com"
-OG_IMAGE = "IMG-01.jpg"          # until IMG-33 (the dedicated 1.91:1) exists
+OG_IMAGE = "IMG-33.jpg"          # dedicated 1.91:1 share crop
 
 # ---------------------------------------------------------------- optimise
 # Generated PNGs land at ~2MB each, which would wreck the LCP target. Convert
