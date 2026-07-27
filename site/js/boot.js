@@ -23,14 +23,60 @@
     if (sessionStorage.getItem('qobban-loaded')) root.className += ' is-loaded';
   } catch (e) {}
 
-  /* Page transition direction. Browser back/forward must animate the
-     opposite way to a forward click, or the motion contradicts where the
-     user thinks they're going. `traverse` covers history navigation.
-     Set on pagereveal, which fires before the incoming transition runs. */
+  /* ------------------------------------------------------------------
+     Page transition direction — the site as a spatial map.
+
+     Top-level pages sit on one horizontal line in nav order, so Quote is
+     always at the far right and Home at the far left. Move to a page
+     further along and the content slides that way; move back and it
+     slides the other way. That fixed geography is what stops navigation
+     feeling like an endless loop: the motion tells you where you are.
+
+     Service pages sit one level *beneath* Services, so entering one moves
+     forward in depth rather than sideways, and leaving reverses it.
+
+     Because direction is derived from the two URLs, browser back/forward
+     is handled for free — no need to inspect the navigation type.
+     ------------------------------------------------------------------ */
+  var ORDER = ['index.html', 'services.html', 'projects.html',
+    'process.html', 'about.html', 'contact.html', 'quote.html'];
+  var SERVICES = ['gates.html', 'pergolas.html', 'railings.html',
+    'canopies.html', 'custom-fabrication.html', 'maintenance.html'];
+
+  function locate(url) {
+    var path;
+    try { path = new URL(url, location.href).pathname; } catch (e) { return null; }
+    var file = path.split('/').pop() || 'index.html';
+    if (path.indexOf('/services/') > -1) {
+      // Child of Services: same lateral slot, one level deeper.
+      return { x: ORDER.indexOf('services.html'), depth: 1, sub: SERVICES.indexOf(file) };
+    }
+    var x = ORDER.indexOf(file);
+    return { x: x < 0 ? 0 : x, depth: 0, sub: -1 };
+  }
+
+  function direction(fromUrl, toUrl) {
+    var a = locate(fromUrl), b = locate(toUrl);
+    if (!a || !b) return 'forward';
+    if (b.depth > a.depth) return 'in';       // drilling into a service
+    if (b.depth < a.depth) return 'out';      // stepping back up
+    var i = a.depth ? a.sub : a.x;            // siblings compare laterally
+    var j = b.depth ? b.sub : b.x;
+    if (j === i) return 'forward';
+    return j > i ? 'forward' : 'back';
+  }
+
+  /* Outgoing document: the destination is on the activation entry. */
+  window.addEventListener('pageswap', function (e) {
+    if (!e.viewTransition || !e.activation || !e.activation.entry) return;
+    root.dataset.nav = direction(location.href, e.activation.entry.url);
+  });
+
+  /* Incoming document: `from` is where we just came from. */
   window.addEventListener('pagereveal', function (e) {
     if (!e.viewTransition) return;
-    var type = window.navigation && window.navigation.activation
-      && window.navigation.activation.navigationType;
-    root.dataset.nav = type === 'traverse' ? 'back' : 'forward';
+    var act = window.navigation && window.navigation.activation;
+    var from = act && act.from && act.from.url;
+    root.dataset.nav = from ? direction(from, location.href) : 'forward';
   });
 })();

@@ -830,9 +830,9 @@ html { background: #070707; }
   to   { transform: none; border-radius: 0; opacity: 1; }
 }
 
-/* Back/forward through history mirrors the direction, so the motion always
-   matches the mental model of where you're going. Set by qobban.js from
-   the navigation type. */
+/* Moving to a page earlier in the running order reverses the slide, so the
+   geography stays consistent whichever way you travel — including browser
+   back, which resolves to the same comparison. Set by boot.js. */
 html[data-nav="back"]::view-transition-old(root) { animation-name: cardOutBack; }
 html[data-nav="back"]::view-transition-new(root) { animation-name: cardInBack; }
 @keyframes cardOutBack {
@@ -844,9 +844,36 @@ html[data-nav="back"]::view-transition-new(root) { animation-name: cardInBack; }
   to   { transform: none; border-radius: 0; opacity: 1; }
 }
 
-/* RTL reads right-to-left, so "forward" is the other way. */
-[dir="rtl"]::view-transition-old(root) { animation-name: cardOutBack; }
-[dir="rtl"]::view-transition-new(root) { animation-name: cardInBack; }
+/* Depth, not distance: a service page lives *under* Services, so entering
+   one moves toward the viewer instead of sideways. Leaving reverses it.
+   Pure scale — no lateral travel — so the two axes never read the same. */
+html[data-nav="in"]::view-transition-old(root)  { animation-name: depthOutIn; }
+html[data-nav="in"]::view-transition-new(root)  { animation-name: depthInIn; }
+html[data-nav="out"]::view-transition-old(root) { animation-name: depthOutUp; }
+html[data-nav="out"]::view-transition-new(root) { animation-name: depthInDown; }
+
+@keyframes depthOutIn {   /* parent recedes */
+  from { transform: none; border-radius: 0; opacity: 1; }
+  to   { transform: scale(0.94); border-radius: 16px; opacity: 0; }
+}
+@keyframes depthInIn {    /* child rises toward you */
+  from { transform: scale(1.06); border-radius: 16px; opacity: 0; }
+  to   { transform: none; border-radius: 0; opacity: 1; }
+}
+@keyframes depthOutUp {   /* child passes the viewer on the way out */
+  from { transform: none; border-radius: 0; opacity: 1; }
+  to   { transform: scale(1.06); border-radius: 16px; opacity: 0; }
+}
+@keyframes depthInDown {  /* parent returns from behind */
+  from { transform: scale(0.94); border-radius: 16px; opacity: 0; }
+  to   { transform: none; border-radius: 0; opacity: 1; }
+}
+
+/* RTL reads right-to-left, so the lateral pair swaps. Depth is unaffected. */
+[dir="rtl"][data-nav="forward"]::view-transition-old(root) { animation-name: cardOutBack; }
+[dir="rtl"][data-nav="forward"]::view-transition-new(root) { animation-name: cardInBack; }
+[dir="rtl"][data-nav="back"]::view-transition-old(root) { animation-name: cardOut; }
+[dir="rtl"][data-nav="back"]::view-transition-new(root) { animation-name: cardIn; }
 
 /* The header is visually continuous between pages — hold it still so it
    reads as one persistent frame while the content card swaps beneath. */
