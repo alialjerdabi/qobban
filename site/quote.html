@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request a Quote — Qobban</title>
+<meta name="description" content="Tell us about your gate, pergola, railing or canopy project in Bahrain. Six quick questions and we'll advise on material, finish and approach.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/qobban.css?v=3">
+</head>
+<body data-whatsapp="973XXXXXXXX">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header is-stuck">
+  <div class="wrap header__inner">
+    <a class="logo" href="index.html" aria-label="Qobban — home">
+      <svg class="logo__mark" viewBox="0 0 100 72" fill="none" aria-hidden="true">
+        <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z" stroke="#fff" stroke-width="5"/>
+        <path d="M62 46l22 22" stroke="#fff" stroke-width="5" stroke-linecap="square"/>
+        <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
+        <path d="M36 33a8 5 0 0 1 16 0" fill="#fff"/>
+      </svg>
+      <span class="logo__text"><span class="logo__ar">قبان</span><span class="logo__en">Qobban</span></span>
+    </a>
+    <button class="burger" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span><span></span></button>
+    <nav class="nav" id="nav">
+      <a class="nav__link" href="services.html">Services</a>
+      <a class="nav__link" href="projects.html">Projects</a>
+      <a class="nav__link" href="process.html">Process</a>
+      <a class="nav__link" href="about.html">About</a>
+      <a class="nav__link" href="contact.html">Contact</a>
+      <a class="btn btn--primary" href="quote.html" aria-current="page">Get a Quote</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="section" style="padding-block-start:calc(76px + 3rem)">
+  <div class="gridlines" aria-hidden="true"></div>
+  <div class="wrap">
+
+    <div class="head">
+      <p class="spec">Request a quote</p>
+      <h1>Six questions. No obligation.</h1>
+      <p class="lede">The more you can tell us, the more useful our first reply will be.
+        Skip anything you don't know yet — "not measured" is a perfectly good answer.</p>
+    </div>
+
+    <div class="progress" aria-hidden="true">
+      <div class="progress__seg"></div><div class="progress__seg"></div>
+      <div class="progress__seg"></div><div class="progress__seg"></div>
+      <div class="progress__seg"></div><div class="progress__seg"></div>
+    </div>
+    <p class="spec spec--plain" data-step-label style="margin-block-end:var(--s-4)">Step 1 of 6</p>
+
+    <form class="form" data-stepper novalidate>
+
+      <!-- 1 -->
+      <div class="stepper__step is-active">
+        <h2>What do you need?</h2>
+        <p class="muted" style="margin-block:var(--s-2) var(--s-3)">Pick the closest match.</p>
+        <div class="choices" data-advance>
+          <label class="choice"><input type="radio" name="Service" value="Gate" required><span>Gate</span></label>
+          <label class="choice"><input type="radio" name="Service" value="Pergola / shade"><span>Pergola / Shade</span></label>
+          <label class="choice"><input type="radio" name="Service" value="Railing / balustrade"><span>Railing / Balustrade</span></label>
+          <label class="choice"><input type="radio" name="Service" value="Canopy / car shade"><span>Canopy / Car Shade</span></label>
+          <label class="choice"><input type="radio" name="Service" value="Custom fabrication"><span>Custom Fabrication</span></label>
+          <label class="choice"><input type="radio" name="Service" value="Maintenance / repair"><span>Maintenance / Repair</span></label>
+        </div>
+        <div class="stepper__nav"><button type="button" class="btn btn--primary" data-next>Continue <span class="btn__arrow">→</span></button></div>
+      </div>
+
+      <!-- 2 -->
+      <div class="stepper__step">
+        <h2>What kind of property?</h2>
+        <p class="muted" style="margin-block:var(--s-2) var(--s-3)">This changes the specification more than most people expect.</p>
+        <div class="choices" data-advance>
+          <label class="choice"><input type="radio" name="Property" value="Villa / residential" required><span>Villa / Residential</span></label>
+          <label class="choice"><input type="radio" name="Property" value="Commercial"><span>Commercial</span></label>
+          <label class="choice"><input type="radio" name="Property" value="Industrial"><span>Industrial</span></label>
+          <label class="choice"><input type="radio" name="Property" value="New build / developer"><span>New Build / Developer</span></label>
+        </div>
+        <div class="stepper__nav">
+          <button type="button" class="btn btn--ghost" data-prev>← Back</button>
+          <button type="button" class="btn btn--primary" data-next>Continue <span class="btn__arrow">→</span></button>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="stepper__step">
+        <h2>Do you have dimensions?</h2>
+        <div class="field" style="margin-block-start:var(--s-3)">
+          <label for="dims">Approximate size</label>
+          <input id="dims" name="Dimensions" type="text" placeholder="e.g. 4.2 m wide × 2.1 m high — or 'not measured yet'">
+          <p class="field__hint">Rough is fine. We measure on site before anything is fabricated.</p>
+        </div>
+        <div class="field">
+          <label for="notes">Anything else we should know</label>
+          <textarea id="notes" name="Notes" placeholder="Existing metalwork condition, automation needed, finish preference, access constraints…"></textarea>
+        </div>
+        <div class="stepper__nav">
+          <button type="button" class="btn btn--ghost" data-prev>← Back</button>
+          <button type="button" class="btn btn--primary" data-next>Continue <span class="btn__arrow">→</span></button>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="stepper__step">
+        <h2>Have a photo or sketch?</h2>
+        <p class="muted" style="margin-block:var(--s-2) var(--s-3)">Optional, but it usually saves a site visit at this stage.</p>
+        <div class="field">
+          <label for="photo">Attach an image</label>
+          <input id="photo" name="Photo" type="file" accept="image/*">
+          <p class="field__hint">A phone photo of the space is enough. You can also send it on WhatsApp after submitting.</p>
+        </div>
+        <div class="stepper__nav">
+          <button type="button" class="btn btn--ghost" data-prev>← Back</button>
+          <button type="button" class="btn btn--primary" data-next>Continue <span class="btn__arrow">→</span></button>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="stepper__step">
+        <h2>Where and when?</h2>
+        <div class="field" style="margin-block-start:var(--s-3)">
+          <label for="area">Area in Bahrain</label>
+          <input id="area" name="Area" type="text" placeholder="e.g. Riffa, Saar, Amwaj, Hamala" required>
+          <p class="field__error">Please tell us the area.</p>
+        </div>
+        <div class="field">
+          <label for="timeline">Preferred timeline</label>
+          <select id="timeline" name="Timeline">
+            <option value="">Select…</option>
+            <option>As soon as possible</option>
+            <option>Within 1 month</option>
+            <option>1–3 months</option>
+            <option>Still planning</option>
+          </select>
+        </div>
+        <div class="stepper__nav">
+          <button type="button" class="btn btn--ghost" data-prev>← Back</button>
+          <button type="button" class="btn btn--primary" data-next>Continue <span class="btn__arrow">→</span></button>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="stepper__step">
+        <h2>How do we reach you?</h2>
+        <div class="field" style="margin-block-start:var(--s-3)">
+          <label for="name">Name</label>
+          <input id="name" name="Name" type="text" required>
+          <p class="field__error">Please enter your name.</p>
+        </div>
+        <div class="field">
+          <label for="phone">Phone / WhatsApp</label>
+          <input id="phone" name="Phone" type="tel" inputmode="tel" placeholder="+973 …" required>
+          <p class="field__error">Please enter a contact number.</p>
+        </div>
+        <div class="field">
+          <label for="email">Email <span class="muted">(optional)</span></label>
+          <input id="email" name="Email" type="email">
+        </div>
+        <div class="stepper__nav">
+          <button type="button" class="btn btn--ghost" data-prev>← Back</button>
+          <button type="submit" class="btn btn--primary">Send Request <span class="btn__arrow">→</span></button>
+        </div>
+      </div>
+
+    </form>
+
+    <div data-quote-done hidden style="max-inline-size:44rem">
+      <p class="spec">Received</p>
+      <h2 style="margin-block:var(--s-3)">Thanks — one more step</h2>
+      <p>Your details are ready to send. Tap below to open WhatsApp with everything
+        filled in, so we can reply with material and finish advice today.</p>
+      <div class="stepper__nav">
+        <a class="btn btn--primary" data-wa-link href="#" target="_blank" rel="noopener">Open WhatsApp <span class="btn__arrow">→</span></a>
+        <a class="btn btn--ghost" href="index.html">Back to home</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__bottom" style="border:0">
+    <span>© <span data-year></span> Qobban. Precision is our standard.</span>
+    <span><a href="contact.html">Contact</a></span>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/973XXXXXXXX" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2Z"/></svg>
+</a>
+<script src="js/qobban.js?v=3" defer></script>
+</body>
+</html>

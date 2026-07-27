@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qobban — Architectural Metalwork in Bahrain | Gates, Pergolas, Railings</title>
+<meta name="description" content="Precision-led architectural metalwork in Bahrain. Gates, pergolas, railings, canopies and custom fabrication — measured on site, finished for the climate, installed to belong.">
+<meta property="og:title" content="Qobban — Precision Is Our Standard">
+<meta property="og:description" content="Architectural metalwork in Bahrain. Measured before it's made. Finished for the climate.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/qobban.css?v=3">
+<script>
+/* Repeat visitors skip the loader entirely — set before first paint so
+   there is no flash of the loading screen on internal navigation. */
+try { if (sessionStorage.getItem('qobban-loaded')) document.documentElement.className += ' is-loaded'; } catch (e) {}
+</script>
+</head>
+<body data-whatsapp="973XXXXXXXX">
+
+<div class="loader" data-loader aria-hidden="true">
+  <div class="loader__panel loader__panel--top"></div>
+  <div class="loader__panel loader__panel--bottom"></div>
+  <div class="loader__inner">
+    <div class="loader__vial"><span class="loader__bubble"></span></div>
+    <p class="loader__word">Qobban</p>
+  </div>
+</div>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="logo" href="index.html" aria-label="Qobban — home">
+      <svg class="logo__mark" viewBox="0 0 100 72" fill="none" aria-hidden="true">
+        <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z" stroke="#fff" stroke-width="5"/>
+        <path d="M62 46l22 22" stroke="#fff" stroke-width="5" stroke-linecap="square"/>
+        <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
+        <path d="M36 33a8 5 0 0 1 16 0" fill="#fff"/>
+      </svg>
+      <span class="logo__text">
+        <span class="logo__ar">قبان</span>
+        <span class="logo__en">Qobban</span>
+      </span>
+    </a>
+
+    <button class="burger" aria-expanded="false" aria-controls="nav" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="nav">
+      <a class="nav__link" href="services.html">Services</a>
+      <a class="nav__link" href="projects.html">Projects</a>
+      <a class="nav__link" href="process.html">Process</a>
+      <a class="nav__link" href="about.html">About</a>
+      <a class="nav__link" href="contact.html">Contact</a>
+      <a class="btn btn--primary" href="quote.html">Get a Quote</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="section" style="padding-block:calc(76px + 2rem) var(--s-6)">
+  <div class="wrap">
+
+    <!-- Interactive spirit level. Cursor on desktop, tilt on mobile,
+         drag anywhere, arrow keys for keyboard users. -->
+    <div>
+      <div class="levelbar" data-level tabindex="0" role="slider"
+           aria-label="Spirit level — move your cursor, tilt your device, or use the arrow keys"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="Level">
+        <div class="levelbar__vial">
+          <span class="levelbar__tick levelbar__tick--a"></span>
+          <span class="levelbar__tick levelbar__tick--b"></span>
+          <span class="levelbar__bubble"></span>
+        </div>
+      </div>
+      <p class="levelbar__hint">
+        <span data-level-hint>Move your cursor to tip the level</span>
+        <span class="levelbar__state">● Level</span>
+      </p>
+    </div>
+
+    <!-- Hero card. IMG-01 becomes the card background once generated. -->
+    <div class="herocard">
+      <div class="herocard__media" data-img="IMG-01"></div>
+      <span class="herocard__corner herocard__corner--tl"></span>
+      <span class="herocard__corner herocard__corner--tr"></span>
+      <span class="herocard__corner herocard__corner--bl"></span>
+      <span class="herocard__corner herocard__corner--br"></span>
+      <div class="herocard__body">
+        <p class="spec">Architectural Metalwork · Kingdom of Bahrain</p>
+        <h1 class="display">Precision is<br>our <span class="accent">standard.</span></h1>
+        <p class="lede">Gates, pergolas, railings and custom fabrication — measured on site
+          before anything is cut, finished for heat and salt air, and installed to sit
+          right against the architecture.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="quote.html">Request a Quote <span class="btn__arrow">→</span></a>
+          <a class="btn btn--ghost" href="projects.html">See the Work</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ POSITIONING ============ -->
+<section class="section section--line">
+  <div class="gridlines" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="spec">What we hold ourselves to</p>
+      <h2>Three things decide whether metalwork lasts</h2>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal" data-delay="1">
+        <span class="pillar__num">01 / Precision</span>
+        <h3>Measured before it's made</h3>
+        <p>Every project is site-measured and checked for level and square before
+          fabrication begins. Most problems on a finished gate started as a bad
+          measurement weeks earlier.</p>
+      </div>
+      <div class="pillar reveal" data-delay="2">
+        <span class="pillar__num">02 / Durability</span>
+        <h3>Finished for Bahrain</h3>
+        <p>Heat, 80% humidity and coastal salt air punish shortcuts. We name the
+          material and the coating system in writing, with a warranty period — not
+          a promise of "premium quality".</p>
+      </div>
+      <div class="pillar reveal" data-delay="3">
+        <span class="pillar__num">03 / Fit</span>
+        <h3>Designed to belong</h3>
+        <p>A gate is the first thing anyone sees of a property. A railing shapes how
+          a staircase feels. We design to the building's lines, not to a catalogue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="section section--line">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="spec">Services</p>
+      <h2>What we fabricate</h2>
+      <p class="lede">Six disciplines, one standard of execution. Residential,
+        commercial and industrial across Bahrain.</p>
+    </div>
+
+    <div class="cards">
+      <a class="card reveal" data-delay="1" href="services/gates.html">
+        <svg class="card__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 21V7l9-4 9 4v14M3 21h18M7 21V11M12 21V9M17 21V11"/></svg>
+        <h3>Gates</h3>
+        <p>Swing, sliding and automated entrance gates. Security that still reads as
+          part of the façade.</p>
+        <span class="card__more">Explore →</span>
+      </a>
+      <a class="card reveal" data-delay="2" href="services/pergolas.html">
+        <svg class="card__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 8h18M4 8v13M20 8v13M3 4h18M6 8v-4M12 8v-4M18 8v-4"/></svg>
+        <h3>Pergolas &amp; Shade</h3>
+        <p>Aluminium and steel pergolas, louvred roofs and outdoor structures built
+          for real summer use.</p>
+        <span class="card__more">Explore →</span>
+      </a>
+      <a class="card reveal" data-delay="3" href="services/railings.html">
+        <svg class="card__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 7h18M5 7v13M19 7v13M9 7v13M15 7v13M3 20h18"/></svg>
+        <h3>Railings &amp; Balustrades</h3>
+        <p>Stair, balcony and terrace railings in steel, stainless and glass-and-steel
+          combinations.</p>
+        <span class="card__more">Explore →</span>
+      </a>
+      <a class="card reveal" data-delay="1" href="services/canopies.html">
+        <svg class="card__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 11l10-6 10 6M5 11v9M19 11v9M5 20h14"/></svg>
+        <h3>Canopies &amp; Car Shades</h3>
+        <p>Vehicle shades, entrance canopies and walkway covers engineered for wind
+          load and sun.</p>
+        <span class="card__more">Explore →</span>
+      </a>
+      <a class="card reveal" data-delay="2" href="services/custom-fabrication.html">
+        <svg class="card__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+        <h3>Custom Fabrication</h3>
+        <p>Privacy screens, decorative panels, staircases and one-off architectural
+          pieces from drawing to install.</p>
+        <span class="card__more">Explore →</span>
+      </a>
+      <a class="card reveal" data-delay="3" href="services/maintenance.html">
+        <svg class="card__icon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 0 1 5.4-5.4l-2.6 2.6-1.4-1.4 2.6-2.6"/></svg>
+        <h3>Maintenance &amp; Repair</h3>
+        <p>Rust treatment, recoating, realignment and automation servicing — on our
+          work and on other people's.</p>
+        <span class="card__more">Explore →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED PROJECTS ============ -->
+<section class="section section--line">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="spec">Selected work</p>
+      <h2>Recent projects</h2>
+    </div>
+    <div class="projects">
+      <article class="reveal" data-delay="1">
+        <div class="figure">
+          <!-- IMG-02 -->
+          <div class="figure__ph" data-img="IMG-02">
+            <p class="spec spec--plain">IMG-02</p>
+            <p class="muted">Villa entrance gate · Riffa</p>
+          </div>
+          <span class="figure__dim">4200 mm</span>
+        </div>
+        <div class="project__meta"><h3>Sliding Entrance Gate</h3><span>Riffa</span></div>
+      </article>
+      <article class="reveal" data-delay="2">
+        <div class="figure">
+          <!-- IMG-03 -->
+          <div class="figure__ph" data-img="IMG-03">
+            <p class="spec spec--plain">IMG-03</p>
+            <p class="muted">Louvred pergola · Saar</p>
+          </div>
+          <span class="figure__dim">6000 × 4000 mm</span>
+        </div>
+        <div class="project__meta"><h3>Louvred Pergola</h3><span>Saar</span></div>
+      </article>
+      <article class="reveal" data-delay="3">
+        <div class="figure">
+          <!-- IMG-04 -->
+          <div class="figure__ph" data-img="IMG-04">
+            <p class="spec spec--plain">IMG-04</p>
+            <p class="muted">Stair balustrade · Janabiya</p>
+          </div>
+          <span class="figure__dim">Ø 42 mm handrail</span>
+        </div>
+        <div class="project__meta"><h3>Steel &amp; Glass Balustrade</h3><span>Janabiya</span></div>
+      </article>
+    </div>
+    <p style="margin-block-start:var(--s-4)" class="reveal">
+      <a class="btn btn--ghost" href="projects.html">View all projects <span class="btn__arrow">→</span></a>
+    </p>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section class="section section--line">
+  <div class="gridlines" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="spec">How a project runs</p>
+      <h2>No surprises between quote and handover</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal" data-delay="1">
+        <div class="step__n">01</div><h3>Consultation</h3>
+        <p>We discuss use, material, finish and budget before anyone quotes a number.</p>
+      </div>
+      <div class="step reveal" data-delay="2">
+        <div class="step__n">02</div><h3>Site Measurement</h3>
+        <p>On-site measurement, level and square checks, and access assessment.</p>
+      </div>
+      <div class="step reveal" data-delay="3">
+        <div class="step__n">03</div><h3>Written Scope</h3>
+        <p>A priced scope naming material specification, coating system and warranty.</p>
+      </div>
+      <div class="step reveal" data-delay="4">
+        <div class="step__n">04</div><h3>Fabrication</h3>
+        <p>Built in our workshop to the approved drawing, then finished and coated.</p>
+      </div>
+      <div class="step reveal" data-delay="5">
+        <div class="step__n">05</div><h3>Installation</h3>
+        <p>Clean-site installation, alignment verified, protected surfaces, site cleared.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY QOBBAN ============ -->
+<section class="section section--line">
+  <div class="wrap split">
+    <div class="reveal">
+      <div class="figure">
+        <!-- IMG-05 -->
+        <div class="figure__ph" data-img="IMG-05">
+          <p class="spec spec--plain">IMG-05</p>
+          <p class="muted">Workshop detail · weld and finish close-up</p>
+        </div>
+        <span class="figure__dim">Tolerance ± 1 mm</span>
+      </div>
+    </div>
+    <div class="reveal" data-delay="2">
+      <p class="spec">Why Qobban</p>
+      <h2 style="margin-block:var(--s-3)">Most quotes hide the things that matter</h2>
+      <div class="stack">
+        <p>Ask three workshops for a gate and you'll get three prices and almost no
+          specification. Nobody tells you the alloy, the coating system, the fixing
+          method, or what happens in eighteen months when the coastal air gets to it.</p>
+        <p><strong>We put it in writing.</strong> Material, finish, warranty period,
+          lead time and scope — before you commit. If a cheaper approach genuinely
+          suits your project, we'll say that too.</p>
+      </div>
+      <div class="stats" style="margin-block-start:var(--s-5)">
+        <div class="stat">
+          <div class="stat__n"><span data-count="100" data-suffix="%">0%</span></div>
+          <div class="stat__l">Site-measured before cutting</div>
+        </div>
+        <div class="stat">
+          <div class="stat__n"><span data-count="6" data-suffix="">0</span></div>
+          <div class="stat__l">Fabrication disciplines</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section section--line">
+  <div class="wrap">
+    <div class="head reveal">
+      <p class="spec">Before you ask</p>
+      <h2>Common questions</h2>
+    </div>
+    <div class="acc reveal">
+      <div class="acc__item">
+        <button class="acc__btn" aria-expanded="false" aria-controls="f1">
+          Will it rust in Bahrain's climate?
+          <svg class="acc__ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="acc__panel" id="f1"><div><p>Not if the material and coating are chosen for the exposure.
+          Coastal and near-coastal properties need different treatment than inland ones. We name the
+          specific alloy and coating system on the quote, with the warranty period attached to it.</p></div></div>
+      </div>
+      <div class="acc__item">
+        <button class="acc__btn" aria-expanded="false" aria-controls="f2">
+          How long does a typical project take?
+          <svg class="acc__ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="acc__panel" id="f2"><div><p>It depends on the scope, the finish and current
+          workshop load — which is why we give a lead time in writing rather than a number over the phone.
+          Automation, imported profiles and powder-coating schedules are the usual variables.</p></div></div>
+      </div>
+      <div class="acc__item">
+        <button class="acc__btn" aria-expanded="false" aria-controls="f3">
+          Do you work from an architect's drawings?
+          <svg class="acc__ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="acc__panel" id="f3"><div><p>Yes. We fabricate to supplied drawings and will flag
+          buildability, tolerance or fixing issues before production rather than after. We can also
+          produce shop drawings for approval.</p></div></div>
+      </div>
+      <div class="acc__item">
+        <button class="acc__btn" aria-expanded="false" aria-controls="f4">
+          Do you service metalwork you didn't build?
+          <svg class="acc__ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="acc__panel" id="f4"><div><p>Yes — rust treatment, recoating, realignment and gate
+          automation servicing. We'll tell you honestly when a repair isn't worth it compared to
+          replacement.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <div class="wrap">
+    <div class="reveal" style="max-inline-size:44rem">
+      <h2>Tell us the space. We'll tell you what it needs.</h2>
+      <p style="margin-block:var(--s-3)">Send dimensions, a photo or a sketch — or nothing at all.
+        We'll advise on material, finish and approach before anyone talks about price.</p>
+      <div class="hero__actions" style="margin-block-start:var(--s-4)">
+        <a class="btn btn--primary" href="quote.html">Start a Quote <span class="btn__arrow">→</span></a>
+        <a class="btn btn--ghost" style="border-color:rgba(26,26,26,.35);color:var(--black)" href="contact.html">Contact us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="logo" href="index.html" style="margin-block-end:var(--s-2)">
+          <span class="logo__text">
+            <span class="logo__ar">قبان</span>
+            <span class="logo__en">Qobban</span>
+          </span>
+        </a>
+        <p class="muted" style="font-size:.875rem">Precision is our standard.<br>Architectural metalwork, Kingdom of Bahrain.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="services/gates.html">Gates</a></li>
+          <li><a href="services/pergolas.html">Pergolas &amp; Shade</a></li>
+          <li><a href="services/railings.html">Railings</a></li>
+          <li><a href="services/canopies.html">Canopies &amp; Car Shades</a></li>
+          <li><a href="services/custom-fabrication.html">Custom Fabrication</a></li>
+          <li><a href="services/maintenance.html">Maintenance &amp; Repair</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="process.html">Process</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="quote.html">Get a Quote</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+973XXXXXXXX">+973 XXXX XXXX</a></li>
+          <li><a href="mailto:info@qobban.com">info@qobban.com</a></li>
+          <li><a href="https://wa.me/973XXXXXXXX" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-year></span> Qobban. All rights reserved.</span>
+      <span>Kingdom of Bahrain</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/973XXXXXXXX" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2Z"/></svg>
+</a>
+
+<script src="js/qobban.js?v=3" defer></script>
+</body>
+</html>
