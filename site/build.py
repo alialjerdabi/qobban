@@ -17,8 +17,41 @@ IMG = ROOT / "img"
 SITE = "https://qobban.com"
 OG_IMAGE = "IMG-01.jpg"          # until IMG-33 (the dedicated 1.91:1) exists
 
+# ---------------------------------------------------------------- optimise
+# Generated PNGs land at ~2MB each, which would wreck the LCP target. Convert
+# anything raw to JPEG at a sane width once, on the way in. Idempotent: a slot
+# that already has a .jpg is left alone.
+MAX_W, QUALITY = 2000, 82
+
+for png in sorted(IMG.glob("IMG-*.png")):
+    jpg = png.with_suffix(".jpg")
+    if not jpg.exists():
+        try:
+            from PIL import Image
+        except ImportError:
+            print(f"  ! PIL missing — leaving {png.name} unoptimised")
+            break
+        im = Image.open(png).convert("RGB")
+        if im.width > MAX_W:
+            im = im.resize((MAX_W, round(im.height * MAX_W / im.width)), Image.LANCZOS)
+        im.save(jpg, "JPEG", quality=QUALITY, optimize=True, progressive=True)
+        before, after = png.stat().st_size, jpg.stat().st_size
+        print(f"  {png.name} -> {jpg.name}  {before//1024}KB -> {after//1024}KB")
+    png.unlink()
+
 # ---------------------------------------------------------------- images
 have = {p.stem: p.name for p in sorted(IMG.glob("IMG-*.*"))}
+
+
+def dimensions(name):
+    """Real pixel size, so the width/height attributes reserve the correct
+    box and the page doesn't shift when the image loads."""
+    try:
+        from PIL import Image
+        with Image.open(IMG / name) as im:
+            return im.size
+    except Exception:
+        return (1456, 1092)
 
 PLACEHOLDER = re.compile(
     r'<div class="figure__ph" data-img="(IMG-\d+)">.*?'
@@ -32,12 +65,25 @@ def strip_tags(s):
     return re.sub(r"<[^>]+>", "", s).replace("&amp;", "&").strip()
 
 
+first_on_page = True
+
+
 def swap_placeholder(m):
+    """First image on a page is the hero: it must load eagerly and at high
+    priority, or it becomes the LCP element and we've deferred it. Everything
+    below the fold stays lazy."""
+    global first_on_page
     slot, caption = m.group(1), strip_tags(m.group(2))
     if slot not in have:
         return m.group(0)
+    w, h = dimensions(have[slot])
+    if first_on_page:
+        first_on_page = False
+        loading = 'loading="eager" fetchpriority="high"'
+    else:
+        loading = 'loading="lazy"'
     return (f'<img src="{{PREFIX}}img/{have[slot]}" alt="{caption}" '
-            f'loading="lazy" decoding="async" width="1456" height="1092">')
+            f'{loading} decoding="async" width="{w}" height="{h}">')
 
 
 def swap_media(m):
@@ -97,8 +143,19 @@ changed = 0
 
 for page in pages:
     src = page.read_text(encoding="utf-8")
+    first_on_page = True
     out = MEDIA.sub(swap_media, PLACEHOLDER.sub(swap_placeholder, src))
     out = out.replace("{PREFIX}", "../" if page.parent != ROOT else "")
+
+    # Normalise loading hints on images already wired by an earlier run:
+    # first image on the page is the hero (eager, high priority), rest lazy.
+    imgs = list(re.finditer(r'<img [^>]*src="[^"]*img/IMG-[^"]*"[^>]*>', out))
+    for i, m in enumerate(imgs):
+        tag = m.group(0)
+        fixed = re.sub(r'\s*(loading="[a-z]*"|fetchpriority="[a-z]*")', '', tag)
+        hint = ('loading="eager" fetchpriority="high"' if i == 0 else 'loading="lazy"')
+        fixed = fixed.replace('<img ', f'<img {hint} ', 1)
+        out = out.replace(tag, fixed, 1)
 
     block = seo_for(page)
     if SEO_BLOCK.search(out):
