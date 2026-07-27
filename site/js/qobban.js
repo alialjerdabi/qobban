@@ -319,24 +319,87 @@
     stepper.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!validate(steps[idx])) return;
+
       var data = new FormData(e.target);
+      var payload = {};
+      data.forEach(function (v, k) {
+        if (typeof v === 'string' && v) payload[k] = v; /* skip the file input */
+      });
+
       var lines = ['*New quote request — Qobban website*'];
-      data.forEach(function (v, k) { if (v) lines.push(k + ': ' + v); });
-      /* No backend yet: hand the qualified lead straight to WhatsApp. */
+      Object.keys(payload).forEach(function (k) {
+        if (k !== 'company') lines.push(k + ': ' + payload[k]);
+      });
       var phone = document.body.dataset.whatsapp || '';
-      var url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'));
+      var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'));
+
       var done = document.querySelector('[data-quote-done]');
-      if (done) {
+      var finish = function () {
+        if (!done) { window.open(waUrl, '_blank', 'noopener'); return; }
         stepper.hidden = true;
         done.hidden = false;
-        done.querySelector('[data-wa-link]').href = url;
+        done.querySelector('[data-wa-link]').href = waUrl;
         done.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
-      } else {
-        window.open(url, '_blank', 'noopener');
-      }
+      };
+
+      var submit = e.target.querySelector('[type="submit"]');
+      if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
+
+      /* Record the lead server-side first, then offer WhatsApp. If the API is
+         unreachable we still show the WhatsApp hand-off — a captured lead beats
+         an error message. */
+      fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(function () { /* offline or blocked — fall through */ })
+        .then(finish);
     });
 
     paint();
+  }
+
+  /* ---------- Simple lead form (contact page) ---------- */
+  var leadForm = document.querySelector('[data-lead-form]');
+  if (leadForm) {
+    leadForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var status = leadForm.querySelector('[data-form-status]');
+      var submit = leadForm.querySelector('[type="submit"]');
+      var payload = {};
+      new FormData(leadForm).forEach(function (v, k) {
+        if (typeof v === 'string' && v) payload[k] = v;
+      });
+
+      if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
+      if (status) { status.textContent = ''; status.style.color = ''; }
+
+      fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).then(function (r) {
+        if (r.ok) {
+          leadForm.reset();
+          if (status) status.textContent = 'Thanks — we’ll come back to you shortly.';
+          if (submit) submit.textContent = 'Sent';
+          return;
+        }
+        throw new Error(String(r.status));
+      }).catch(function (err) {
+        /* Never leave someone stuck: point them at WhatsApp instead. */
+        var phone = document.body.dataset.whatsapp || '';
+        if (status) {
+          status.style.color = '#ff6b6b';
+          status.innerHTML = err.message === '429'
+            ? 'Too many messages just now. Please try again shortly, or ' +
+              '<a href="https://wa.me/' + phone + '" style="color:var(--yellow)">message us on WhatsApp</a>.'
+            : 'That didn’t send. Please ' +
+              '<a href="https://wa.me/' + phone + '" style="color:var(--yellow)">message us on WhatsApp</a> instead.';
+        }
+        if (submit) { submit.disabled = false; submit.textContent = 'Send Message'; }
+      });
+    });
   }
 
   /* ---------- i18n scaffold (English active, Arabic ready) ---------- */
