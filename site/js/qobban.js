@@ -402,25 +402,137 @@
     });
   }
 
-  /* ---------- i18n scaffold (English active, Arabic ready) ---------- */
-  window.QobbanI18n = {
-    /* Switching to 'ar' flips <html dir> and swaps [data-i18n] strings.
-       Arabic dictionary is intentionally empty until copy is written —
-       see BRAND/Tone_of_Voice.md: Arabic is a rewrite, not a translation. */
-    set: function (lang) {
-      var dict = this.dictionaries[lang];
-      if (!dict) return false;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      document.querySelectorAll('[data-i18n]').forEach(function (el) {
-        var key = el.dataset.i18n;
-        if (dict[key]) el.textContent = dict[key];
-      });
-      try { localStorage.setItem('qobban-lang', lang); } catch (e) {}
-      return true;
-    },
-    dictionaries: { en: {}, ar: {} }
+  /* ============================================================
+     THEME TOGGLE
+     boot.js has already applied the stored/OS choice before paint;
+     this only handles the click and remembers the decision.
+     ============================================================ */
+  var themeBtn = document.querySelector('[data-theme-toggle]');
+  if (themeBtn) {
+    var applyThemeLabel = function () {
+      var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+      themeBtn.setAttribute('aria-label',
+        dark ? 'Switch to light mode' : 'Switch to dark mode');
+      themeBtn.setAttribute('aria-pressed', String(!dark));
+    };
+    applyThemeLabel();
+    themeBtn.addEventListener('click', function () {
+      var next = document.documentElement.getAttribute('data-theme') === 'light'
+        ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('qobban-theme', next); } catch (e) {}
+      applyThemeLabel();
+    });
+  }
+
+  /* ============================================================
+     LANGUAGE TOGGLE — English / العربية
+     ponytail: translates by matching the English string itself, so no
+     data-i18n tagging across 13 pages. Ceiling: it is client-side, so
+     Arabic is NOT indexable — when Arabic SEO matters, generate real
+     /ar/ pages from these same strings. Untranslated text stays English
+     rather than disappearing.
+     ============================================================ */
+  var AR = {
+    // Navigation and chrome
+    'Services': 'الخدمات', 'Projects': 'المشاريع', 'Process': 'آلية العمل',
+    'About': 'من نحن', 'Contact': 'اتصل بنا', 'Get a Quote': 'اطلب عرض سعر',
+    'Skip to content': 'تخطَّ إلى المحتوى', 'Menu': 'القائمة',
+    'Company': 'الشركة', 'Kingdom of Bahrain': 'مملكة البحرين',
+    'WhatsApp': 'واتساب', 'Instagram': 'إنستغرام', 'TikTok': 'تيك توك',
+    // Calls to action
+    'Request a Quote': 'اطلب عرض سعر', 'See the Work': 'شاهد أعمالنا',
+    'Start a Quote': 'ابدأ طلب عرض السعر', 'Contact us': 'تواصل معنا',
+    'Get in Touch': 'تواصل معنا', 'Send Message': 'إرسال الرسالة',
+    'Book a Consultation': 'احجز استشارة', 'Quote a Gate': 'عرض سعر لبوابة',
+    'Quote a Pergola': 'عرض سعر لبرجولا', 'Quote a Railing': 'عرض سعر لدرابزين',
+    'Quote a Canopy': 'عرض سعر لمظلة', 'Book an Assessment': 'احجز معاينة',
+    'View all projects': 'عرض كل المشاريع', 'See projects': 'شاهد المشاريع',
+    // Service names
+    'Gates': 'البوابات', 'Pergolas & Shade': 'البرجولات والمظلات',
+    'Railings & Balustrades': 'الدرابزينات والحواجز',
+    'Canopies & Car Shades': 'المظلات ومظلات السيارات',
+    'Custom Fabrication': 'التصنيع حسب الطلب',
+    'Maintenance & Repair': 'الصيانة والإصلاح',
+    // Headline
+    'Precision is': 'الدقة هي', 'standard.': 'معيارنا.',
+    'Architectural Metalwork · Kingdom of Bahrain':
+      'أعمال معدنية معمارية · مملكة البحرين',
+    // Form labels
+    'Name': 'الاسم', 'Phone / WhatsApp': 'الهاتف / واتساب',
+    'Email': 'البريد الإلكتروني', 'Message': 'الرسالة',
+    'Area in Bahrain': 'المنطقة في البحرين',
+    'What do you need?': 'ما الذي تحتاجه؟',
+    'Preferred timeline': 'الجدول الزمني المفضل',
   };
+
+  var langBtn = document.querySelector('[data-lang-toggle]');
+  if (langBtn) {
+    var arabicFontLoaded = false;
+    var loadArabicFont = function () {
+      if (arabicFontLoaded) return;
+      arabicFontLoaded = true;
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap';
+      document.head.appendChild(link);
+    };
+
+    /* Walk text nodes and swap whole strings we have a translation for.
+       Skips script/style so we never rewrite code. */
+    var translate = function (dict) {
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (node) {
+          var tag = node.parentNode.nodeName;
+          if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+          return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        }
+      });
+      var node;
+      while ((node = walker.nextNode())) {
+        var key = node.nodeValue.trim();
+        if (dict[key]) {
+          if (!node.parentNode.dataset.en) node.parentNode.dataset.en = key;
+          node.nodeValue = node.nodeValue.replace(key, dict[key]);
+        }
+      }
+      /* aria-labels and placeholders are attributes, not text nodes. */
+      document.querySelectorAll('[aria-label], [placeholder]').forEach(function (el) {
+        ['aria-label', 'placeholder'].forEach(function (attr) {
+          var v = el.getAttribute(attr);
+          if (v && dict[v.trim()]) el.setAttribute(attr, dict[v.trim()]);
+        });
+      });
+    };
+
+    var setLang = function (lang, persist) {
+      var root = document.documentElement;
+      if (lang === 'ar') {
+        loadArabicFont();
+        root.lang = 'ar';
+        root.dir = 'rtl';
+        translate(AR);
+        langBtn.textContent = 'EN';
+        langBtn.setAttribute('aria-label', 'Switch to English');
+      } else {
+        /* Reloading is the honest way back: it restores every original
+           string without keeping a reverse dictionary in sync. */
+        if (persist) { try { localStorage.setItem('qobban-lang', 'en'); } catch (e) {} location.reload(); return; }
+        langBtn.textContent = 'ع';
+        langBtn.setAttribute('aria-label', 'التبديل إلى العربية');
+      }
+      if (persist) { try { localStorage.setItem('qobban-lang', lang); } catch (e) {} }
+    };
+
+    /* boot.js already set dir/lang if Arabic was stored — finish the job. */
+    var stored = null;
+    try { stored = localStorage.getItem('qobban-lang'); } catch (e) {}
+    if (stored === 'ar') setLang('ar', false); else setLang('en', false);
+
+    langBtn.addEventListener('click', function () {
+      setLang(document.documentElement.dir === 'rtl' ? 'en' : 'ar', true);
+    });
+  }
 
   /* ---------- Current year ---------- */
   document.querySelectorAll('[data-year]').forEach(function (el) {

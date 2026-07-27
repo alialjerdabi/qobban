@@ -43,7 +43,39 @@
   --dur: 0.7s;
 
   --font: "Montserrat", "Gotham", "Helvetica Neue", Arial, sans-serif;
+
+  /* Base colour the page overlays are mixed from. Tokenised so light mode
+     can flip the hero and header washes without rewriting every gradient. */
+  --wash: 17, 17, 17;
+  --header-bg: rgba(17, 17, 17, 0.92);
+  --accent-text: var(--yellow);   /* yellow fails contrast on light — see below */
+  --shadow: rgba(0, 0, 0, 0.45);
 }
+
+/* ---------- Light theme ----------
+   The brand is dark-first (BRAND/Color_System.md); this is the documented
+   inversion: white base, #1A1A1A type, yellow used more sparingly still.
+   #FFC220 as *text* on a light background is ~1.6:1 and fails outright, so
+   --accent-text darkens to an amber that clears AA while still reading as
+   the brand colour. Yellow as a *fill* behind dark text is unchanged. */
+[data-theme="light"] {
+  --surface:        #F4F4F1;
+  --surface-raised: #FFFFFF;
+  --surface-line:   #DEDED8;
+  --surface-hover:  #EDEDE7;
+
+  --text:        #1A1A1A;
+  --text-body:   #3C3C3C;
+  --text-muted:  #6B6B6B;
+
+  --wash: 244, 244, 241;
+  --header-bg: rgba(244, 244, 241, 0.92);
+  --accent-text: #8A5D00;
+  --shadow: rgba(0, 0, 0, 0.16);
+
+  color-scheme: light;
+}
+[data-theme="dark"] { color-scheme: dark; }
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -118,7 +150,7 @@ strong { color: var(--text); font-weight: 600; }
   line-height: 1.02;
   color: var(--text);
 }
-.accent { color: var(--yellow); }
+.accent { color: var(--accent-text); }
 
 /* Spec caption — the "spec sheet" voice */
 .spec {
@@ -176,7 +208,7 @@ strong { color: var(--text); font-weight: 600; }
   border-block-end: 1px solid transparent;
 }
 .header.is-stuck {
-  background: rgba(17,17,17,0.92);
+  background: var(--header-bg);
   backdrop-filter: blur(12px);
   border-block-end-color: var(--surface-line);
 }
@@ -187,7 +219,7 @@ strong { color: var(--text); font-weight: 600; }
   gap: var(--s-4);
   block-size: 76px;
 }
-.logo { display: flex; align-items: center; gap: 0.7rem; flex: none; }
+.logo { display: flex; align-items: center; gap: 0.7rem; flex: none; color: var(--text); }
 .logo__mark { inline-size: 42px; block-size: auto; }
 .logo__text { display: flex; flex-direction: column; line-height: 1; }
 .logo__ar { font-size: 0.7rem; color: var(--text-muted); }
@@ -208,6 +240,36 @@ strong { color: var(--text); font-weight: 600; }
 }
 .nav__link:hover, .nav__link[aria-current="page"] { color: var(--text); }
 .nav__link:hover::after, .nav__link[aria-current="page"]::after { inline-size: 100%; }
+
+/* ---------- Header controls: theme + language ----------
+   Two small icon buttons. Deliberately quiet — they are utilities, not
+   calls to action, so they never take yellow. */
+.controls { display: flex; align-items: center; gap: 0.35rem; flex: none; }
+.ctrl {
+  display: grid;
+  place-content: center;
+  inline-size: 38px;
+  block-size: 38px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color .25s var(--ease), border-color .25s var(--ease),
+              background .25s var(--ease);
+}
+.ctrl:hover { color: var(--text); border-color: var(--text-muted); }
+.ctrl__lang {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+/* Only one icon shows at a time; the other is hidden per theme. */
+.ctrl__sun, .ctrl__moon { display: none; }
+[data-theme="dark"] .ctrl__sun { display: block; }
+[data-theme="light"] .ctrl__moon { display: block; }
 
 .burger {
   display: none; background: none; border: 0; cursor: pointer;
@@ -248,7 +310,7 @@ strong { color: var(--text); font-weight: 600; }
 }
 .hero__media::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(17,17,17,.95) 0%, rgba(17,17,17,.75) 45%, rgba(17,17,17,.35) 100%);
+  background: linear-gradient(90deg, rgba(var(--wash),.96) 0%, rgba(var(--wash),.75) 45%, rgba(var(--wash),.35) 100%);
 }
 [dir="rtl"] .hero__media::after { transform: scaleX(-1); }
 .hero__content { position: relative; max-inline-size: 46rem; }
@@ -471,7 +533,7 @@ html.is-loaded .loader { display: none; }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(17,17,17,.96) 0%, rgba(17,17,17,.82) 42%, rgba(17,17,17,.4) 100%);
+  background: linear-gradient(90deg, rgba(var(--wash),.96) 0%, rgba(var(--wash),.82) 42%, rgba(var(--wash),.4) 100%);
 }
 [dir="rtl"] .herocard__media::after { transform: scaleX(-1); }
 .herocard__body {
@@ -685,7 +747,7 @@ html.is-loaded .loader { display: none; }
   inline-size: 56px; block-size: 56px; border-radius: 50%;
   background: var(--yellow); color: var(--black);
   display: grid; place-content: center;
-  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  box-shadow: 0 8px 28px var(--shadow);
   transition: transform .3s var(--ease);
 }
 .wa:hover { transform: scale(1.08); }
@@ -715,6 +777,35 @@ html.is-loaded .loader { display: none; }
   background: var(--yellow); color: var(--black); padding: 0.75rem 1.25rem; font-weight: 700;
 }
 .skip:focus { inset-block-start: var(--s-2); }
+
+/* ============================================================
+   ARABIC / RTL
+   Layout already flips for free — every spacing rule in this file
+   uses logical properties. What Arabic actually needs is type
+   handling, and one rule that is not optional:
+
+   letter-spacing BREAKS Arabic. The script is cursive; adding
+   tracking pulls the joined letterforms apart into gibberish.
+   Every tracked style in this file must reset to normal.
+   ============================================================ */
+[lang="ar"] body,
+[dir="rtl"] body {
+  font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+}
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4,
+[dir="rtl"] .display, [dir="rtl"] .spec, [dir="rtl"] .btn,
+[dir="rtl"] .nav__link, [dir="rtl"] .logo__en, [dir="rtl"] .stat__l,
+[dir="rtl"] .card__more, [dir="rtl"] .figure__dim, [dir="rtl"] .footer h4,
+[dir="rtl"] .filter, [dir="rtl"] .field label, [dir="rtl"] .loader__word {
+  letter-spacing: normal;
+  text-transform: none;   /* Arabic has no letter case; uppercase is a no-op
+                             that only risks odd font fallback */
+}
+/* Arabic headlines need a touch more leading than the tight Latin setting */
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] .display { line-height: 1.25; }
+/* Directional glyphs have to turn around with the layout */
+[dir="rtl"] .btn__arrow { transform: scaleX(-1); }
+[dir="rtl"] .btn:hover .btn__arrow { transform: scaleX(-1) translateX(4px); }
 
 /* ---------- Motion preference ---------- */
 @media (prefers-reduced-motion: reduce) {

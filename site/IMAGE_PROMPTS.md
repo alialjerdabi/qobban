@@ -1,6 +1,6 @@
 # Image Prompts — Qobban Website
 
-32 image slots. Every placeholder in the site is tagged `data-img="IMG-XX"` and
+33 image slots. Every placeholder in the site is tagged `data-img="IMG-XX"` and
 prints its own ID on screen, so you can match generated files to slots visually.
 
 **Target model:** GPT-5 image generator.
