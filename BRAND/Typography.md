@@ -21,10 +21,27 @@ Fallback stack: `Gotham, Montserrat, "Helvetica Neue", Arial, sans-serif`
 
 ## Arabic
 
-Arabic is part of the logo lockup and will be part of the site at the RTL stage.
-Pair Gotham/Montserrat with a geometric Arabic face of matching weight and
-x-height — candidates: **IBM Plex Sans Arabic**, **Almarai**, **Tajawal**.
-`[CONFIRM]` before Arabic content work begins. See [../WEBSITE/Website_Strategy.md](../WEBSITE/Website_Strategy.md).
+**IBM Plex Sans Arabic** — Regular 400 / SemiBold 600 / Bold 700. Confirmed
+2026-07-28. Use it for all Arabic, everywhere: the logo lockup, the website,
+social, print and documents. Do not substitute Almarai or Tajawal.
+
+It was chosen over the alternatives because its proportions and x-height sit
+closest to Montserrat, so mixed-script lines hold a common baseline weight, and
+because it carries a genuinely matched weight range rather than only Regular
+and Bold.
+
+Web stack: `"IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif` — exposed as
+the `--font-ar` token. It loads in the same Google Fonts request as Montserrat,
+so it costs no extra connection, and unicode-range subsetting means the Arabic
+file only downloads on pages containing Arabic glyphs.
+
+**Letter-spacing must reset to `normal` for Arabic.** The script is cursive;
+tracking pulls the joined letterforms apart into unreadable fragments. Every
+tracked style in the system — headings, nav, buttons, spec captions, form
+labels — resets under `[dir="rtl"]`. This is not optional styling.
+
+Arabic has no letter case, so `text-transform: uppercase` is dropped too.
+Headlines also take slightly more leading (1.25 vs the tight Latin setting).
 
 ## Scale
 

@@ -272,6 +272,16 @@ strong { color: var(--text); font-weight: 600; }
   letter-spacing: 0.08em;
   line-height: 1;
 }
+
+/* Language toggle is hidden until the Arabic copy exists.
+   The mechanism is complete and tested — RTL flip, font, letter-spacing
+   reset, string swap — but the dictionary only covers navigation, CTAs,
+   service names and form labels. Body copy is 491 strings / ~4,500 words
+   still in English, and shipping a half-translated page is worse than
+   shipping an English one.
+
+   TO RE-ENABLE: delete this one rule. Nothing else is disabled. */
+[data-lang-toggle] { display: none; }
 /* Only one icon shows at a time; the other is hidden per theme. */
 .ctrl__sun, .ctrl__moon { display: none; }
 [data-theme="dark"] .ctrl__sun { display: block; }
@@ -1013,18 +1023,29 @@ html[data-nav="out"]::view-transition-new(root) { animation-name: depthInDown; }
    tracking pulls the joined letterforms apart into gibberish.
    Every tracked style in this file must reset to normal.
    ============================================================ */
+/* IBM Plex Sans Arabic is the brand Arabic face (BRAND/Typography.md).
+   It ships in the same Google Fonts request as Montserrat — no extra
+   connection — and unicode-range subsetting means the Arabic file only
+   downloads on pages that actually contain Arabic glyphs. */
+:root { --font-ar: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif; }
+
 [lang="ar"] body,
-[dir="rtl"] body {
-  font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
-}
-[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4,
-[dir="rtl"] .display, [dir="rtl"] .spec, [dir="rtl"] .btn,
-[dir="rtl"] .nav__link, [dir="rtl"] .logo__en, [dir="rtl"] .stat__l,
-[dir="rtl"] .card__more, [dir="rtl"] .figure__dim, [dir="rtl"] .footer h4,
-[dir="rtl"] .filter, [dir="rtl"] .field label, [dir="rtl"] .loader__word {
+[dir="rtl"] body { font-family: var(--font-ar); }
+
+/* The bilingual wordmark renders in Arabic on every page, English or not,
+   so it takes the brand Arabic face rather than a system fallback. */
+.logo__ar,
+:lang(ar) { font-family: var(--font-ar); }
+/* Applies to the marked element AND everything inside it. Listing individual
+   components missed the case where the Arabic element is itself the one
+   carrying dir/lang — e.g. a single Arabic heading on an English page — and
+   that element kept the Latin tracking. */
+[dir="rtl"], [dir="rtl"] *,
+[lang="ar"], [lang="ar"] * {
   letter-spacing: normal;
-  text-transform: none;   /* Arabic has no letter case; uppercase is a no-op
-                             that only risks odd font fallback */
+  /* Arabic has no letter case, so uppercase is a no-op that only risks an
+     odd font fallback. */
+  text-transform: none;
 }
 /* Arabic headlines need a touch more leading than the tight Latin setting */
 [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] .display { line-height: 1.25; }

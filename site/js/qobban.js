@@ -468,18 +468,16 @@
 
   var langBtn = document.querySelector('[data-lang-toggle]');
   if (langBtn) {
-    var arabicFontLoaded = false;
-    var loadArabicFont = function () {
-      if (arabicFontLoaded) return;
-      arabicFontLoaded = true;
-      var link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap';
-      document.head.appendChild(link);
-    };
-
     /* Walk text nodes and swap whole strings we have a translation for.
-       Skips script/style so we never rewrite code. */
+       Skips script/style so we never rewrite code.
+
+       Whitespace is normalised before lookup: body copy is wrapped across
+       several source lines, so the raw node value carries newlines and
+       indentation. Without collapsing those, no multi-line paragraph could
+       ever match a dictionary key — only the short single-line strings
+       would translate, which is precisely the half-translated failure. */
+    var normalise = function (s) { return s.replace(/\s+/g, ' ').trim(); };
+
     var translate = function (dict) {
       var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
         acceptNode: function (node) {
@@ -490,10 +488,10 @@
       });
       var node;
       while ((node = walker.nextNode())) {
-        var key = node.nodeValue.trim();
+        var key = normalise(node.nodeValue);
         if (dict[key]) {
           if (!node.parentNode.dataset.en) node.parentNode.dataset.en = key;
-          node.nodeValue = node.nodeValue.replace(key, dict[key]);
+          node.nodeValue = dict[key];
         }
       }
       /* aria-labels and placeholders are attributes, not text nodes. */
@@ -508,7 +506,8 @@
     var setLang = function (lang, persist) {
       var root = document.documentElement;
       if (lang === 'ar') {
-        loadArabicFont();
+        /* Font is no longer injected here — IBM Plex Sans Arabic ships in
+           the page's own Google Fonts request alongside Montserrat. */
         root.lang = 'ar';
         root.dir = 'rtl';
         translate(AR);
