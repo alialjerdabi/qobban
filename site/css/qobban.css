@@ -88,7 +88,13 @@ body {
   color: var(--text-body);
   background: var(--surface);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* Stops the mobile nav (translateX(100%)) causing horizontal scroll.
+     Must be `clip`, not `hidden`: overflow-x:hidden forces overflow-y to
+     auto, which makes BODY a scroll container — and position:sticky then
+     resolves against body's scrollport instead of the viewport, so the
+     process stage stack silently stops pinning. `clip` clips identically
+     without creating a scroll container. */
+  overflow-x: clip;
 }
 img, svg, video { display: block; max-width: 100%; height: auto; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -672,6 +678,123 @@ html.is-loaded .loader { display: none; }
 .step:hover .step__n { color: var(--yellow); }
 .step h3 { margin-block-end: var(--s-1); }
 .step p { font-size: 0.9375rem; color: var(--text-muted); }
+
+/* ============================================================
+   PROCESS STAGE STACK
+   Each stage pins under the header at an increasing offset, so earlier
+   stages stay visible as later ones arrive — the reader accumulates the
+   process instead of scrolling past it. No pin maths, no scroll listener,
+   no dependency: the runway comes from the cards' own height.
+
+   Requires `body { overflow-x: clip }` — see the note on body above.
+   ============================================================ */
+.stagestack {
+  --header: 76px;
+  --step: 16px;              /* visible sliver of each earlier card */
+  display: grid;
+  gap: clamp(2rem, 6vw, 5rem);
+  /* Knob: raise to ~12vh if you want stage 05 to pin for a beat before
+     the page moves on. Costs that much empty space below it. */
+  padding-block-end: 0;
+}
+
+.stage {
+  position: sticky;
+  inset-block-start: calc(var(--header) + var(--i) * var(--step));
+  background: var(--surface-raised);
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  transform-origin: top center;
+  /* Opaque + own shadow so stacked cards read as separate objects */
+  box-shadow: 0 -1px 0 var(--surface-line), 0 18px 40px var(--shadow);
+}
+
+.stage__grid { display: grid; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; }
+@media (min-width: 900px) {
+  .stage__grid { grid-template-columns: 1fr 1fr; }
+  .stage--flip .stage__grid > :first-child { order: 2; }
+}
+
+.stage__n {
+  font-size: var(--f-caption);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.stage h2 { margin-block: var(--s-2) var(--s-3); }
+
+.stage__corner {
+  position: absolute;
+  inline-size: 14px;
+  block-size: 14px;
+  border: 2px solid var(--yellow);
+  pointer-events: none;
+  opacity: .5;
+}
+.stage__corner--tl { inset-block-start: 8px; inset-inline-start: 8px; border-inline-end: 0; border-block-end: 0; }
+.stage__corner--br { inset-block-end: 8px; inset-inline-end: 8px; border-inline-start: 0; border-block-start: 0; }
+
+/* Enhancement only: recede as a card is overtaken. Unsupported browsers
+   get the plain sticky stack, which is the point of doing it this way. */
+@supports (animation-timeline: view()) {
+  @media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+    .stage {
+      animation: stageRecede linear both;
+      animation-timeline: view();
+      animation-range: exit-crossing 0% exit-crossing 100%;
+    }
+    @keyframes stageRecede {
+      to { transform: scale(0.94); filter: brightness(0.72); }
+    }
+  }
+}
+
+/* Expand all — a visually-hidden checkbox drives this, so it needs no
+   JavaScript, can't be blocked by the CSP, and can't desync from the DOM. */
+.viewtoggle { display: flex; justify-content: flex-end; margin-block-end: var(--s-3); }
+.viewtoggle__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--surface-line);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: var(--f-caption);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color .25s var(--ease), border-color .25s var(--ease);
+}
+.viewtoggle__btn:hover { color: var(--text); border-color: var(--text-muted); }
+.viewtoggle__input:focus-visible + .viewtoggle .viewtoggle__btn {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+}
+.viewtoggle__off { display: none; }
+.viewtoggle__input:checked + .viewtoggle .viewtoggle__off { display: inline; }
+.viewtoggle__input:checked + .viewtoggle .viewtoggle__on { display: none; }
+.viewtoggle__input:checked ~ .stagestack .stage {
+  position: static;
+  box-shadow: none;
+  animation: none;
+  transform: none;
+  filter: none;
+}
+
+@media (max-width: 768px) {
+  /* Five pinned cards on a phone viewport is a scroll trap. Already flat,
+     so the toggle would be a no-op — hide it rather than lie. */
+  .stage { position: static; box-shadow: none; }
+  .viewtoggle, .viewtoggle__input { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage { position: static; animation: none; transform: none; filter: none; }
+  .viewtoggle, .viewtoggle__input { display: none; }
+}
 
 /* ---------- Stats ---------- */
 .stats { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }

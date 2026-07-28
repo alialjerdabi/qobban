@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/qobban.css?v=8">
+<link rel="stylesheet" href="css/qobban.css?v=10">
 <!-- seo:begin -->
 <link rel="canonical" href="https://qobban.com/process.html">
 <meta property="og:url" content="https://qobban.com/process.html">
@@ -18,7 +18,7 @@
 <meta name="theme-color" content="#111111">
 <script defer src="/_vercel/insights/script.js"></script>
 <!-- seo:end -->
-<script src="js/boot.js?v=8"></script>
+<script src="js/boot.js?v=10"></script>
 </head>
 <body data-whatsapp="973XXXXXXXX">
 <a class="skip" href="#main">Skip to content</a>
@@ -68,112 +68,129 @@
 </section>
 
 <section class="section section--line">
-  <div class="wrap split">
-    <div class="reveal">
-      <p class="spec">Stage 01</p>
-      <h2 style="margin-block:var(--s-3)">Consultation</h2>
-      <div class="stack">
-        <p>We start with use, not product. What the space has to do, who uses it, what's
-          already there, and what's actually bothering you about it now.</p>
-        <p>You'll get an honest view of material options and the cost bands they sit in —
-          including when the cheaper option is genuinely the right one.</p>
-        <p><strong>You receive:</strong> a recommended approach and an indicative cost band.</p>
-      </div>
+  <div class="wrap">
+    <input type="checkbox" id="flatview" class="viewtoggle__input sr">
+    <div class="viewtoggle">
+      <label class="viewtoggle__btn" for="flatview">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        <span class="viewtoggle__on">Expand all</span>
+        <span class="viewtoggle__off">Stack view</span>
+      </label>
     </div>
-    <div class="reveal" data-delay="2">
-      <div class="figure">
-        <img loading="eager" fetchpriority="high" src="img/IMG-25.jpg" alt="Consultation — discussing options on site" decoding="async" width="1456" height="1092">
-        <span class="figure__dim">Stage 01</span>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="section section--line">
-  <div class="wrap split split--reverse">
-    <div class="reveal" data-delay="2">
-      <p class="spec">Stage 02</p>
-      <h2 style="margin-block:var(--s-3)">Site Measurement</h2>
-      <div class="stack">
-        <p>Nothing is fabricated from a phone measurement. We measure on site, check level
-          and square, record fall across openings, and assess access for installation.</p>
-        <p>This is the stage that prevents the gate that doesn't close and the pergola that
-          doesn't sit level. It is not optional, and it is not charged separately.</p>
-        <p><strong>You receive:</strong> confirmed dimensions and any constraints we found.</p>
-      </div>
-    </div>
-    <div class="reveal">
-      <div class="figure">
-        <img loading="lazy" src="img/IMG-26.jpg" alt="Measurement — tape, laser, level on site" decoding="async" width="1456" height="1092">
-        <span class="figure__dim">Stage 02</span>
-      </div>
-    </div>
-  </div>
-</section>
+    <div class="stagestack">
 
-<section class="section section--line">
-  <div class="wrap split">
-    <div class="reveal">
-      <div class="figure">
-        <img loading="lazy" src="img/IMG-27.jpg" alt="Written scope document on desk with samples" decoding="async" width="1456" height="1092">
-        <span class="figure__dim">Stage 03</span>
-      </div>
-    </div>
-    <div class="reveal" data-delay="2">
-      <p class="spec">Stage 03</p>
-      <h2 style="margin-block:var(--s-3)">Written Scope</h2>
-      <div class="stack">
-        <p>This is the part that separates us from a price on a WhatsApp message. Your scope
-          names the material and grade, section sizes, the coating system and film thickness,
-          hardware and automation makes, the warranty period, and the lead time.</p>
-        <p>You can compare it line by line against any other quote — and we'd encourage you
-          to. If a competitor won't specify the same things, that difference is the point.</p>
-        <p><strong>You receive:</strong> a priced, itemised scope and drawings where relevant.</p>
-      </div>
-    </div>
-  </div>
-</section>
+      <article class="stage" style="--i:0">
+        <span class="stage__corner stage__corner--tl"></span>
+        <span class="stage__corner stage__corner--br"></span>
+        <div class="stage__grid">
+          <div>
+            <p class="stage__n">Stage 01</p>
+            <h2>Consultation</h2>
+            <div class="stack">
+              <p>We start with use, not product. What the space has to do, who uses it, what's
+                already there, and what's actually bothering you about it now.</p>
+              <p>You'll get an honest view of material options and the cost bands they sit in —
+                including when the cheaper option is genuinely the right one.</p>
+              <p><strong>You receive:</strong> a recommended approach and an indicative cost band.</p>
+            </div>
+          </div>
+          <div class="figure">
+            <img loading="eager" fetchpriority="high" src="img/IMG-25.jpg" alt="Consultation — discussing options on site" decoding="async" width="1456" height="1092">
+            <span class="figure__dim">Stage 01</span>
+          </div>
+        </div>
+      </article>
 
-<section class="section section--line">
-  <div class="wrap split split--reverse">
-    <div class="reveal" data-delay="2">
-      <p class="spec">Stage 04</p>
-      <h2 style="margin-block:var(--s-3)">Fabrication</h2>
-      <div class="stack">
-        <p>Built in our workshop to the approved drawing. Welds dressed, edges finished,
-          fit checked before anything goes to coating.</p>
-        <p>Coating happens after fabrication, not before — so cut edges and weld zones are
-          covered, which is exactly where corrosion normally begins.</p>
-        <p><strong>You receive:</strong> progress updates and photos at key points.</p>
-      </div>
-    </div>
-    <div class="reveal">
-      <div class="figure">
-        <img loading="lazy" src="img/IMG-28.jpg" alt="Workshop fabrication — jig and frame assembly" decoding="async" width="1456" height="1092">
-        <span class="figure__dim">Stage 04</span>
-      </div>
-    </div>
-  </div>
-</section>
+      <article class="stage stage--flip" style="--i:1">
+        <span class="stage__corner stage__corner--tl"></span>
+        <span class="stage__corner stage__corner--br"></span>
+        <div class="stage__grid">
+          <div>
+            <p class="stage__n">Stage 02</p>
+            <h2>Site Measurement</h2>
+            <div class="stack">
+              <p>Nothing is fabricated from a phone measurement. We measure on site, check level
+                and square, record fall across openings, and assess access for installation.</p>
+              <p>This is the stage that prevents the gate that doesn't close and the pergola that
+                doesn't sit level. It is not optional, and it is not charged separately.</p>
+              <p><strong>You receive:</strong> confirmed dimensions and any constraints we found.</p>
+            </div>
+          </div>
+          <div class="figure">
+            <img loading="lazy" src="img/IMG-26.jpg" alt="Measurement — tape, laser, level on site" decoding="async" width="1456" height="1092">
+            <span class="figure__dim">Stage 02</span>
+          </div>
+        </div>
+      </article>
 
-<section class="section section--line">
-  <div class="wrap split">
-    <div class="reveal">
-      <div class="figure">
-        <img loading="lazy" src="img/IMG-29.jpg" alt="Installation — protected surfaces, clean site" decoding="async" width="1456" height="1092">
-        <span class="figure__dim">Stage 05</span>
-      </div>
-    </div>
-    <div class="reveal" data-delay="2">
-      <p class="spec">Stage 05</p>
-      <h2 style="margin-block:var(--s-3)">Installation &amp; Handover</h2>
-      <div class="stack">
-        <p>Surfaces protected before work starts. Fixings into structure, alignment verified,
-          full operation and automation cycle tested. Site swept and cleared before we leave.</p>
-        <p>At handover you get photographs, operating and maintenance guidance, and the
-          warranty documentation matching the scope you signed.</p>
-        <p><strong>You receive:</strong> handover photos, care guidance and warranty.</p>
-      </div>
+      <article class="stage" style="--i:2">
+        <span class="stage__corner stage__corner--tl"></span>
+        <span class="stage__corner stage__corner--br"></span>
+        <div class="stage__grid">
+          <div>
+            <p class="stage__n">Stage 03</p>
+            <h2>Written Scope</h2>
+            <div class="stack">
+              <p>This is the part that separates us from a price on a WhatsApp message. Your scope
+                names the material and grade, section sizes, the coating system and film thickness,
+                hardware and automation makes, the warranty period, and the lead time.</p>
+              <p>You can compare it line by line against any other quote — and we'd encourage you
+                to. If a competitor won't specify the same things, that difference is the point.</p>
+              <p><strong>You receive:</strong> a priced, itemised scope and drawings where relevant.</p>
+            </div>
+          </div>
+          <div class="figure">
+            <img loading="lazy" src="img/IMG-27.jpg" alt="Written scope document on desk with samples" decoding="async" width="1456" height="1092">
+            <span class="figure__dim">Stage 03</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="stage stage--flip" style="--i:3">
+        <span class="stage__corner stage__corner--tl"></span>
+        <span class="stage__corner stage__corner--br"></span>
+        <div class="stage__grid">
+          <div>
+            <p class="stage__n">Stage 04</p>
+            <h2>Fabrication</h2>
+            <div class="stack">
+              <p>Built in our workshop to the approved drawing. Welds dressed, edges finished,
+                fit checked before anything goes to coating.</p>
+              <p>Coating happens after fabrication, not before — so cut edges and weld zones are
+                covered, which is exactly where corrosion normally begins.</p>
+              <p><strong>You receive:</strong> progress updates and photos at key points.</p>
+            </div>
+          </div>
+          <div class="figure">
+            <img loading="lazy" src="img/IMG-28.jpg" alt="Workshop fabrication — jig and frame assembly" decoding="async" width="1456" height="1092">
+            <span class="figure__dim">Stage 04</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="stage" style="--i:4">
+        <span class="stage__corner stage__corner--tl"></span>
+        <span class="stage__corner stage__corner--br"></span>
+        <div class="stage__grid">
+          <div>
+            <p class="stage__n">Stage 05</p>
+            <h2>Installation &amp; Handover</h2>
+            <div class="stack">
+              <p>Surfaces protected before work starts. Fixings into structure, alignment verified,
+                full operation and automation cycle tested. Site swept and cleared before we leave.</p>
+              <p>At handover you get photographs, operating and maintenance guidance, and the
+                warranty documentation matching the scope you signed.</p>
+              <p><strong>You receive:</strong> handover photos, care guidance and warranty.</p>
+            </div>
+          </div>
+          <div class="figure">
+            <img loading="lazy" src="img/IMG-29.jpg" alt="Installation — protected surfaces, clean site" decoding="async" width="1456" height="1092">
+            <span class="figure__dim">Stage 05</span>
+          </div>
+        </div>
+      </article>
+
     </div>
   </div>
 </section>
@@ -204,6 +221,6 @@
 <a class="wa" href="https://wa.me/973XXXXXXXX" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2Z"/></svg>
 </a>
-<script src="js/qobban.js?v=8" defer></script>
+<script src="js/qobban.js?v=10" defer></script>
 </body>
 </html>
