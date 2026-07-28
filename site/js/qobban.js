@@ -433,38 +433,20 @@
      /ar/ pages from these same strings. Untranslated text stays English
      rather than disappearing.
      ============================================================ */
-  var AR = {
-    // Navigation and chrome
-    'Services': 'الخدمات', 'Projects': 'المشاريع', 'Process': 'آلية العمل',
-    'About': 'من نحن', 'Contact': 'اتصل بنا', 'Get a Quote': 'اطلب عرض سعر',
-    'Skip to content': 'تخطَّ إلى المحتوى', 'Menu': 'القائمة',
-    'Company': 'الشركة', 'Kingdom of Bahrain': 'مملكة البحرين',
-    'WhatsApp': 'واتساب', 'Instagram': 'إنستغرام', 'TikTok': 'تيك توك',
-    // Calls to action
-    'Request a Quote': 'اطلب عرض سعر', 'See the Work': 'شاهد أعمالنا',
-    'Start a Quote': 'ابدأ طلب عرض السعر', 'Contact us': 'تواصل معنا',
-    'Get in Touch': 'تواصل معنا', 'Send Message': 'إرسال الرسالة',
-    'Book a Consultation': 'احجز استشارة', 'Quote a Gate': 'عرض سعر لبوابة',
-    'Quote a Pergola': 'عرض سعر لبرجولا', 'Quote a Railing': 'عرض سعر لدرابزين',
-    'Quote a Canopy': 'عرض سعر لمظلة', 'Book an Assessment': 'احجز معاينة',
-    'View all projects': 'عرض كل المشاريع', 'See projects': 'شاهد المشاريع',
-    // Service names
-    'Gates': 'البوابات', 'Pergolas & Shade': 'البرجولات والمظلات',
-    'Railings & Balustrades': 'الدرابزينات والحواجز',
-    'Canopies & Car Shades': 'المظلات ومظلات السيارات',
-    'Custom Fabrication': 'التصنيع حسب الطلب',
-    'Maintenance & Repair': 'الصيانة والإصلاح',
-    // Headline
-    'Precision is': 'الدقة هي', 'standard.': 'معيارنا.',
-    'Architectural Metalwork · Kingdom of Bahrain':
-      'أعمال معدنية معمارية · مملكة البحرين',
-    // Form labels
-    'Name': 'الاسم', 'Phone / WhatsApp': 'الهاتف / واتساب',
-    'Email': 'البريد الإلكتروني', 'Message': 'الرسالة',
-    'Area in Bahrain': 'المنطقة في البحرين',
-    'What do you need?': 'ما الذي تحتاجه؟',
-    'Preferred timeline': 'الجدول الزمني المفضل',
+  /* The dictionary lives in its own file and is fetched only when a visitor
+     actually switches to Arabic — English visitors never download it. */
+  var AR = null;
+  var loadDict = function (done) {
+    if (AR) { done(AR); return; }
+    if (window.QobbanAR) { AR = window.QobbanAR; done(AR); return; }
+    var s = document.createElement('script');
+    s.src = (document.currentScript && /\/services\//.test(location.pathname) ? '../' : '')
+            + 'js/ar.js?v=13';
+    s.onload = function () { AR = window.QobbanAR || {}; done(AR); };
+    s.onerror = function () { AR = {}; done(AR); };   /* stay English on failure */
+    document.head.appendChild(s);
   };
+
 
   var langBtn = document.querySelector('[data-lang-toggle]');
   if (langBtn) {
@@ -491,7 +473,12 @@
         var key = normalise(node.nodeValue);
         if (dict[key]) {
           if (!node.parentNode.dataset.en) node.parentNode.dataset.en = key;
-          node.nodeValue = dict[key];
+          /* Preserve the node's own leading/trailing whitespace. A headline
+             split across several nodes — "Precision is" / "our " / "standard."
+             — relies on that trailing space to separate the words once they
+             are re-joined. Substituting the trimmed value welds them together. */
+          var pad = node.nodeValue.match(/^(\s*)[\s\S]*?(\s*)$/);
+          node.nodeValue = pad[1] + dict[key] + pad[2];
         }
       }
       /* aria-labels and placeholders are attributes, not text nodes. */
@@ -510,7 +497,7 @@
            the page's own Google Fonts request alongside Montserrat. */
         root.lang = 'ar';
         root.dir = 'rtl';
-        translate(AR);
+        loadDict(function (dict) { translate(dict); });
         langBtn.textContent = 'EN';
         langBtn.setAttribute('aria-label', 'Switch to English');
       } else {

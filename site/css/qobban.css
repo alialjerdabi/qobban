@@ -273,15 +273,6 @@ strong { color: var(--text); font-weight: 600; }
   line-height: 1;
 }
 
-/* Language toggle is hidden until the Arabic copy exists.
-   The mechanism is complete and tested — RTL flip, font, letter-spacing
-   reset, string swap — but the dictionary only covers navigation, CTAs,
-   service names and form labels. Body copy is 491 strings / ~4,500 words
-   still in English, and shipping a half-translated page is worse than
-   shipping an English one.
-
-   TO RE-ENABLE: delete this one rule. Nothing else is disabled. */
-[data-lang-toggle] { display: none; }
 /* Only one icon shows at a time; the other is hidden per theme. */
 .ctrl__sun, .ctrl__moon { display: none; }
 [data-theme="dark"] .ctrl__sun { display: block; }
