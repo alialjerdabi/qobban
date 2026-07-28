@@ -305,47 +305,6 @@ strong { color: var(--text); font-weight: 600; }
   [dir="rtl"] .nav { transform: translateX(-100%); }
   .nav.is-open { transform: translateX(0); }
   .nav__link { font-size: 1.25rem; }
-
-  /* --- Staggered reveal ---------------------------------------------
-     Items rise in sequence behind the panel. Driven by :nth-child, so no
-     markup changed on any page.
-
-     The delays live on .is-open only. Removing that class drops them, so
-     the whole menu exits at once and faster than it entered — which is
-     what makes closing feel responsive rather than draggy. */
-  .nav > * {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity .22s var(--ease), transform .22s var(--ease);
-  }
-  .nav.is-open > * {
-    opacity: 1;
-    transform: none;
-    transition-duration: .42s;
-  }
-  .nav.is-open > :nth-child(1) { transition-delay: .10s; }
-  .nav.is-open > :nth-child(2) { transition-delay: .15s; }
-  .nav.is-open > :nth-child(3) { transition-delay: .20s; }
-  .nav.is-open > :nth-child(4) { transition-delay: .25s; }
-  .nav.is-open > :nth-child(5) { transition-delay: .30s; }
-  .nav.is-open > :nth-child(6) { transition-delay: .35s; }
-
-  /* Numbering, in the same caption language as .spec and the stage numbers.
-     Counter is reset on the nav and incremented per link, so it stays
-     correct if the nav ever gains or loses an item. */
-  .nav { counter-reset: navitem; }
-  .nav__link { counter-increment: navitem; }
-  .nav__link::before {
-    content: counter(navitem, decimal-leading-zero);
-    position: absolute;
-    inset-inline-start: -2.2rem;
-    inset-block-start: 0.65rem;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--yellow);
-    opacity: .55;
-  }
 }
 
 /* ---------- Hero ---------- */
