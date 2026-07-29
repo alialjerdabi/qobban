@@ -317,9 +317,12 @@
       if (prev && idx > 0) { idx--; paint(); }
     });
 
-    /* Radio choice auto-advances — fewer taps on mobile */
+    /* Radio choice auto-advances on touch, where it saves a tap and the
+       Continue button is often below the fold. On desktop that button sits
+       right next to the choice, so moving on its own reads as a glitch. */
+    var coarsePointer = window.matchMedia('(pointer: coarse)').matches;
     stepper.addEventListener('change', function (e) {
-      if (e.target.matches('[data-advance] input[type="radio"]') && !reduced) {
+      if (e.target.matches('[data-advance] input[type="radio"]') && !reduced && coarsePointer) {
         setTimeout(function () {
           if (idx < steps.length - 1) { idx++; paint(); }
         }, 260);
@@ -459,7 +462,7 @@
     if (window.QobbanAR) { AR = window.QobbanAR; done(AR); return; }
     var s = document.createElement('script');
     s.src = (document.currentScript && /\/services\//.test(location.pathname) ? '../' : '')
-            + 'js/ar.js?v=16';
+            + 'js/ar.js?v=17';
     s.onload = function () { AR = window.QobbanAR || {}; done(AR); };
     s.onerror = function () { AR = {}; done(AR); };   /* stay English on failure */
     document.head.appendChild(s);
