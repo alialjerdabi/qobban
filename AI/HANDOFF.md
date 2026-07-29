@@ -40,16 +40,22 @@ needs a second phone line and Meta app review), and AI triage (one person, zero
 leads). Revisit HubSpot's free tier when two people work leads, or when
 follow-up reminders are genuinely needed.
 
-Script is written and reviewed: [../api/lead-to-sheet.gs](../api/lead-to-sheet.gs).
-It is not web-reachable — `vercel.json` sets `outputDirectory: site`, so only
-`site/` is served.
+**This is live and verified end to end.** A real submission through
+`qobban.vercel.app` reached the API, forwarded to Apps Script, appended a row
+and delivered the email. The script is a standalone project ("leads
+management") targeting the sheet by `SHEET_ID`, deployed as a web app with
+access "Anyone"; `LEAD_WEBHOOK_URL` in Vercel carries the shared secret in the
+query string because Apps Script strips the `Authorization` header —
+`LEAD_WEBHOOK_KEY` is unused and must stay unset.
 
-**Owner's remaining steps, ~10 minutes:** create the sheet, paste the script,
-set `NOTIFY` and `SECRET`, deploy as a web app with access "Anyone", then set
-`LEAD_WEBHOOK_URL` in Vercel to the `/exec` URL **with `?key=YOUR_SECRET`
-appended**. Apps Script strips the `Authorization` header, so `LEAD_WEBHOOK_KEY`
-cannot work here — leave it unset. Run `test_()` in the Apps Script editor
-first. Then send one real submission end to end.
+Source: [../api/lead-to-sheet.gs](../api/lead-to-sheet.gs). Not web-reachable —
+`vercel.json` sets `outputDirectory: site`, so only `site/` is served. The
+committed copy keeps `SECRET = 'CHANGE_ME'`; the real secret lives only in the
+Apps Script editor and Vercel, and must never be committed.
+
+Note when reading results: `/api/lead` returns `ok:true` even when the forward
+fails, by design — a broken sheet must never cost a lead. The sheet, the email,
+or Apps Script → Executions are the only honest confirmations.
 
 ## Still open
 
@@ -64,8 +70,11 @@ The `[CONFIRM]` items are commitments, not copy. The site promises free site
 measurement, a written specification naming coating system and warranty period,
 and photographic handover. Confirm Qobban will do all three, or change the copy.
 
-Also open: `ALLOWED_ORIGIN` unset · domain not pointed · Vercel Analytics not
-enabled · favicon not exported from the inline SVG mark (32 / 180 / 512 px).
+Also open: **`ALLOWED_ORIGIN` unset** — now that leads reach a real sheet, any
+site can POST to `/api/lead`; rate limiting is the only brake. Set it to the
+production origin once the domain is pointed. Domain not pointed · Vercel
+Analytics not enabled · favicon not exported from the inline SVG mark
+(32 / 180 / 512 px).
 
 **172 markdown files are still `TBD`.** Priority: `MARKETING/` (TikTok strategy
 was agreed and never written) → `SERVICES/` → `CUSTOMERS/` → `SALES/` →
@@ -86,5 +95,6 @@ repaint, which would pull focus off the language toggle.
 
 ---
 
-**Next action:** commit the working tree, then deploy the Apps Script and send
-one real lead through. After that, the domain and the 16 `[CONFIRM]` facts.
+**Next action:** delete the test rows from the sheet, then the domain — pointing
+it, `SITE` in `site/build.py`, the 23 canonical/OG URLs and `ALLOWED_ORIGIN` are
+one pass. Then the 16 `[CONFIRM]` facts.
