@@ -11,7 +11,7 @@
  *  2. Extensions → Apps Script. Delete the placeholder, paste this file.
  *  3. Set NOTIFY and SECRET below. SECRET is any long random string.
  *     Set SHEET_ID too if this script is standalone rather than opened
- *     from the sheet. Then run test_ (not doPost) to check it writes.
+ *     from the sheet. Then run runTest (not doPost) to check it writes.
  *  4. Deploy → New deployment → type "Web app".
  *       Execute as: Me.   Who has access: Anyone.
  *     ("Anyone" is required — Vercel posts without a Google login. SECRET is
@@ -99,9 +99,9 @@ function json(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-/* Run this from the Apps Script editor (select test_, press Run) to confirm
+/* Run this from the Apps Script editor (select runTest, press Run) to confirm
    the sheet write and the email before pointing the live site at it. */
-function test_() {
+function runTest() {
   var sheet = target_();
   var before = sheet.getLastRow();
 
