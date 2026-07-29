@@ -10,6 +10,8 @@
  *     a tab called "Leads" if one exists, otherwise the first tab.
  *  2. Extensions → Apps Script. Delete the placeholder, paste this file.
  *  3. Set NOTIFY and SECRET below. SECRET is any long random string.
+ *     Set SHEET_ID too if this script is standalone rather than opened
+ *     from the sheet. Then run test_ (not doPost) to check it writes.
  *  4. Deploy → New deployment → type "Web app".
  *       Execute as: Me.   Who has access: Anyone.
  *     ("Anyone" is required — Vercel posts without a Google login. SECRET is
@@ -29,6 +31,12 @@ var NOTIFY = 'CHANGE_ME@example.com';   // who gets the alert
 var SECRET = 'CHANGE_ME';               // must match ?key= in LEAD_WEBHOOK_URL
 var TAB    = 'Leads';               // falls back to the first tab if absent
 
+/* The spreadsheet to write to, taken from its URL:
+   docs.google.com/spreadsheets/d/THIS_PART_HERE/edit
+   Leave blank only if this script was opened from the sheet itself via
+   Extensions → Apps Script. A standalone project has no sheet attached. */
+var SHEET_ID = '';
+
 /* Order of the sheet columns. Status is ours, never written by the site —
    it stays blank so it can be filled in by hand, or ignored entirely. */
 var COLUMNS = ['receivedAt', 'name', 'phone', 'email', 'service', 'property',
@@ -47,12 +55,7 @@ function doPost(e) {
     return json({ ok: false, error: 'bad_json' });
   }
 
-  /* Fall back to the first tab: getSheetByName is case-sensitive, and a
-     lead is far too valuable to drop over the spelling of a tab. */
-  var book = SpreadsheetApp.getActive();
-  if (!book) throw new Error('No spreadsheet bound — open Apps Script from the sheet itself (Extensions → Apps Script), not from script.google.com.');
-  var sheet = book.getSheetByName(TAB) || book.getSheets()[0];
-
+  var sheet = target_();
   if (sheet.getLastRow() === 0) sheet.appendRow(COLUMNS);
 
   sheet.appendRow(COLUMNS.map(function (c) {
@@ -61,6 +64,18 @@ function doPost(e) {
 
   notify(lead);
   return json({ ok: true });
+}
+
+/** The tab to write to. Falls back to the first tab because getSheetByName
+    is case-sensitive, and a lead is too valuable to drop over spelling. */
+function target_() {
+  var book = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActive();
+  if (!book) {
+    throw new Error('No spreadsheet. Set SHEET_ID to the id in your sheet URL ' +
+                    '(docs.google.com/spreadsheets/d/THIS_PART/edit), or open ' +
+                    'this script from the sheet via Extensions → Apps Script.');
+  }
+  return book.getSheetByName(TAB) || book.getSheets()[0];
 }
 
 function notify(lead) {
@@ -87,8 +102,7 @@ function json(obj) {
 /* Run this from the Apps Script editor (select test_, press Run) to confirm
    the sheet write and the email before pointing the live site at it. */
 function test_() {
-  var book = SpreadsheetApp.getActive();
-  var sheet = book.getSheetByName(TAB) || book.getSheets()[0];
+  var sheet = target_();
   var before = sheet.getLastRow();
 
   var res = doPost({
@@ -108,13 +122,12 @@ function test_() {
   /* The email is not proof: it is sent after the write. Check the sheet. */
   var after = sheet.getLastRow();
   if (after <= before) {
-    throw new Error('No row was written to "' + sheet.getName() +
-                    '" in "' + book.getName() + '". Wrong spreadsheet?');
+    throw new Error('No row was written to "' + sheet.getName() + '".');
   }
 
   var rejected = doPost({ parameter: { key: 'wrong' }, postData: { contents: '{}' } });
   if (JSON.parse(rejected.getContent()).ok !== false) throw new Error('bad key was accepted');
 
-  Logger.log('ok — wrote row ' + after + ' to "' + sheet.getName() +
-             '" in "' + book.getName() + '", bad key rejected');
+  Logger.log('ok — wrote row ' + after + ' to "' + sheet.getName() + '" in "' +
+             sheet.getParent().getName() + '", bad key rejected');
 }
