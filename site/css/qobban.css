@@ -1043,6 +1043,12 @@ html[data-nav="out"]::view-transition-new(root) { animation-name: depthInDown; }
 /* Directional glyphs have to turn around with the layout */
 [dir="rtl"] .btn__arrow { transform: scaleX(-1); }
 [dir="rtl"] .btn:hover .btn__arrow { transform: scaleX(-1) translateX(4px); }
+/* A phone number is not Arabic text. The leading "+" is bidi-neutral, so in
+   an RTL paragraph the algorithm flips the whole string and +973 3994 9004
+   renders as 9004 3994 973+. Isolating it pins the digits to LTR order.
+   Selector is not scoped to [dir="rtl"] — it should hold wherever a number
+   lands, including a future Arabic page. */
+a[href^="tel:"] { direction: ltr; unicode-bidi: isolate; }
 
 /* ---------- Motion preference ---------- */
 @media (prefers-reduced-motion: reduce) {

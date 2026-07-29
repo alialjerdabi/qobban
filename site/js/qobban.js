@@ -462,7 +462,7 @@
     if (window.QobbanAR) { AR = window.QobbanAR; done(AR); return; }
     var s = document.createElement('script');
     s.src = (document.currentScript && /\/services\//.test(location.pathname) ? '../' : '')
-            + 'js/ar.js?v=17';
+            + 'js/ar.js?v=18';
     s.onload = function () { AR = window.QobbanAR || {}; done(AR); };
     s.onerror = function () { AR = {}; done(AR); };   /* stay English on failure */
     document.head.appendChild(s);
