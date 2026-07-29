@@ -275,11 +275,21 @@
     var segs = Array.prototype.slice.call(document.querySelectorAll('.progress__seg'));
     var idx = 0;
 
+    /* Built here rather than in the dictionary: the translator walks the DOM
+       once, and this label is rewritten on every step change afterwards. */
+    var stepLabel = function (n, total) {
+      if (document.documentElement.lang !== 'ar') return 'Step ' + n + ' of ' + total;
+      var digits = function (v) {
+        return String(v).replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'[+d]; });
+      };
+      return 'الخطوة ' + digits(n) + ' من ' + digits(total);
+    };
+
     var paint = function () {
       steps.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
       segs.forEach(function (s, i) { s.classList.toggle('is-done', i <= idx); });
       var label = document.querySelector('[data-step-label]');
-      if (label) label.textContent = 'Step ' + (idx + 1) + ' of ' + steps.length;
+      if (label) label.textContent = stepLabel(idx + 1, steps.length);
       var heading = steps[idx].querySelector('h2, h3');
       if (heading) heading.setAttribute('tabindex', '-1'), heading.focus({ preventScroll: true });
     };
@@ -354,6 +364,14 @@
         body: JSON.stringify(payload),
       }).catch(function () { /* offline or blocked — fall through */ })
         .then(finish);
+    });
+
+    /* Switching to Arabic doesn't change the step, so only the label needs
+       redrawing — a full paint() would steal focus from the language toggle.
+       (Switching back to English reloads the page.) */
+    document.addEventListener('qobban:lang', function () {
+      var label = document.querySelector('[data-step-label]');
+      if (label) label.textContent = stepLabel(idx + 1, steps.length);
     });
 
     paint();
@@ -441,7 +459,7 @@
     if (window.QobbanAR) { AR = window.QobbanAR; done(AR); return; }
     var s = document.createElement('script');
     s.src = (document.currentScript && /\/services\//.test(location.pathname) ? '../' : '')
-            + 'js/ar.js?v=14';
+            + 'js/ar.js?v=16';
     s.onload = function () { AR = window.QobbanAR || {}; done(AR); };
     s.onerror = function () { AR = {}; done(AR); };   /* stay English on failure */
     document.head.appendChild(s);
@@ -497,7 +515,10 @@
            the page's own Google Fonts request alongside Montserrat. */
         root.lang = 'ar';
         root.dir = 'rtl';
-        loadDict(function (dict) { translate(dict); });
+        loadDict(function (dict) {
+          translate(dict);
+          document.dispatchEvent(new CustomEvent('qobban:lang'));
+        });
         langBtn.textContent = 'EN';
         langBtn.setAttribute('aria-label', 'Switch to English');
       } else {

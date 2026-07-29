@@ -380,16 +380,15 @@ window.QobbanAR = {
   'Site visits across Bahrain by appointment. For workshop visits, message ahead so someone is free to walk you through the work.':
     'زيارات الموقع في جميع أنحاء البحرين بموعد مسبق. ولزيارة الورشة، راسلنا مقدمًا ليكون أحدنا متفرغًا ليشرح لك العمل.',
   'Ready when you are.': 'جاهزون متى كنت جاهزًا.',
-  'Six questions, two minutes, and we\'ll come back with material and finish advice — not just a number.':
-    'ستة أسئلة في دقيقتين، ونعود إليك بنصيحة في الخامة والتشطيب — لا بمجرد رقم.',
+  'Five questions, two minutes, and we\'ll come back with material and finish advice — not just a number.':
+    'خمسة أسئلة في دقيقتين، ونعود إليك بنصيحة في الخامة والتشطيب — لا بمجرد رقم.',
   'Map embed or workshop exterior': 'خريطة أو واجهة الورشة',
 
   /* ---------- Quote form ---------- */
   'Request a quote': 'طلب عرض سعر',
-  'Six questions. No obligation.': 'ستة أسئلة. دون أي التزام.',
+  'Five questions. No obligation.': 'خمسة أسئلة. دون أي التزام.',
   'The more you can tell us, the more useful our first reply will be. Skip anything you don\'t know yet — "not measured" is a perfectly good answer.':
     'كلما أخبرتنا أكثر، كان ردنا الأول أنفع. تجاوز أي شيء لا تعرفه بعد — و"لم يُقس بعد" إجابة صحيحة تمامًا.',
-  'Step 1 of 6': 'الخطوة ١ من ٦',
   'Pick the closest match.': 'اختر الأقرب.',
   'Continue': 'متابعة',
   '← Back': '→ رجوع',
@@ -405,12 +404,6 @@ window.QobbanAR = {
   'Rough is fine. We measure on site before anything is fabricated.':
     'التقريبي يكفي. نقيس في الموقع قبل تصنيع أي شيء.',
   'Anything else we should know': 'أي شيء آخر ينبغي أن نعرفه',
-  'Have a photo or sketch?': 'هل لديك صورة أو رسم؟',
-  'Optional, but it usually saves a site visit at this stage.':
-    'اختياري، لكنه عادة يوفّر زيارة موقع في هذه المرحلة.',
-  'Attach an image': 'أرفق صورة',
-  'A phone photo of the space is enough. You can also send it on WhatsApp after submitting.':
-    'صورة من الهاتف للمكان تكفي. ويمكنك إرسالها عبر واتساب بعد الإرسال أيضًا.',
   'Where and when?': 'أين ومتى؟',
   'Area in Bahrain': 'المنطقة في البحرين',
   'Please tell us the area.': 'من فضلك أخبرنا بالمنطقة.',

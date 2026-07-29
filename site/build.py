@@ -106,6 +106,7 @@ BUSINESS = {
     "slogan": "Precision is our standard.",
     "url": SITE,
     "image": f"{SITE}/img/{OG_IMAGE}",
+    "telephone": "+97339949004",
     "address": {"@type": "PostalAddress", "addressCountry": "BH"},
     "areaServed": {"@type": "Country", "name": "Bahrain"},
 }
