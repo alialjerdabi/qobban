@@ -12,6 +12,7 @@ grep for the term. Rules: `.claude/rules/context-loading.md`.
 | Visual / design work | `BRAND/Color_System.md`, `BRAND/Typography.md`, `BRAND/Logo_System.md`, `BRAND/Brand_Do_and_Dont.md` |
 | Social media | `MARKETING/Content_Pillars.md`, `MARKETING/Caption_Guidelines.md`, `BRAND/Social_Media_System.md` |
 | Marketing / campaigns / SEO | `MARKETING/Marketing_Strategy.md`, `MARKETING/Content_Strategy.md`, `MARKETING/SEO_Strategy.md` |
+| AI video / image asset generation | `AI/Video_And_Asset_Prompt.md` (then only what it names) |
 | Sales scripts and pipeline | `SALES/Sales_Process.md`, `SALES/CRM_Stages.md`, plus the specific script file |
 | Objections / customer segments | `CUSTOMERS/Objections.md`, `CUSTOMERS/Pain_Points.md`, plus the one segment file |
 | Pricing / quoting | `10_PRICING_PHILOSOPHY.md`, `08_BUSINESS_MODEL.md`, `SALES/Quotation_System.md` |
