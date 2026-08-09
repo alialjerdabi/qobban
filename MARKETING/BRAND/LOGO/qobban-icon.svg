@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="640"
+     height="360"
+     viewBox="0 0 640 360"
+     role="img"
+     aria-labelledby="qobban-icon-title qobban-icon-desc">
+  <title id="qobban-icon-title">Qobban logo icon</title>
+  <desc id="qobban-icon-desc">Q-shaped precision frame containing a construction-yellow spirit level.</desc>
+
+  <!-- Transparent background. Brand colors: warm white #F2F2F2,
+       construction yellow #FFC220, charcoal #141617. -->
+  <g id="qobban-symbol" fill="none" stroke="#F2F2F2" stroke-width="28"
+     stroke-linecap="butt" stroke-linejoin="round">
+    <!-- Left side, lower rail and left half of the divided upper rail. -->
+    <path id="q-frame-left"
+          d="M270 42 H108
+             C68 42 46 65 46 104
+             V242
+             C46 281 68 304 108 304
+             H466"/>
+
+    <!-- Right half of the upper rail and right side. -->
+    <path id="q-frame-right"
+          d="M350 42 H506
+             C546 42 568 65 568 104
+             V250"/>
+
+    <!-- Distinctive Q tail. -->
+    <path id="q-tail" d="M474 272 L590 342"/>
+  </g>
+
+  <!-- Spirit-level body. -->
+  <rect id="level-body"
+        x="145" y="135" width="330" height="92" rx="7"
+        fill="#FFC220"/>
+
+  <!-- Center level vial / precision indicator. -->
+  <path id="level-vial"
+        d="M260 135 H360 V151
+           C360 190 340 210 310 210
+           C280 210 260 190 260 151 Z"
+        fill="#F2F2F2"
+        stroke="#141617"
+        stroke-width="16"
+        stroke-linejoin="round"/>
+</svg>

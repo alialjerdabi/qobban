@@ -4,3 +4,15 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
+
+# MARKETING/ rendered assets — ~545 MB of PNG/PDF renders, regenerable from the
+# tools/ scripts and prompt manifests committed beside them. Source SVGs with
+# embedded rasters are binary in practice and excluded the same way.
+MARKETING/**/*.png
+MARKETING/**/*.jpg
+MARKETING/**/*.pdf
+MARKETING/**/*.ttf
+MARKETING/BRAND/SIGNAGE/workshop-signboard/workshop-signboard-source.svg
+MARKETING/product-posts/svg-exports/decorative-metal-stands-offer-post.svg
+MARKETING/product-posts/svg-exports/decorative-metal-stands-panel-true-vector.svg
+MARKETING/product-posts/svg-exports/driveway-shades-launch-offer-cover-01-of-06.svg
