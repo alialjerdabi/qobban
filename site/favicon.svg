@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Qobban">
+  <!-- Square lockup of the header mark. A charcoal tile rather than a
+       transparent one, so the icon holds its shape against both light and
+       dark browser chrome. Strokes are thickened relative to the header
+       version: at 16px the 5px original disappears. -->
+  <rect width="96" height="96" rx="18" fill="#141617"/>
+  <g transform="translate(7.5,12.9) scale(0.9)" fill="none" stroke="#F2F2F2"
+     stroke-width="6.5" stroke-linejoin="round">
+    <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z"/>
+    <path d="M62 46l22 22" stroke-linecap="square"/>
+  </g>
+  <g transform="translate(7.5,12.9) scale(0.9)">
+    <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
+    <path d="M36 33a8 5 0 0 1 16 0" fill="#141617"/>
+  </g>
+</svg>

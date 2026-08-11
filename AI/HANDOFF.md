@@ -1,9 +1,31 @@
 # Handoff
 
-**Session:** 2026-08-09 · **Task:** MARKETING assets triaged and pushed, CORS
-origin allowlist
+**Session:** 2026-08-09 · **Task:** MARKETING assets pushed, domain live,
+production launch audit
 
-Everything below is verified against the working tree, not recalled.
+Everything below is verified against the working tree and the live site, not
+recalled.
+
+## The domain is live
+
+`qobban.store` is pointed and serving. Verified over HTTP, not assumed:
+
+| Entry point | Result |
+|---|---|
+| `http://qobban.store` | 308 → `https://qobban.store` |
+| `https://qobban.store` | 308 → `https://www.qobban.store` |
+| `http://www.qobban.store` | 308 → `https://www.qobban.store` |
+| `https://www.qobban.store` | **200** — canonical host |
+
+Two hops maximum, no loop, valid certificate, HSTS with `includeSubDomains;
+preload` on the canonical host. Namecheap keeps the mail records: `MX` to
+`privateemail.com` and `v=spf1 include:spf.privateemail.com ~all` were read and
+left untouched.
+
+**`www` is canonical, so `SITE` is `https://www.qobban.store`.** Before this
+session every canonical and OG URL named the apex, which 308-redirects — each
+one pointed at a redirect rather than the page. Never hand-edit those URLs;
+`SITE` in [../site/build.py](../site/build.py) generates all of them.
 
 ## Settled this session
 
@@ -23,23 +45,12 @@ allowed, because curl and server-side posts never send one and CORS was never a
 boundary against them. Covered by five assertions in
 [../api/lead.test.mjs](../api/lead.test.mjs) — `node api/lead.test.mjs` passes.
 
-**Set in the Vercel dashboard (owner action, not done):**
-`ALLOWED_ORIGIN = https://qobban.vercel.app,https://qobban.store`. Both, now.
-Until it is set the endpoint accepts POSTs from any site and per-instance IP
-rate limiting is the only brake.
-
-**The domain is `qobban.store`, not `qobban.com`.** `SITE` in
-[../site/build.py](../site/build.py) is set to `https://qobban.store` and
-`python site/build.py` has been re-run — 13/13 pages, so every canonical,
-`og:url`, `og:image`, JSON-LD `url`, `sitemap.xml` and `robots.txt` now matches.
-`SITE` is the only place the domain is written; never hand-edit the pages.
-
-**DNS is still not configured.** Nothing resolves at `qobban.store` yet, so the
-site currently declares a canonical hostname that does not exist and is
-effectively unindexable. Left that way deliberately, on the owner's call that
-the domain lands within days. If it slips to weeks, switch `SITE` to
-`https://qobban.vercel.app`, re-run the build, and redirect later — the
-alternative is weeks of not being indexed at all.
+**`ALLOWED_ORIGIN` is still unset, and this was confirmed against production,
+not assumed.** A `POST /api/lead` carrying `Origin: https://evil.example`
+reached field validation instead of being rejected — so any site can post to the
+endpoint today. Set in the Vercel dashboard, Production scope:
+`ALLOWED_ORIGIN = https://qobban.vercel.app,https://www.qobban.store`
+— the canonical host is `www`, so a value without it rejects every real lead.
 
 **Qobban does not own `qobban.com`.** The owner initially gave the business
 email as `info@qobban.com`, then confirmed only `qobban.store` is registered —
@@ -48,6 +59,96 @@ are now `info@qobban.store` (`index.html:428`, `contact.html:84`). **The mailbox
 does not exist yet**; it needs creating with MX on `qobban.store` before launch,
 or the address bounces just the same. Reverse this only if `qobban.com` is
 actually acquired.
+
+## Production launch audit
+
+Fixed, all through `SITE` and one build re-run except where noted:
+
+- **Canonical host** — every canonical, `og:url`, `og:image`, JSON-LD `url`,
+  `sitemap.xml` and `robots.txt` moved from the apex to `www`.
+- **Favicon** — there was none on any page and `/favicon.ico` 404'd. Added
+  [../site/favicon.svg](../site/favicon.svg), a square charcoal tile of the
+  header mark with thickened strokes, wired into every page from `build.py`.
+  SVG only, deliberately: declaring `rel="icon"` also stops the implicit
+  `/favicon.ico` request. No PNG set — no rasteriser is installed, and the only
+  thing it would add is an iOS home-screen icon.
+- **Light-mode contrast, a real AA failure.** `contact.html` had five inline
+  `color:var(--yellow)` links — phone, email, Instagram, TikTok, quote form.
+  The design system already defines `--accent-text` (`#8A5D00` on light)
+  precisely because yellow fails there; these bypassed it. Yellow on the light
+  surface measures **1.46:1** against a 4.5:1 floor. Now `var(--accent-text)`,
+  which measures 5.1:1. Two matching cases in `js/qobban.js` fixed too, so
+  `qobban.js` alone bumped to `?v=19`; the CSS is unchanged and stays `v=18`.
+- **404 page** — Vercel was serving a bare 79-byte `text/plain`. Added
+  [../site/404.html](../site/404.html), branded and with routes back. It is in
+  `build.py`'s `NOINDEX` set, so it gets `noindex`, no canonical and no sitemap
+  entry.
+- **Instagram** — `https://instagram.com/` on two pages went to Instagram's
+  homepage. Now `instagram.com/qobban.bh`.
+- `og:image:width` / `:height` added so WhatsApp renders the preview without
+  fetching the image first.
+- **Instagram is `qobban_bh`** — underscore, not a dot. An earlier pass used
+  `qobban.bh`; both pages are corrected.
+
+## Hero video
+
+The hero card now plays [../site/video/hero.mp4](../site/video/hero.mp4)
+instead of showing a still. The source was 14.31 MB — 1280×720, 15 s, about
+7.6 Mbps, **with an AAC audio track**. Re-encoded with ffmpeg to **1.02 MB**, a
+93% reduction:
+
+```
+ffmpeg -i <source> -an -c:v libx264 -crf 28 -preset slow \
+       -pix_fmt yuv420p -movflags +faststart site/video/hero.mp4
+```
+
+`-an` drops the audio stream outright, so the file is silent by construction
+rather than only `muted` in markup. Encoded at native 720p — the source is not
+1080p, and upscaling would have cost bytes for nothing. `+faststart` puts `moov`
+before `mdat` so playback starts before the download finishes; verified at byte
+36 vs 5074. ffmpeg was installed for this (`winget install Gyan.FFmpeg`).
+
+The markup keeps the IMG-01 background on `.herocard__media` **and** sets it as
+the video's `poster`, so a blocked, failed or reduced-motion video leaves the
+card looking exactly as it did before. `@media (prefers-reduced-motion: reduce)`
+hides the video — a 15 s auto-loop is the moving content WCAG 2.2.2 asks to be
+stoppable. The video is `aria-hidden` and `tabindex="-1"`: it is decoration and
+must not take focus. Stacking is video → gradient wash → copy, so contrast over
+the text is unchanged.
+
+`vercel.json` gained a `/video/(.*)` immutable cache rule matching `/img/`.
+CSS changed, so `qobban.css` is now `?v=19` alongside `qobban.js?v=19`;
+`boot.js` is untouched at `v=18`.
+
+Verified served locally: `readyState` 4, no media error, 1280×720,
+`muted`/`loop`/`playsinline` all set, `paused: false`, and
+`webkitAudioDecodedByteCount` 0 confirming no audio.
+
+Checked and found clean: 13/13 unique titles and descriptions, one `h1` per
+page, every `img` has `alt` plus `width`/`height`, no broken internal links or
+missing image files, every `tel:` is `+97339949004`, every `wa.me` link is the
+right number, no `target="_blank"` without `rel="noopener"`, no localhost or
+`vercel.app` references, no `console.log`, no `http://` subresources. Security
+headers are set in `vercel.json` — CSP, HSTS, `nosniff`, `X-Frame-Options`,
+`Referrer-Policy`, `Permissions-Policy` — and `/api/` carries `no-store` and
+`X-Robots-Tag: noindex`. `GET /api/lead` correctly returns 405. No secrets in
+client code.
+
+**Not verified, and I could not verify it here.** The browser pane runs zero
+animation frames (`requestAnimationFrame` fired 0 times in 500 ms), so any CSS
+transition never advances and reads stuck at its start value. That made the
+mobile menu *look* broken. It is not demonstrated broken: the DOM half is
+correct — `aria-expanded` flips and `.is-open` lands on the nav — and
+`.nav.is-open { transform: translateX(0) }` is present at the right specificity
+([../site/css/qobban.css](../site/css/qobban.css):313). Anything transition-,
+animation- or layout-dependent still needs a real device. Treat screenshots and
+`getBoundingClientRect` from that pane as unreliable for moving elements.
+
+**Vercel Analytics is not enabled.** `/_vercel/insights/script.js` 404s on every
+page load and throws two console errors. The `<script>` tag is already in
+`build.py`; enabling Analytics in the dashboard fixes it. If it is not going to
+be enabled, delete the tag instead — shipping a 404 on every page view is worse
+than having no analytics.
 
 ## Settled this session
 
@@ -107,10 +208,13 @@ figures, which counted matches in the documentation folders too.
 
 | Item | Count | Where |
 |---|---|---|
-| `[CONFIRM]` **visible to visitors** | 2 | `contact.html:150–151` — address and hours |
-| Bare Instagram / TikTok links | 4 | `index.html:430–431`, `contact.html:93–94` |
-| `info@qobban.store` mailbox | — | Address is in the pages; the mailbox itself does not exist yet |
-| `qobban.store` DNS | — | Not configured. `SITE` and all 45 generated URLs already point at it |
+| `[CONFIRM]` **visible to visitors** | 2 | `contact.html` — address and hours |
+| Bare TikTok links | 2 | `index.html`, `contact.html` — go to TikTok's homepage; the handle is still unknown |
+| `ALLOWED_ORIGIN` | — | Confirmed unset against production; `/api/lead` accepts any origin |
+| Vercel Analytics | — | Not enabled; its script 404s on every page load |
+| `info@qobban.store` mailbox | — | Owner reports it configured and working; not independently verifiable from here |
+
+Instagram is resolved — both links now point at `instagram.com/qobban.bh`.
 
 **`[CONFIRM]` is shipping to users.** The live contact page renders the literal
 string "[CONFIRM] Workshop address, Kingdom of Bahrain" and "[CONFIRM]
@@ -125,11 +229,13 @@ all three, or change the copy. Founding year, team size and service areas are
 likewise asserted without a marker — they were never `[CONFIRM]`-tagged, so
 grepping for the marker will not find them.
 
-Also open: **`ALLOWED_ORIGIN` still unset in Vercel** — the code now accepts a
-list, but until the variable exists any site can POST to `/api/lead`. Vercel
-Analytics not enabled · favicon not exported (32 / 180 / 512 px); the source
-mark is now committed at
-[../MARKETING/BRAND/LOGO/qobban-icon.svg](../MARKETING/BRAND/LOGO/qobban-icon.svg).
+Optional, not blocking: all 33 images are JPEG totalling 6.8 MB, largest 438 KB.
+Only two load above the fold and the rest are lazy, so the homepage costs about
+550 KB — fine as it stands. WebP would cut roughly a third if it ever matters.
+The hero is a CSS `background-image`, so it cannot take `fetchpriority`; a
+`<link rel="preload">` would likely help LCP, but LCP could not be measured in
+this environment and the change is unmeasured, so it was not made. There is no
+hero video anywhere on the site — that whole class of concern does not apply.
 
 **172 markdown files are still `TBD`.** Priority: `MARKETING/` (TikTok strategy
 was agreed and never written) → `SERVICES/` → `CUSTOMERS/` → `SALES/` →
@@ -137,11 +243,13 @@ was agreed and never written) → `SERVICES/` → `CUSTOMERS/` → `SALES/` →
 
 ## Never tested on hardware
 
-Everything so far was verified in a preview pane. Untested on a real device:
-menu, quote flow, WhatsApp hand-off, light mode, Arabic RTL, Lighthouse — and
-**gyroscope tilt on the hero spirit level**, which cannot be exercised without
-one. Page transitions need a server; they do not run from `file://`. A local
-server config now exists at `.claude/launch.json` (`python -m http.server 8123`).
+Still true, and this session reinforced why: the preview pane renders no frames,
+so it cannot verify anything that moves. Untested on a real device: the mobile
+menu, quote flow, WhatsApp hand-off, light mode, Arabic RTL, page transitions,
+Lighthouse — and **gyroscope tilt on the hero spirit level**, which cannot be
+exercised without one. Page transitions need a server; they do not run from
+`file://`. Local server config: `.claude/launch.json`
+(`python -m http.server 8123`).
 
 Step counter now builds its own Arabic with Arabic-Indic digits rather than
 going through the dictionary, and redraws on a `qobban:lang` event — so it is
@@ -151,9 +259,23 @@ repaint, which would pull focus off the language toggle.
 ---
 
 **Next action:** replace the two `[CONFIRM]` strings on `contact.html` with the
-real workshop address and hours — they are visible to visitors right now and
-need nothing but the two facts. Owner actions in parallel: set `ALLOWED_ORIGIN`
-in Vercel to `https://qobban.vercel.app,https://qobban.store`, configure DNS for
-`qobban.store`, and create the `info@qobban.store` mailbox. `SITE` is already
-correct, so the domain needs no further code change. Then the favicon export,
-then the `TBD` backlog starting with `MARKETING/`.
+real workshop address and hours — visible to visitors right now, and blocked
+only on those two facts. Owner actions in parallel, all in the Vercel dashboard
+or on a phone: set `ALLOWED_ORIGIN`, enable Analytics, supply the TikTok handle,
+and walk the site once on a real device. Then the `TBD` backlog, starting with
+`MARKETING/`.
+
+Everything after commit `66e57df` is **uncommitted** — `site/build.py`,
+`site/css/qobban.css`, `site/js/qobban.js`, 14 rebuilt pages, `vercel.json`,
+`sitemap.xml`, `robots.txt`, plus new `site/404.html`, `site/favicon.svg` and
+`site/video/hero.mp4`. Held for review at the owner's instruction; nothing was
+pushed.
+
+**The "Not secure" warning was investigated and is not a site defect.** Both
+certificates are valid Let's Encrypt, correctly scoped (`qobban.store` and
+`www.qobban.store`), issued 2026-08-10 at 23:15 and 23:22 UTC. A full redirect
+walk from `http://qobban.store` ends at `https://www.qobban.store` with
+`ssl_verify: 0` after two hops, and every subresource on the page is HTTPS —
+there is no mixed content, and `upgrade-insecure-requests` in the CSP would
+catch any that appeared. The screenshot almost certainly predates certificate
+issuance. A hard reload clears it; there is nothing in the code to change.

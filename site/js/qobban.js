@@ -414,9 +414,9 @@
           status.style.color = '#ff6b6b';
           status.innerHTML = err.message === '429'
             ? 'Too many messages just now. Please try again shortly, or ' +
-              '<a href="https://wa.me/' + phone + '" style="color:var(--yellow)">message us on WhatsApp</a>.'
+              '<a href="https://wa.me/' + phone + '" style="color:var(--accent-text)">message us on WhatsApp</a>.'
             : 'That didn’t send. Please ' +
-              '<a href="https://wa.me/' + phone + '" style="color:var(--yellow)">message us on WhatsApp</a> instead.';
+              '<a href="https://wa.me/' + phone + '" style="color:var(--accent-text)">message us on WhatsApp</a> instead.';
         }
         if (submit) { submit.disabled = false; submit.textContent = 'Send Message'; }
       });

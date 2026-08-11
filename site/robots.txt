@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://qobban.store/sitemap.xml
+Sitemap: https://www.qobban.store/sitemap.xml

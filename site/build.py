@@ -14,7 +14,9 @@ ROOT = pathlib.Path(__file__).parent
 IMG = ROOT / "img"
 
 # Replace before launch, then re-run. Everything canonical derives from it.
-SITE = "https://qobban.store"
+# www is the canonical host: the apex 308-redirects to it, so canonicals and OG
+# URLs must name www or every one of them points at a redirect.
+SITE = "https://www.qobban.store"
 OG_IMAGE = "IMG-33.jpg"          # dedicated 1.91:1 share crop
 
 # ---------------------------------------------------------------- optimise
@@ -119,16 +121,31 @@ def json_ld():
             + "</script>")
 
 
+# Pages that must never be indexed or listed: no canonical, no sitemap entry.
+NOINDEX = {"404.html"}
+
+
 def seo_for(page):
     rel = page.relative_to(ROOT).as_posix()
     url = SITE + "/" + ("" if rel == "index.html" else rel)
+    if rel in NOINDEX:
+        return "\n".join([BEGIN,
+                          '<meta name="robots" content="noindex">',
+                          '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
+                          '<meta name="theme-color" content="#111111">',
+                          END])
     lines = [BEGIN,
              f'<link rel="canonical" href="{url}">',
              f'<meta property="og:url" content="{url}">',
              f'<meta property="og:image" content="{SITE}/img/{OG_IMAGE}">',
              '<meta property="og:site_name" content="Qobban">',
+             '<meta property="og:image:width" content="1731">',
+             '<meta property="og:image:height" content="909">',
              '<meta name="twitter:card" content="summary_large_image">',
              '<meta name="theme-color" content="#111111">',
+             # SVG only, deliberately. Declaring rel="icon" also stops the
+             # browser's implicit /favicon.ico request, which was 404ing.
+             '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
              # Vercel Web Analytics: first-party, cookieless, no personal data.
              # That is why the site needs no cookie consent banner.
              '<script defer src="/_vercel/insights/script.js"></script>']
@@ -174,6 +191,7 @@ urls = "".join(
                             else p.relative_to(ROOT).as_posix())
     + "</loc></url>"
     for p in pages
+    if p.relative_to(ROOT).as_posix() not in NOINDEX
 )
 (ROOT / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?>'

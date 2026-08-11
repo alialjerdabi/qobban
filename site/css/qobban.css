@@ -548,10 +548,26 @@ html.is-loaded .loader { display: none; }
   z-index: 0;
   background: var(--black) center/cover no-repeat;
 }
+/* Sits under the ::after wash, over the background image. The image stays as
+   the poster and the fallback, so a blocked or failed video is invisible. */
+.herocard__video {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* A 15s looping hero is exactly the motion WCAG 2.2.2 asks to be stoppable.
+   Removing it uncovers the IMG-01 background, so the card still reads. */
+@media (prefers-reduced-motion: reduce) {
+  .herocard__video { display: none; }
+}
 .herocard__media::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: linear-gradient(90deg, rgba(var(--wash),.96) 0%, rgba(var(--wash),.82) 42%, rgba(var(--wash),.4) 100%);
 }
 [dir="rtl"] .herocard__media::after { transform: scaleX(-1); }
