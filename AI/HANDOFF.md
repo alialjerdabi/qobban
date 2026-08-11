@@ -237,6 +237,29 @@ The hero is a CSS `background-image`, so it cannot take `fetchpriority`; a
 this environment and the change is unmeasured, so it was not made. There is no
 hero video anywhere on the site — that whole class of concern does not apply.
 
+## Not in Google — expected, nothing broken
+
+Searches for `qobban.store` and for the brand return nothing: Google has no
+record of the site. That is normal for a domain pointed one day earlier, and
+there is **no technical fault to fix**. Verified: no `noindex` meta or
+`X-Robots-Tag` on any page, `robots.txt` allows crawling and names the sitemap,
+`sitemap.xml` is valid XML and byte-identical to the deployed copy, and all 13
+listed URLs return 200 with a self-referential canonical.
+
+Google cannot index what it has not discovered, and the site has no backlinks
+and has never been submitted. What actually moves it, in order of impact:
+
+1. **Google Business Profile** — for a local Bahrain fabricator this outranks
+   organic indexing entirely; it is what puts Qobban in Maps and the local pack.
+2. **Google Search Console** — verify `www.qobban.store` (the canonical host),
+   submit `https://www.qobban.store/sitemap.xml`, then "Request indexing" on the
+   homepage.
+3. **Backlinks** — the Instagram and TikTok bios are the cheapest real ones.
+
+Then wait. Days to weeks is normal. Note the canonical host changed twice inside
+24 hours (`qobban.com` → apex → `www`); that churn did not help, but it is
+settled and consistent now, so the signal Google eventually crawls will be clean.
+
 **172 markdown files are still `TBD`.** Priority: `MARKETING/` (TikTok strategy
 was agreed and never written) → `SERVICES/` → `CUSTOMERS/` → `SALES/` →
 `PROCESS/` and `OPERATIONS/`.
@@ -271,11 +294,34 @@ Everything after commit `66e57df` is **uncommitted** — `site/build.py`,
 `site/video/hero.mp4`. Held for review at the owner's instruction; nothing was
 pushed.
 
-**The "Not secure" warning was investigated and is not a site defect.** Both
-certificates are valid Let's Encrypt, correctly scoped (`qobban.store` and
-`www.qobban.store`), issued 2026-08-10 at 23:15 and 23:22 UTC. A full redirect
-walk from `http://qobban.store` ends at `https://www.qobban.store` with
-`ssl_verify: 0` after two hops, and every subresource on the page is HTTPS —
-there is no mixed content, and `upgrade-insecure-requests` in the CSP would
-catch any that appeared. The screenshot almost certainly predates certificate
-issuance. A hard reload clears it; there is nothing in the code to change.
+## "Not secure" — root cause is port 80, not the certificate
+
+My first read of this was wrong. It is not a stale tab and not the cert. The
+plaintext redirect hop is **intermittently timing out at Vercel's edge**:
+
+| Target | Result |
+|---|---|
+| `https://qobban.store` | 8/8 succeeded |
+| `https://www.qobban.store` | 8/8 succeeded |
+| `http://qobban.store` (port 80) | **4 of 8 timed out** |
+| `http://www.qobban.store` (port 80) | **3 of 5 timed out** |
+| `http://example.com` (network control) | 6/6 — the local network is fine |
+
+HTTPS is completely reliable; only port 80 is flaky, and the control rules out
+this machine's connection. So typing `qobban.store` makes Chrome try `http://`
+first, the request hangs, and the browser sits on a plaintext URL showing
+"Not secure" — it never reaches HTTPS. Certificates remain valid and correctly
+scoped, and there is no mixed content.
+
+**The durable fix is HSTS preload**, which makes browsers skip port 80 entirely
+for this domain. It is currently impossible to submit: `hstspreload.org`
+requires the apex to serve `includeSubDomains; preload`, and
+`https://qobban.store` serves only `max-age=63072000`. That header is Vercel's
+automatic one for a **dashboard-level domain redirect**, which never reaches the
+deployment, so `vercel.json`'s full HSTS header does not apply to it. Fixing it
+means attaching the apex to the project as a normal domain and moving the
+apex→www redirect into `vercel.json`, where the headers block applies. That is a
+coordinated dashboard + config change and was **not** made unilaterally.
+
+The flakiness may also simply be edge configuration still settling — the domain
+was added the day before. Re-measure before escalating to Vercel support.
