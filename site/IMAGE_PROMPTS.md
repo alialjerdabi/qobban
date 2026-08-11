@@ -282,7 +282,7 @@ ever sees of Qobban.
 
 Add to every page's `<head>` once generated:
 ```html
-<meta property="og:image" content="https://qobban.com/img/IMG-33.webp">
+<meta property="og:image" content="https://qobban.store/img/IMG-33.webp">
 ```
 
 **Favicon** — no prompt needed. Export the Q-and-level logo mark already inlined

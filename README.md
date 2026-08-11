@@ -28,9 +28,10 @@ Start at [00_PROJECT_OVERVIEW.md](00_PROJECT_OVERVIEW.md).
 
 Placeholders still to replace across `site/`:
 
-- `973XXXXXXXX` — phone and WhatsApp number (every page)
-- `info@qobban.com` — email
-- Workshop address and hours (`contact.html`)
+- Workshop address and hours (`contact.html`) — currently rendering the literal
+  string `[CONFIRM]` to visitors
+- `info@qobban.store` — the address is in the pages; the mailbox itself still
+  needs creating on the `qobban.store` domain
 - Instagram and TikTok URLs
 - Images — see [site/IMAGE_PROMPTS.md](site/IMAGE_PROMPTS.md)
 

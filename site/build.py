@@ -14,7 +14,7 @@ ROOT = pathlib.Path(__file__).parent
 IMG = ROOT / "img"
 
 # Replace before launch, then re-run. Everything canonical derives from it.
-SITE = "https://qobban.com"
+SITE = "https://qobban.store"
 OG_IMAGE = "IMG-33.jpg"          # dedicated 1.91:1 share crop
 
 # ---------------------------------------------------------------- optimise

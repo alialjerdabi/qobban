@@ -42,9 +42,13 @@ Static HTML, no framework, no dependencies · immutable cache headers on
 
 ## Before going live
 
-1. **Replace placeholders** — `973XXXXXXXX` (phone + WhatsApp, every page),
-   `info@qobban.com`, workshop address and hours, Instagram and TikTok URLs.
-2. **Set `SITE` in `site/build.py`** to the real domain, then re-run `python build.py`.
+1. **Replace placeholders** — workshop address and hours (`contact.html` still
+   renders the literal `[CONFIRM]`), Instagram and TikTok URLs. Phone, WhatsApp
+   and `info@qobban.store` are done in the pages; the mailbox still needs
+   creating on the domain.
+2. **Point the domain** — `qobban.store` has no DNS yet. `SITE` in
+   `site/build.py` is already set to it; re-run `python build.py` after any
+   change to confirm.
 3. **Set Vercel env vars** — `ALLOWED_ORIGIN`, and `LEAD_WEBHOOK_URL` +
    `LEAD_WEBHOOK_KEY` if leads should reach a CRM or inbox. Without the webhook
    the endpoint still accepts and logs, so nothing breaks.

@@ -1,10 +1,53 @@
 # Handoff
 
-**Session:** 2026-07-29 · **Task:** WhatsApp wired, lead destination chosen
+**Session:** 2026-08-09 · **Task:** MARKETING assets triaged and pushed, CORS
+origin allowlist
 
-Everything below is verified against the working tree, not recalled. **The tree
-is uncommitted** — 16 modified files plus two new ones. Review and commit before
-starting anything else.
+Everything below is verified against the working tree, not recalled.
+
+## Settled this session
+
+**The repository is pushed and clean.** `main` and `origin/main` are level at
+`f96344a`. The five new `MARKETING/` folders held 319 files and **545 MB**, of
+which 267 were PNG renders. Only the 42 text and tooling files are committed —
+the scripts, prompt manifests and specs that produce the renders. The renders
+themselves are gitignored and remain on disk; they are regenerable from the
+tooling beside them. Rules are at the bottom of [../.gitignore](../.gitignore),
+including three SVGs that are raster-embedded and binary in practice.
+
+**`ALLOWED_ORIGIN` is now a comma-separated list**, not a single value
+([../api/lead.mjs](../api/lead.mjs), `originRejected`). Set it to one origin and
+pointing the custom domain would have silently 403'd every lead at cutover.
+Unset still allows any origin; a request with no `Origin` header is always
+allowed, because curl and server-side posts never send one and CORS was never a
+boundary against them. Covered by five assertions in
+[../api/lead.test.mjs](../api/lead.test.mjs) — `node api/lead.test.mjs` passes.
+
+**Set in the Vercel dashboard (owner action, not done):**
+`ALLOWED_ORIGIN = https://qobban.vercel.app,https://qobban.store`. Both, now.
+Until it is set the endpoint accepts POSTs from any site and per-instance IP
+rate limiting is the only brake.
+
+**The domain is `qobban.store`, not `qobban.com`.** `SITE` in
+[../site/build.py](../site/build.py) is set to `https://qobban.store` and
+`python site/build.py` has been re-run — 13/13 pages, so every canonical,
+`og:url`, `og:image`, JSON-LD `url`, `sitemap.xml` and `robots.txt` now matches.
+`SITE` is the only place the domain is written; never hand-edit the pages.
+
+**DNS is still not configured.** Nothing resolves at `qobban.store` yet, so the
+site currently declares a canonical hostname that does not exist and is
+effectively unindexable. Left that way deliberately, on the owner's call that
+the domain lands within days. If it slips to weeks, switch `SITE` to
+`https://qobban.vercel.app`, re-run the build, and redirect later — the
+alternative is weeks of not being indexed at all.
+
+**Qobban does not own `qobban.com`.** The owner initially gave the business
+email as `info@qobban.com`, then confirmed only `qobban.store` is registered —
+so that address would have bounced every email lead silently. Both occurrences
+are now `info@qobban.store` (`index.html:428`, `contact.html:84`). **The mailbox
+does not exist yet**; it needs creating with MX on `qobban.store` before launch,
+or the address bounces just the same. Reverse this only if `qobban.com` is
+actually acquired.
 
 ## Settled this session
 
@@ -59,22 +102,34 @@ or Apps Script → Executions are the only honest confirmations.
 
 ## Still open
 
-| Item | Count | Note |
+Counts below are grepped against `site/` on 2026-08-09 and supersede the earlier
+figures, which counted matches in the documentation folders too.
+
+| Item | Count | Where |
 |---|---|---|
-| `https://qobban.com` | 23 | Canonicals and OG. Also `SITE` in `site/build.py` — set both together |
-| `info@qobban.com` | 4 | |
-| Bare Instagram / TikTok links | 4 | Footer and contact |
-| `[CONFIRM]` markers | 16 | Address, hours, warranty terms, founding year, team size, service areas |
+| `[CONFIRM]` **visible to visitors** | 2 | `contact.html:150–151` — address and hours |
+| Bare Instagram / TikTok links | 4 | `index.html:430–431`, `contact.html:93–94` |
+| `info@qobban.store` mailbox | — | Address is in the pages; the mailbox itself does not exist yet |
+| `qobban.store` DNS | — | Not configured. `SITE` and all 45 generated URLs already point at it |
 
-The `[CONFIRM]` items are commitments, not copy. The site promises free site
-measurement, a written specification naming coating system and warranty period,
-and photographic handover. Confirm Qobban will do all three, or change the copy.
+**`[CONFIRM]` is shipping to users.** The live contact page renders the literal
+string "[CONFIRM] Workshop address, Kingdom of Bahrain" and "[CONFIRM]
+Saturday–Thursday, working hours". This is the most urgent open item on the
+site and needs only two facts from the owner: the workshop address and the
+opening hours.
 
-Also open: **`ALLOWED_ORIGIN` unset** — now that leads reach a real sheet, any
-site can POST to `/api/lead`; rate limiting is the only brake. Set it to the
-production origin once the domain is pointed. Domain not pointed · Vercel
-Analytics not enabled · favicon not exported from the inline SVG mark
-(32 / 180 / 512 px).
+Separately, and unmarked in the copy, the site makes three commitments on
+Qobban's behalf: free site measurement, a written specification naming coating
+system and warranty period, and photographic handover. Confirm Qobban will do
+all three, or change the copy. Founding year, team size and service areas are
+likewise asserted without a marker — they were never `[CONFIRM]`-tagged, so
+grepping for the marker will not find them.
+
+Also open: **`ALLOWED_ORIGIN` still unset in Vercel** — the code now accepts a
+list, but until the variable exists any site can POST to `/api/lead`. Vercel
+Analytics not enabled · favicon not exported (32 / 180 / 512 px); the source
+mark is now committed at
+[../MARKETING/BRAND/LOGO/qobban-icon.svg](../MARKETING/BRAND/LOGO/qobban-icon.svg).
 
 **172 markdown files are still `TBD`.** Priority: `MARKETING/` (TikTok strategy
 was agreed and never written) → `SERVICES/` → `CUSTOMERS/` → `SALES/` →
@@ -95,6 +150,10 @@ repaint, which would pull focus off the language toggle.
 
 ---
 
-**Next action:** delete the test rows from the sheet, then the domain — pointing
-it, `SITE` in `site/build.py`, the 23 canonical/OG URLs and `ALLOWED_ORIGIN` are
-one pass. Then the 16 `[CONFIRM]` facts.
+**Next action:** replace the two `[CONFIRM]` strings on `contact.html` with the
+real workshop address and hours — they are visible to visitors right now and
+need nothing but the two facts. Owner actions in parallel: set `ALLOWED_ORIGIN`
+in Vercel to `https://qobban.vercel.app,https://qobban.store`, configure DNS for
+`qobban.store`, and create the `info@qobban.store` mailbox. `SITE` is already
+correct, so the domain needs no further code change. Then the favicon export,
+then the `TBD` backlog starting with `MARKETING/`.
