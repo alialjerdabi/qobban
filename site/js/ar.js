@@ -699,5 +699,48 @@ window.QobbanAR = {
     'نعم، وجزء كبير من هذا العمل هو ذلك بالضبط. وسنخبرك بما أُنجز جيدًا وبما لم يُنجز، دون أن نحوّل ذلك إلى عرض بيع للاستبدال.',
   'Send a photo of the worst spot.': 'أرسل صورة لأسوأ موضع.',
   'A close-up of the corrosion and one wider shot is usually enough for us to tell you whether it\'s treatable.':
-    'صورة قريبة للتآكل وأخرى أوسع تكفيان عادة لنخبرك إن كان قابلًا للمعالجة.'
+    'صورة قريبة للتآكل وأخرى أوسع تكفيان عادة لنخبرك إن كان قابلًا للمعالجة.',
+
+  /* ---------- Products: ready-made items sold at a fixed price ----------
+     Product names and specs are generated from PRODUCTS in build.py, so
+     each one needs its own key added here as the range grows. */
+  'Products': 'المنتجات',
+  'Ready-made.': 'جاهزة للطلب.',
+  'Priced, not quoted.': 'بسعر معلن، لا بعرض سعر.',
+  'Standard pieces we build in batches, so they carry a price instead of a site visit. Same steel, same coating system, same tolerance as the commissioned work — just already designed. Delivery across Bahrain.':
+    'قطع قياسية نصنعها على دفعات، فتحمل سعرًا بدل زيارة موقع. الفولاذ نفسه، ونظام الطلاء نفسه، والدقة نفسها المعتمدة في الأعمال المفصّلة — لكنها مصممة مسبقًا. التوصيل داخل البحرين.',
+  'Photograph to follow': 'الصورة قريبًا',
+  'Order on WhatsApp': 'اطلب عبر واتساب',
+  'Order by form': 'اطلب عبر النموذج',
+  'Price on request': 'السعر عند الطلب',
+  'Looking for something built to your dimensions instead?': 'تبحث عن قطعة بمقاساتك أنت؟',
+  'Start a quote': 'ابدأ عرض سعر',
+  '— that work is measured on site and specified in writing.':
+    '— هذا العمل يُقاس في الموقع ويُوثَّق خطيًا.',
+  'Ordering': 'الطلب',
+  'Two ways, both reach the same place': 'طريقتان، وكلتاهما تصل إلينا',
+  'WhatsApp is fastest.': 'واتساب هو الأسرع.',
+  'The button on each product opens a message with the item and price already written. Tell us the quantity and where you are, and we confirm availability and delivery in the same conversation.':
+    'الزر في كل منتج يفتح رسالة مكتوبًا فيها الصنف والسعر. أخبرنا بالكمية وموقعك، ونؤكد لك التوفّر والتوصيل في المحادثة نفسها.',
+  'Prefer not to use WhatsApp? The form sends the same details to us directly. We reply by phone or email.':
+    'لا تفضّل واتساب؟ النموذج يرسل إلينا التفاصيل نفسها مباشرة، ونرد عليك هاتفيًا أو بالبريد.',
+  'Prices are per item and exclude delivery, which depends on where in Bahrain you are. We confirm the total before anything is dispatched.':
+    'الأسعار لكل قطعة ولا تشمل التوصيل، إذ يعتمد على موقعك في البحرين. نؤكد لك المبلغ الإجمالي قبل الشحن.',
+  'Send an order': 'أرسل طلبًا',
+  'Product': 'المنتج',
+  'Quantity, size and area in Bahrain': 'الكمية والمقاس والمنطقة في البحرين',
+  'e.g. two of the medium size, delivered to Riffa.': 'مثال: قطعتان بالمقاس المتوسط، توصيل إلى الرفاع.',
+  'Send Order': 'أرسل الطلب',
+  'Need it in a different size?': 'تحتاجها بمقاس مختلف؟',
+  'Most of these can be built to your dimensions. Send the measurement and we\'ll price it.':
+    'معظم هذه القطع يمكن تصنيعها بمقاساتك. أرسل المقاس ونسعّرها لك.',
+
+  /* Seed product. Add a matching pair for every new entry in PRODUCTS. */
+  'Decorative Metal Stands': 'ستاندات ديكور معدنية',
+  'Three sizes, one design. Powder-coated steel stands for plants, display or storage — built to the same tolerance as the architectural work.':
+    'ثلاثة مقاسات وتصميم واحد. ستاندات فولاذية مطلية بالبودرة للنباتات أو العرض أو التخزين — بالدقة نفسها المعتمدة في الأعمال المعمارية.',
+  '12 x 12 mm square tube': 'أنبوب مربع ١٢ × ١٢ مم',
+  'Powder-coated steel': 'فولاذ مطلي بالبودرة',
+  'Three sizes': 'ثلاثة مقاسات',
+  'Indoor or shaded outdoor': 'داخلي أو خارجي مظلَّل'
 };

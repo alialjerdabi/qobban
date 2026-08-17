@@ -90,6 +90,56 @@ Fixed, all through `SITE` and one build re-run except where noted:
 - **Instagram is `qobban_bh`** — underscore, not a dot. An earlier pass used
   `qobban.bh`; both pages are corrected.
 
+## Products page — direct selling
+
+[../site/products.html](../site/products.html) sells ready-made items at a fixed
+price, as opposed to the quoted custom work under Services. **A real checkout was
+considered and rejected for now**: payment means a gateway account tied to the
+CR, order records, stock, returns and 10% VAT invoicing — a system, not a page —
+on a static site with one serverless function. WhatsApp already converts and the
+lead pipeline already works, so v1 uses those. Revisit real checkout when order
+volume actually justifies the overhead.
+
+**`PRODUCTS` in [../site/build.py](../site/build.py) is the single source.** It
+generates the cards, the order form's dropdown and the `Product`/`Offer`
+structured data together, so the page cannot drift from the price list. Add a
+product there and re-run — never hand-edit the generated block between
+`<!-- products:begin -->` and `<!-- products:end -->`.
+
+Each product carries `slug`, `name`, `price` (whole BHD, `None` renders "Price on
+request"), `blurb`, `specs` and `image`. An empty `image` renders a hatched
+"Photograph to follow" panel, so an item can be listed and ordered before it has
+been photographed. Seeded with the one product with a confirmed price:
+**Decorative Metal Stands, BD 33**, taken from the offer artwork in
+`MARKETING/product-posts/`. The owner is supplying the rest.
+
+Two order paths, both verified:
+
+- **WhatsApp** — per-product button, `wa.me` text URL-encoded at build time so
+  the em-dash survives. Opens with the item and price pre-written.
+- **The form** — reuses the existing `data-lead-form` handler, so it POSTs to
+  `/api/lead` and lands in the same sheet with no new JavaScript. The product
+  goes in `Message` and the free text in `Notes`; `Service` is deliberately
+  absent because the API's enum has no product values and any product name would
+  fail validation. Confirmed against the real validator: an order payload passes
+  with zero errors, including an Arabic name.
+
+Details worth keeping: the `<select>` leads with an empty `Select…` option so
+`required` actually forces a choice — without it the first product was
+preselected and would be silently ordered. The `Notes` textarea is
+`maxlength="1500"` to match the server cap exactly (it was briefly 200, confused
+with the `dimensions` field, which would have truncated people silently). Card
+buttons are padded to clear the 44px touch target; at the original padding they
+measured 43.
+
+Nav: Products sits after Services on all 14 nav-bearing pages, with `../` on the
+six `services/*` subpages — the first pass missed those because their nav uses
+relative paths, so verify both prefixes after any nav change. `404.html` has a
+logo-only header and deliberately has no nav. Arabic copy for the whole page,
+including the seed product, is in `js/ar.js`; **every new product needs its name,
+blurb and specs added there** or it stays English on the toggle. Asset versions
+moved to `qobban.css?v=20`, `qobban.js?v=20`, `ar.js?v=19`.
+
 ## Hero video
 
 The hero card now plays [../site/video/hero.mp4](../site/video/hero.mp4)
@@ -210,6 +260,7 @@ figures, which counted matches in the documentation folders too.
 |---|---|---|
 | `[CONFIRM]` **visible to visitors** | 2 | `contact.html` — address and hours |
 | Bare TikTok links | 2 | `index.html`, `contact.html` — go to TikTok's homepage; the handle is still unknown |
+| Product list | 1 of ~6 | Only Decorative Metal Stands has a confirmed price. Owner to supply names, prices, specs and photos for the rest |
 | `ALLOWED_ORIGIN` | — | Confirmed unset against production; `/api/lead` accepts any origin |
 | Vercel Analytics | — | Not enabled; its script 404s on every page load |
 | `info@qobban.store` mailbox | — | Owner reports it configured and working; not independently verifiable from here |

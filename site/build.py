@@ -18,6 +18,7 @@ IMG = ROOT / "img"
 # URLs must name www or every one of them points at a redirect.
 SITE = "https://www.qobban.store"
 OG_IMAGE = "IMG-33.jpg"          # dedicated 1.91:1 share crop
+PHONE = "97339949004"            # no +, as wa.me and the JSON-LD both want it
 
 # ---------------------------------------------------------------- optimise
 # Generated PNGs land at ~2MB each, which would wreck the LCP target. Convert
@@ -108,7 +109,7 @@ BUSINESS = {
     "slogan": "Precision is our standard.",
     "url": SITE,
     "image": f"{SITE}/img/{OG_IMAGE}",
-    "telephone": "+97339949004",
+    "telephone": "+" + PHONE,
     "address": {"@type": "PostalAddress", "addressCountry": "BH"},
     "areaServed": {"@type": "Country", "name": "Bahrain"},
 }
@@ -119,6 +120,117 @@ def json_ld():
     return ('<script type="application/ld+json">'
             + json.dumps(BUSINESS, ensure_ascii=False, separators=(",", ":"))
             + "</script>")
+
+
+# ---------------------------------------------------------------- products
+# Ready-made items sold directly, as opposed to the quoted custom work under
+# SERVICES. This list is the single source: the cards, the order form's
+# dropdown and the Product structured data are all generated from it. Add a
+# product here and re-run — never hand-edit the generated block.
+#
+#   price  — whole BHD. Use None for "price on request".
+#   specs  — short factual lines. No marketing copy; the card is small.
+#   image  — a filename in site/img/. Empty string renders a placeholder,
+#            so a product can go live before its photograph exists.
+CURRENCY = "BHD"
+PRODUCTS = [
+    {
+        "slug": "decorative-metal-stands",
+        "name": "Decorative Metal Stands",
+        "price": 33,
+        "blurb": "Three sizes, one design. Powder-coated steel stands for "
+                 "plants, display or storage — built to the same tolerance as "
+                 "the architectural work.",
+        "specs": ["12 x 12 mm square tube", "Powder-coated steel",
+                  "Three sizes", "Indoor or shaded outdoor"],
+        "image": "",
+    },
+]
+
+
+def money(price):
+    return "Price on request" if price is None else f"BD {price}"
+
+
+def product_cards():
+    """One card per product. Image when we have one, placeholder when we
+    don't — a product without a photograph still has to be orderable."""
+    import html as _html
+    import urllib.parse as _url
+    out = []
+    for i, p in enumerate(PRODUCTS, 1):
+        name = _html.escape(p["name"])
+        text = f'Order: {p["name"]} — {money(p["price"])}'
+        wa = "https://wa.me/" + PHONE + "?text=" + _url.quote(text)
+        if p["image"] and (ROOT / "img" / p["image"]).exists():
+            w, h = dimensions(p["image"])
+            media = (f'<img loading="lazy" decoding="async" src="img/{p["image"]}" '
+                     f'alt="{name}" width="{w}" height="{h}">')
+        else:
+            media = ('<div class="product__ph" aria-hidden="true">'
+                     '<span class="spec">Photograph to follow</span></div>')
+        specs = "".join(f"<li>{_html.escape(s)}</li>" for s in p["specs"])
+        out.append(f"""      <article class="product reveal" data-delay="{(i - 1) % 3 + 1}" id="{p["slug"]}">
+        <div class="product__media">{media}</div>
+        <div class="product__body">
+          <h3>{name}</h3>
+          <p class="product__price">{money(p["price"])}</p>
+          <p>{_html.escape(p["blurb"])}</p>
+          <ul class="product__specs">{specs}</ul>
+          <div class="product__actions">
+            <a class="btn btn--primary" href="{wa}" target="_blank" rel="noopener">Order on WhatsApp <span class="btn__arrow">→</span></a>
+            <a class="btn btn--ghost" href="#order">Order by form</a>
+          </div>
+        </div>
+      </article>""")
+    return "\n".join(out)
+
+
+def product_options():
+    """Leading empty option so `required` actually forces a choice — without
+    it the first product is preselected and silently ordered."""
+    import html as _html
+    return "\n".join(
+        ['              <option value="">Select…</option>']
+        + [f'              <option>Order: {_html.escape(p["name"])} — {money(p["price"])}</option>'
+           for p in PRODUCTS])
+
+
+def products_ld():
+    """ItemList of Product/Offer. This is what puts a price in the Google
+    result rather than a bare blue link."""
+    import json
+    items = []
+    for i, p in enumerate(PRODUCTS, 1):
+        product = {
+            "@type": "Product",
+            "name": p["name"],
+            "description": p["blurb"],
+            "brand": {"@type": "Brand", "name": "Qobban"},
+        }
+        if p["image"] and (ROOT / "img" / p["image"]).exists():
+            product["image"] = f"{SITE}/img/{p['image']}"
+        if p["price"] is not None:
+            product["offers"] = {
+                "@type": "Offer",
+                "price": str(p["price"]),
+                "priceCurrency": CURRENCY,
+                "availability": "https://schema.org/InStock",
+                "url": f"{SITE}/products.html#{p['slug']}",
+                "seller": {"@type": "Organization", "name": "Qobban"},
+            }
+        items.append({"@type": "ListItem", "position": i, "item": product})
+    return ('<script type="application/ld+json">'
+            + json.dumps({"@context": "https://schema.org", "@type": "ItemList",
+                          "itemListElement": items},
+                         ensure_ascii=False, separators=(",", ":"))
+            + "</script>")
+
+
+PRODUCTS_BLOCK = re.compile(
+    r"<!-- products:begin -->.*?<!-- products:end -->", re.S)
+OPTIONS_BLOCK = re.compile(
+    r"<!-- productoptions:begin -->.*?<!-- productoptions:end -->", re.S)
 
 
 # Pages that must never be indexed or listed: no canonical, no sitemap entry.
@@ -151,6 +263,8 @@ def seo_for(page):
              '<script defer src="/_vercel/insights/script.js"></script>']
     if rel == "index.html":
         lines.append(json_ld())
+    if rel == "products.html":
+        lines.append(products_ld())
     lines.append(END)
     return "\n".join(lines)
 
@@ -174,6 +288,17 @@ for page in pages:
         hint = ('loading="eager" fetchpriority="high"' if i == 0 else 'loading="lazy"')
         fixed = fixed.replace('<img ', f'<img {hint} ', 1)
         out = out.replace(tag, fixed, 1)
+
+    # Product cards, order dropdown and Product structured data are generated
+    # from PRODUCTS, so the page can never drift from the price list.
+    if PRODUCTS_BLOCK.search(out):
+        out = PRODUCTS_BLOCK.sub(
+            lambda _: "<!-- products:begin -->\n" + product_cards()
+                      + "\n      <!-- products:end -->", out)
+    if OPTIONS_BLOCK.search(out):
+        out = OPTIONS_BLOCK.sub(
+            lambda _: "<!-- productoptions:begin -->\n" + product_options()
+                      + "\n              <!-- productoptions:end -->", out)
 
     block = seo_for(page)
     if SEO_BLOCK.search(out):

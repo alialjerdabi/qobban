@@ -314,6 +314,81 @@ strong { color: var(--text); font-weight: 600; }
   .nav__link { font-size: 1.25rem; }
 }
 
+/* ---------- Products ---------- */
+.products {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  margin-block-start: var(--s-5);
+}
+.product {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--surface-line);
+  background: var(--surface-raised);
+}
+.product__media { aspect-ratio: 4 / 3; overflow: hidden; }
+.product__media img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Stand-in until a product is photographed, so an unphotographed item can
+   still be listed and ordered rather than held back. */
+.product__ph {
+  display: grid;
+  place-items: center;
+  block-size: 100%;
+  background:
+    repeating-linear-gradient(45deg, var(--surface-hover) 0 10px, transparent 10px 20px),
+    var(--surface);
+}
+.product__body {
+  padding: var(--s-3);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: .625rem;
+}
+.product__body h3 { color: var(--text); }
+.product__price {
+  color: var(--accent-text);
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+.product__specs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: .25rem;
+  font-size: .875rem;
+  color: var(--text-muted);
+}
+.product__specs li { padding-inline-start: .875rem; position: relative; }
+.product__specs li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: .5rem;
+  inline-size: 5px;
+  block-size: 5px;
+  background: var(--yellow);
+}
+/* Pushed to the bottom so cards of differing text length still line their
+   buttons up across the row. */
+.product__actions {
+  margin-block-start: auto;
+  padding-block-start: var(--s-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+/* Smaller type than a page-level button, but the tap target still has to
+   clear 44px — at .625rem padding it came out at 43. */
+.product__actions .btn { font-size: .8125rem; padding: .75rem 1rem; }
+
 /* ---------- Hero ---------- */
 .hero {
   min-block-size: 100svh;
