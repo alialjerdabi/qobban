@@ -469,7 +469,7 @@
     var up = location.pathname.replace(/[^/]*$/, '').split('/').filter(Boolean).length;
     /* Bump this whenever ar.js changes. It is served immutable for a year,
        so a stale ?v= leaves visitors on an old dictionary forever. */
-    s.src = '../'.repeat(up) + 'js/ar.js?v=20';
+    s.src = '../'.repeat(up) + 'js/ar.js?v=21';
     s.onload = function () { AR = window.QobbanAR || {}; done(AR); };
     s.onerror = function () { AR = {}; done(AR); };   /* stay English on failure */
     document.head.appendChild(s);

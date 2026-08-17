@@ -327,11 +327,82 @@ strong { color: var(--text); font-weight: 600; }
 .crumbs a:hover { color: var(--accent-text); }
 .crumbs [aria-current="page"] { color: var(--text); }
 
+/* ---------- Category chip rail ----------
+   The row of categories a shop puts above the grid. Plain overflow-x with
+   scroll-snap: no carousel, no JS, and it keeps working with a keyboard
+   because the chips are just links. */
+.chips {
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  padding-block: var(--s-2);
+  margin-block-end: var(--s-4);
+  /* Bleed to the viewport edges on small screens so the rail reads as
+     scrollable rather than as a clipped row. */
+  margin-inline: calc(var(--gutter, 1.25rem) * -1);
+  padding-inline: var(--gutter, 1.25rem);
+  scrollbar-width: none;
+}
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  padding: .625rem 1.125rem;
+  min-block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--surface-line);
+  border-radius: 999px;
+  font-size: .875rem;
+  color: var(--text-body);
+  white-space: nowrap;
+  transition: border-color .2s var(--ease), color .2s var(--ease);
+}
+.chip:hover { border-color: var(--yellow); color: var(--text); }
+.chip.is-current {
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: var(--black);
+  font-weight: 600;
+}
+
+/* ---------- Sale band ---------- */
+.saleband {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,194,32,.5);
+  background: var(--surface-raised);
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  margin-block-end: var(--s-5);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-4);
+  align-items: center;
+}
+.saleband__body { max-inline-size: 40rem; }
+.saleband__body h2 { margin-block: var(--s-2) var(--s-2); }
+.saleband__mark { inline-size: clamp(90px, 14vw, 150px); color: var(--surface-line); }
+.saleband__mark svg { inline-size: 100%; block-size: auto; display: block; }
+@media (max-width: 640px) {
+  /* The mark is decoration; at phone width the copy needs the whole row. */
+  .saleband { grid-template-columns: 1fr; }
+  .saleband__mark { display: none; }
+}
+
+.head__minor {
+  margin-block: var(--s-5) var(--s-3);
+  font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+}
+
 /* ---------- Products ---------- */
 .products {
   display: grid;
   gap: var(--s-4);
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  /* auto-fill, not auto-fit: auto-fit collapses the empty tracks, so a
+     category holding one product stretched that card across the full row. */
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   margin-block-start: var(--s-5);
 }
 .product {
@@ -340,7 +411,19 @@ strong { color: var(--text); font-weight: 600; }
   border: 1px solid var(--surface-line);
   background: var(--surface-raised);
 }
-.product__media { aspect-ratio: 4 / 3; overflow: hidden; }
+.product__media { aspect-ratio: 4 / 3; overflow: hidden; position: relative; }
+.product__flag {
+  position: absolute;
+  inset-block-start: 10px;
+  inset-inline-start: 10px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: .25rem .5rem;
+}
 .product__media img {
   inline-size: 100%;
   block-size: 100%;
@@ -369,6 +452,16 @@ strong { color: var(--text); font-weight: 600; }
   color: var(--accent-text);
   font-weight: 600;
   font-size: 1.125rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .5rem;
+}
+.product__price s { color: var(--text-muted); font-weight: 400; font-size: .9375rem; }
+.product__save {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: .8125rem;
 }
 .product__specs {
   list-style: none;

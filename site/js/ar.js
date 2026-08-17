@@ -745,6 +745,15 @@ window.QobbanAR = {
   'Prefer not to use WhatsApp? Each category page has an order form that sends the same details to us directly. We reply by phone or email.':
     'لا تفضّل واتساب؟ في كل صفحة فئة نموذج طلب يرسل إلينا التفاصيل نفسها مباشرة، ونرد عليك هاتفيًا أو بالبريد.',
   'These are being photographed and priced.': 'يجري تصوير هذه القطع وتسعيرها.',
+  'All': 'الكل',
+  'What\'s available now': 'المتوفر الآن',
+  'On offer': 'عرض',
+  'Save': 'وفّر',
+  'Launch offer': 'عرض الافتتاح',
+  'Opening prices on the first run': 'أسعار افتتاحية على الدفعة الأولى',
+  'Introductory pricing while the first batches come out of the workshop. Same steel and coating system as the commissioned work.':
+    'أسعار تعريفية ريثما تخرج الدفعات الأولى من الورشة. الفولاذ نفسه ونظام الطلاء نفسه المعتمدان في الأعمال المفصّلة.',
+  'See what\'s on offer': 'اطّلع على العروض',
   'Not listed yet': 'لم تُدرَج بعد',
   'These pieces are being photographed and priced. Tell us what you are after and we will confirm what is available and what it costs.':
     'يجري تصوير هذه القطع وتسعيرها. أخبرنا بما تبحث عنه ونؤكد لك المتوفر وسعره.',

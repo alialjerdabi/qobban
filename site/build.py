@@ -146,8 +146,24 @@ CATEGORIES = [
      "blurb": "Placeholder. Replace with the real category name and description."},
 ]
 
+# The promotion banner on the products landing page. Set "active": False to
+# take it down without deleting the copy. Nothing else needs changing — the
+# whole band disappears and the grid moves up.
+SALE = {
+    "active": True,
+    "eyebrow": "Launch offer",          # PLACEHOLDER — real offer copy needed
+    "headline": "Opening prices on the first run",
+    "blurb": "Introductory pricing while the first batches come out of the "
+             "workshop. Same steel and coating system as the commissioned work.",
+    "cta": "See what's on offer",
+    "href": "#on-sale",
+}
+
 #   category — must match a CATEGORIES slug, or the product appears nowhere.
 #   price    — whole BHD. Use None for "price on request".
+#   was      — optional original price. Setting it marks the product as on
+#              sale: it gets a strikethrough, a "Save N%" badge, and it sorts
+#              to the front of the landing grid. Omit for full-price items.
 #   specs    — short factual lines. No marketing copy; the card is small.
 #   image    — a filename in site/img/. Empty string renders a placeholder,
 #              so a product can go live before its photograph exists.
@@ -184,6 +200,58 @@ def in_category(cat):
     return [p for p in PRODUCTS if cat is None or p.get("category") == cat]
 
 
+def on_sale(p):
+    return p.get("was") is not None and p.get("price") is not None
+
+
+def landing_order(items):
+    """Sale items first on the landing grid — the page opens on what is
+    discounted, then everything else in list order."""
+    return sorted(items, key=lambda p: not on_sale(p))
+
+
+def category_strip(current, prefix=""):
+    """Horizontal category rail, the row of chips a shop puts above the grid.
+    Plain overflow-x with scroll-snap — no carousel, no JS. `current` is the
+    active slug, or None for the All chip on the landing page."""
+    import html as _html
+    chips = [(None, "All", f"{prefix}products.html")]
+    chips += [(c["slug"], c["name"], f'{prefix}products/{c["slug"]}.html')
+              for c in CATEGORIES]
+    out = []
+    for slug, label, href in chips:
+        here = slug == current
+        aria = ' aria-current="page"' if here else ""
+        cls = "chip is-current" if here else "chip"
+        out.append(f'        <a class="{cls}" href="{href}"{aria}>{_html.escape(label)}</a>')
+    return "\n".join(out)
+
+
+def sale_band(prefix=""):
+    """The promotion card. Renders nothing at all when the sale is off, so the
+    markers can stay in the page permanently."""
+    import html as _html
+    if not SALE.get("active"):
+        return "      <!-- sale inactive -->"
+    return f"""      <aside class="saleband reveal">
+        <div class="saleband__body">
+          <p class="spec">{_html.escape(SALE["eyebrow"])}</p>
+          <h2>{_html.escape(SALE["headline"])}</h2>
+          <p class="lede">{_html.escape(SALE["blurb"])}</p>
+          <p style="margin-block-start:var(--s-3)">
+            <a class="btn btn--primary" href="{SALE["href"]}">{_html.escape(SALE["cta"])} <span class="btn__arrow">→</span></a>
+          </p>
+        </div>
+        <div class="saleband__mark" aria-hidden="true">
+          <svg viewBox="0 0 100 72" fill="none">
+            <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z" stroke="currentColor" stroke-width="5"/>
+            <path d="M62 46l22 22" stroke="currentColor" stroke-width="5" stroke-linecap="square"/>
+            <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
+          </svg>
+        </div>
+      </aside>"""
+
+
 def category_cards(prefix=""):
     """The hub's directory of categories. Reuses the .cards/.card pattern the
     services page already uses, so there is no new component to maintain."""
@@ -209,7 +277,7 @@ def product_cards(cat=None, prefix=""):
     we don't — a product without a photograph still has to be orderable."""
     import html as _html
     import urllib.parse as _url
-    items = in_category(cat)
+    items = landing_order(in_category(cat))
     if not items:
         return ('      <p class="muted">These are being photographed and priced. '
                 '<a href="' + prefix + 'contact.html" style="color:var(--accent-text)">'
@@ -227,11 +295,24 @@ def product_cards(cat=None, prefix=""):
             media = ('<div class="product__ph" aria-hidden="true">'
                      '<span class="spec">Photograph to follow</span></div>')
         specs = "".join(f"<li>{_html.escape(s)}</li>" for s in p["specs"])
+        if on_sale(p):
+            off = round((p["was"] - p["price"]) / p["was"] * 100)
+            # aria-hidden on the old price: a screen reader announcing two
+            # numbers in a row is confusing, so the saving is spelled out.
+            # The percentage sits in its own element so "Save" is a whole text
+            # node the Arabic dictionary can match — "Save 25%" never could.
+            price = (f'<p class="product__price">{money(p["price"])} '
+                     f'<s aria-hidden="true">{money(p["was"])}</s> '
+                     f'<span class="product__save">Save <span>{off}%</span></span></p>')
+            badge = '<span class="product__flag">On offer</span>'
+        else:
+            price = f'<p class="product__price">{money(p["price"])}</p>'
+            badge = ""
         out.append(f"""      <article class="product reveal" data-delay="{(i - 1) % 3 + 1}" id="{p["slug"]}">
-        <div class="product__media">{media}</div>
+        <div class="product__media">{media}{badge}</div>
         <div class="product__body">
           <h3>{name}</h3>
-          <p class="product__price">{money(p["price"])}</p>
+          {price}
           <p>{_html.escape(p["blurb"])}</p>
           <ul class="product__specs">{specs}</ul>
           <div class="product__actions">
@@ -372,6 +453,10 @@ OPTIONS_BLOCK = re.compile(
     r"<!-- productoptions:begin -->.*?<!-- productoptions:end -->", re.S)
 CATEGORIES_BLOCK = re.compile(
     r"<!-- categories:begin -->.*?<!-- categories:end -->", re.S)
+STRIP_BLOCK = re.compile(
+    r"<!-- strip:begin -->.*?<!-- strip:end -->", re.S)
+SALE_BLOCK = re.compile(
+    r"<!-- sale:begin -->.*?<!-- sale:end -->", re.S)
 # The whole ordering section, dropped when a category has nothing to order —
 # a required <select> with no options is a form that can never be submitted.
 ORDER_BLOCK = re.compile(
@@ -443,6 +528,14 @@ for page in pages:
     # price list. Which products appear follows from the page's own path.
     cat = category_of(page)
     prefix = "../" if page.parent != ROOT else ""
+    if STRIP_BLOCK.search(out):
+        out = STRIP_BLOCK.sub(
+            lambda _: "<!-- strip:begin -->\n" + category_strip(cat, prefix)
+                      + "\n        <!-- strip:end -->", out)
+    if SALE_BLOCK.search(out):
+        out = SALE_BLOCK.sub(
+            lambda _: "<!-- sale:begin -->\n" + sale_band(prefix)
+                      + "\n      <!-- sale:end -->", out)
     if CATEGORIES_BLOCK.search(out):
         out = CATEGORIES_BLOCK.sub(
             lambda _: "<!-- categories:begin -->\n" + category_cards(prefix)

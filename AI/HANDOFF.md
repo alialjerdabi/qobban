@@ -118,6 +118,29 @@ page needs no configuration beyond its filename matching a `CATEGORIES` slug.
 > the matching file in `site/products/`. Do it before launch: renaming now is
 > free, renaming after indexing costs redirects.
 
+**The landing page is laid out like a shop**, following two reference stores the
+owner supplied: a horizontal category rail, then a promotion band, then the
+product grid — not a directory of category cards, which the rail replaced.
+
+- **Category rail** (`.chips`) — plain `overflow-x` with `scroll-snap`, no
+  carousel and no JavaScript, so it keeps working with a keyboard because the
+  chips are just links. It bleeds to `--gutter` so it reads as scrollable rather
+  than clipped. Appears on the hub (with **All** current) and on every category
+  page (with that category current). 44px tall, the touch-target minimum.
+- **Sale band** (`SALE` in build.py) — set `"active": False` to take it down
+  without deleting the copy; the band disappears and the grid moves up. The
+  headline and eyebrow are **placeholders** pending real offer copy.
+- **On-sale pricing** — a product with an optional `was` price renders a
+  strikethrough, a "Save N%" line and an "On offer" flag, and sorts to the front
+  of the grid. The old price is `aria-hidden` so a screen reader does not read
+  two numbers in a row, and the percentage sits in its own element so **Save**
+  is a whole text node the Arabic dictionary can match; `Save 25%` never could.
+  No product carries `was` yet — the path was proven by temporarily marking the
+  seed product down to 33 from 44, asserting the markup, and reverting.
+
+The grid uses `repeat(auto-fill, …)`, not `auto-fit`: `auto-fit` collapses empty
+tracks, which stretched a lone product card to 1137px across a desktop row.
+
 An empty category is handled deliberately: the grid shows a "being photographed
 and priced" line, and the whole order section is **replaced** with a WhatsApp and
 contact CTA rather than rendering a `required` `<select>` with no options, which
@@ -158,8 +181,8 @@ their nav uses relative paths, so verify both prefixes after any nav change.
 
 Arabic for the whole page set is in `js/ar.js`. **Every new product needs its
 name, blurb and specs added there, and every renamed category needs its name**,
-or it stays English on the toggle. Asset versions are now `qobban.css?v=20`,
-`qobban.js?v=21`, `ar.js?v=20`.
+or it stays English on the toggle. Asset versions are now `qobban.css?v=21`,
+`qobban.js?v=22`, `ar.js?v=21`.
 
 ## Deployment stalled — owner action
 
@@ -320,6 +343,7 @@ figures, which counted matches in the documentation folders too.
 | Bare TikTok links | 2 | `index.html`, `contact.html` — go to TikTok's homepage; the handle is still unknown |
 | Category names | 4 | `category-one`…`category-four` are placeholders. Rename in `CATEGORIES` **and** rename the file in `site/products/`, then drop them from `NOINDEX` |
 | Product list | 1 of 20–48 | Only Decorative Metal Stands has a confirmed price. Owner to supply names, prices, specs and photos, and the Arabic for each |
+| Sale copy | — | `SALE` in `build.py` holds placeholder headline and eyebrow. Real offer copy needed, plus a `was` price on whatever is actually discounted |
 | `ALLOWED_ORIGIN` | — | Confirmed unset against production; `/api/lead` accepts any origin |
 | Vercel Analytics | — | Not enabled; its script 404s on every page load |
 | `info@qobban.store` mailbox | — | Owner reports it configured and working; not independently verifiable from here |

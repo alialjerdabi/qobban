@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/qobban.css?v=20">
+<link rel="stylesheet" href="css/qobban.css?v=21">
 <script src="js/boot.js?v=18"></script>
 <!-- seo:begin -->
 <link rel="canonical" href="https://www.qobban.store/products.html">
@@ -75,33 +75,53 @@
         work — just already designed. Delivery across Bahrain.</p>
     </div>
 
-    <div class="cards">
-      <!-- categories:begin -->
-      <a class="card reveal" data-delay="1" href="products/category-one.html">
-        <h3>Category One</h3>
-        <p>Placeholder. Replace with the real category name and description.</p>
-        <span class="spec">1 product</span>
-        <span class="card__more">View →</span>
-      </a>
-      <a class="card reveal" data-delay="2" href="products/category-two.html">
-        <h3>Category Two</h3>
-        <p>Placeholder. Replace with the real category name and description.</p>
-        <span class="spec">Coming soon</span>
-        <span class="card__more">View →</span>
-      </a>
-      <a class="card reveal" data-delay="3" href="products/category-three.html">
-        <h3>Category Three</h3>
-        <p>Placeholder. Replace with the real category name and description.</p>
-        <span class="spec">Coming soon</span>
-        <span class="card__more">View →</span>
-      </a>
-      <a class="card reveal" data-delay="1" href="products/category-four.html">
-        <h3>Category Four</h3>
-        <p>Placeholder. Replace with the real category name and description.</p>
-        <span class="spec">Coming soon</span>
-        <span class="card__more">View →</span>
-      </a>
-      <!-- categories:end -->
+    <nav class="chips" aria-label="Product categories">
+      <!-- strip:begin -->
+        <a class="chip is-current" href="products.html" aria-current="page">All</a>
+        <a class="chip" href="products/category-one.html">Category One</a>
+        <a class="chip" href="products/category-two.html">Category Two</a>
+        <a class="chip" href="products/category-three.html">Category Three</a>
+        <a class="chip" href="products/category-four.html">Category Four</a>
+        <!-- strip:end -->
+    </nav>
+
+    <!-- sale:begin -->
+      <aside class="saleband reveal">
+        <div class="saleband__body">
+          <p class="spec">Launch offer</p>
+          <h2>Opening prices on the first run</h2>
+          <p class="lede">Introductory pricing while the first batches come out of the workshop. Same steel and coating system as the commissioned work.</p>
+          <p style="margin-block-start:var(--s-3)">
+            <a class="btn btn--primary" href="#on-sale">See what&#x27;s on offer <span class="btn__arrow">→</span></a>
+          </p>
+        </div>
+        <div class="saleband__mark" aria-hidden="true">
+          <svg viewBox="0 0 100 72" fill="none">
+            <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z" stroke="currentColor" stroke-width="5"/>
+            <path d="M62 46l22 22" stroke="currentColor" stroke-width="5" stroke-linecap="square"/>
+            <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
+          </svg>
+        </div>
+      </aside>
+      <!-- sale:end -->
+
+    <h2 class="head__minor reveal" id="on-sale">What's available now</h2>
+    <div class="products">
+      <!-- products:begin -->
+      <article class="product reveal" data-delay="1" id="decorative-metal-stands">
+        <div class="product__media"><div class="product__ph" aria-hidden="true"><span class="spec">Photograph to follow</span></div></div>
+        <div class="product__body">
+          <h3>Decorative Metal Stands</h3>
+          <p class="product__price">BD 33</p>
+          <p>Three sizes, one design. Powder-coated steel stands for plants, display or storage — built to the same tolerance as the architectural work.</p>
+          <ul class="product__specs"><li>12 x 12 mm square tube</li><li>Powder-coated steel</li><li>Three sizes</li><li>Indoor or shaded outdoor</li></ul>
+          <div class="product__actions">
+            <a class="btn btn--primary" href="https://wa.me/97339949004?text=Order%3A%20Decorative%20Metal%20Stands%20%E2%80%94%20BD%2033" target="_blank" rel="noopener">Order on WhatsApp <span class="btn__arrow">→</span></a>
+            <a class="btn btn--ghost" href="#order">Order by form</a>
+          </div>
+        </div>
+      </article>
+      <!-- products:end -->
     </div>
 
     <p class="muted reveal" style="margin-block-start:var(--s-5);font-size:.9375rem">
@@ -113,22 +133,56 @@
 </section>
 
 <section class="section section--line" id="order">
-  <div class="wrap">
-    <div class="head reveal" style="max-inline-size:44rem">
-      <p class="spec">Ordering</p>
-      <h2>Two ways, both reach the same place</h2>
-    </div>
-    <div class="stack reveal" data-delay="2" style="max-inline-size:44rem">
-      <p><strong>WhatsApp is fastest.</strong> Every product has a button that opens a
-        message with the item and price already written. Tell us the quantity and where
-        you are, and we confirm availability and delivery in the same conversation.</p>
-      <p>Prefer not to use WhatsApp? Each category page has an order form that sends the
-        same details to us directly. We reply by phone or email.</p>
-      <p class="muted" style="font-size:.9375rem">Prices are per item and exclude delivery,
-        which depends on where in Bahrain you are. We confirm the total before anything
-        is dispatched.</p>
-    </div>
-  </div>
+  <!-- order:begin -->
+      <div class="wrap split">
+        <div class="reveal">
+          <p class="spec">Ordering</p>
+          <h2 style="margin-block:var(--s-3)">Two ways, both reach the same place</h2>
+          <div class="stack">
+            <p><strong>WhatsApp is fastest.</strong> The button on each product opens a message
+              with the item and price already written. Tell us the quantity and where you are,
+              and we confirm availability and delivery in the same conversation.</p>
+            <p>Prefer not to use WhatsApp? The form sends the same details to us directly.
+              We reply by phone or email.</p>
+            <p class="muted" style="font-size:.9375rem">Prices are per item and exclude delivery,
+              which depends on where in Bahrain you are. We confirm the total before anything
+              is dispatched.</p>
+          </div>
+        </div>
+
+        <div class="reveal" data-delay="2">
+          <p class="spec">Send an order</p>
+          <h2 style="margin-block:var(--s-3)">Order by form</h2>
+          <form class="form" data-lead-form>
+            <div class="field">
+              <label for="o-name">Name</label>
+              <input id="o-name" name="Name" type="text" required>
+            </div>
+            <div class="field">
+              <label for="o-phone">Phone / WhatsApp</label>
+              <input id="o-phone" name="Phone" type="tel" inputmode="tel" placeholder="+973 …" required>
+            </div>
+            <div class="field">
+              <label for="o-product">Product</label>
+              <select id="o-product" name="Message" required>
+              <option value="">Select…</option>
+              <option>Order: Decorative Metal Stands — BD 33</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="o-notes">Quantity, size and area in Bahrain</label>
+              <textarea id="o-notes" name="Notes" maxlength="1500" placeholder="e.g. two of the medium size, delivered to Riffa."></textarea>
+            </div>
+            <div class="sr" aria-hidden="true">
+              <label for="o-company">Company</label>
+              <input id="o-company" name="company" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <button class="btn btn--primary" type="submit">Send Order <span class="btn__arrow">→</span></button>
+            <p class="field__hint" data-form-status role="status"></p>
+          </form>
+        </div>
+      </div>
+      <!-- order:end -->
 </section>
 
 <section class="cta">
@@ -154,6 +208,6 @@
   <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2Z"/></svg>
 </a>
 
-<script src="js/qobban.js?v=21" defer></script>
+<script src="js/qobban.js?v=22" defer></script>
 </body>
 </html>
