@@ -377,18 +377,58 @@ strong { color: var(--text); font-weight: 600; }
   padding: clamp(1.5rem, 4vw, 2.75rem);
   margin-block-end: var(--s-5);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  /* The media column is a definite width, not `auto`. With `auto` the track
+     sized itself against a percentage-width grid inside it — circular, and it
+     crushed the copy column to 0. */
+  grid-template-columns: minmax(0, 1fr) 28rem;
   gap: var(--s-4);
   align-items: center;
 }
 .saleband__body { max-inline-size: 40rem; }
 .saleband__body h2 { margin-block: var(--s-2) var(--s-2); }
-.saleband__mark { inline-size: clamp(90px, 14vw, 150px); color: var(--surface-line); }
-.saleband__mark svg { inline-size: 100%; block-size: auto; display: block; }
-@media (max-width: 640px) {
-  /* The mark is decoration; at phone width the copy needs the whole row. */
+
+/* Two silent clips, side by side at every width so the band stays a band and
+   does not push the products below the fold on a phone. */
+.saleband__media {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+  inline-size: 100%;
+}
+.saleband__cell {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--surface-line);
+  background: var(--black) center / cover no-repeat;
+}
+.saleband__clip {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Hiding the video uncovers the cell's poster background, so the frame
+     still reads. A poster attribute alone would vanish with the element. */
+  .saleband__clip { display: none; }
+}
+@media (max-width: 860px) {
   .saleband { grid-template-columns: 1fr; }
-  .saleband__mark { display: none; }
+  .saleband__media { inline-size: 100%; }
+}
+/* Must come after the 860px rule, which also sets inline-size and would
+   otherwise win. Stacking the clips on a phone made the band 752px — taller
+   than the viewport, burying the products the page exists to show. They stay
+   side by side and break out of the band's padding to win back the width. */
+@media (max-width: 479px) {
+  .saleband__media {
+    inline-size: calc(100% + clamp(1.5rem, 4vw, 2.75rem) * 2);
+    margin-inline: calc(clamp(1.5rem, 4vw, 2.75rem) * -1);
+    margin-block-end: calc(clamp(1.5rem, 4vw, 2.75rem) * -1);
+    gap: 2px;
+  }
+  .saleband__cell { border-inline: 0; border-block-end: 0; }
 }
 
 .head__minor {
@@ -445,9 +485,20 @@ strong { color: var(--text); font-weight: 600; }
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: .625rem;
+  gap: .5rem;
 }
-.product__body h3 { color: var(--text); }
+/* Smaller and clamped. A grid is scanned, not read: the name gets two lines
+   at most, then the price, then one line of fact. The full description lives
+   in the Product structured data, not on the card. */
+.product__body h3 {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .product__price {
   color: var(--accent-text);
   font-weight: 600;
@@ -463,34 +514,35 @@ strong { color: var(--text); font-weight: 600; }
   font-weight: 400;
   font-size: .8125rem;
 }
-.product__specs {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: .25rem;
-  font-size: .875rem;
+/* Key facts on one line. Truncated rather than wrapped, so every card in the
+   row is the same height and the eye can run straight down the prices. */
+.product__meta {
+  font-size: .8125rem;
   color: var(--text-muted);
-}
-.product__specs li { padding-inline-start: .875rem; position: relative; }
-.product__specs li::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-start: .5rem;
-  inline-size: 5px;
-  block-size: 5px;
-  background: var(--yellow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* Pushed to the bottom so cards of differing text length still line their
    buttons up across the row. */
 .product__actions {
   margin-block-start: auto;
-  padding-block-start: var(--s-2);
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
+  padding-block-start: var(--s-3);
+  display: grid;
+  gap: .375rem;
+  justify-items: start;
 }
+.product__actions .btn--primary { inline-size: 100%; justify-content: center; }
+/* Secondary path as a quiet link, not a second button — one card, one
+   obvious action. */
+.product__alt {
+  font-size: .8125rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding-block: .25rem;
+}
+.product__alt:hover { color: var(--accent-text); }
 /* Smaller type than a page-level button, but the tap target still has to
    clear 44px — at .625rem padding it came out at 43. */
 .product__actions .btn { font-size: .8125rem; padding: .75rem 1rem; }

@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/qobban.css?v=21">
+<link rel="stylesheet" href="css/qobban.css?v=22">
 <script src="js/boot.js?v=18"></script>
 <!-- seo:begin -->
 <link rel="canonical" href="https://www.qobban.store/products.html">
@@ -95,12 +95,19 @@
             <a class="btn btn--primary" href="#on-sale">See what&#x27;s on offer <span class="btn__arrow">→</span></a>
           </p>
         </div>
-        <div class="saleband__mark" aria-hidden="true">
-          <svg viewBox="0 0 100 72" fill="none">
-            <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z" stroke="currentColor" stroke-width="5"/>
-            <path d="M62 46l22 22" stroke="currentColor" stroke-width="5" stroke-linecap="square"/>
-            <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
-          </svg>
+        <div class="saleband__media" aria-hidden="true">
+          <span class="saleband__cell" style="background-image:url('img/sale-1-poster.jpg')">
+            <video class="saleband__clip" autoplay muted loop playsinline
+                   preload="none" poster="img/sale-1-poster.jpg" tabindex="-1" aria-hidden="true">
+              <source src="video/sale-1.mp4" type="video/mp4">
+            </video>
+          </span>
+          <span class="saleband__cell" style="background-image:url('img/sale-2-poster.jpg')">
+            <video class="saleband__clip" autoplay muted loop playsinline
+                   preload="none" poster="img/sale-2-poster.jpg" tabindex="-1" aria-hidden="true">
+              <source src="video/sale-2.mp4" type="video/mp4">
+            </video>
+          </span>
         </div>
       </aside>
       <!-- sale:end -->
@@ -113,11 +120,10 @@
         <div class="product__body">
           <h3>Decorative Metal Stands</h3>
           <p class="product__price">BD 33</p>
-          <p>Three sizes, one design. Powder-coated steel stands for plants, display or storage — built to the same tolerance as the architectural work.</p>
-          <ul class="product__specs"><li>12 x 12 mm square tube</li><li>Powder-coated steel</li><li>Three sizes</li><li>Indoor or shaded outdoor</li></ul>
+          <p class="product__meta">12 x 12 mm square tube · Powder-coated steel · Three sizes</p>
           <div class="product__actions">
             <a class="btn btn--primary" href="https://wa.me/97339949004?text=Order%3A%20Decorative%20Metal%20Stands%20%E2%80%94%20BD%2033" target="_blank" rel="noopener">Order on WhatsApp <span class="btn__arrow">→</span></a>
-            <a class="btn btn--ghost" href="#order">Order by form</a>
+            <a class="product__alt" href="#order">Order by form</a>
           </div>
         </div>
       </article>

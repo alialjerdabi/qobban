@@ -157,6 +157,10 @@ SALE = {
              "workshop. Same steel and coating system as the commissioned work.",
     "cta": "See what's on offer",
     "href": "#on-sale",
+    # Silent looping clips in the band. Each needs a matching
+    # img/<name>-poster.jpg so the card paints before the video arrives and
+    # still reads if the video is blocked or reduced motion is on.
+    "videos": ["sale-1.mp4", "sale-2.mp4"],
 }
 
 #   category — must match a CATEGORIES slug, or the product appears nowhere.
@@ -242,14 +246,30 @@ def sale_band(prefix=""):
             <a class="btn btn--primary" href="{SALE["href"]}">{_html.escape(SALE["cta"])} <span class="btn__arrow">→</span></a>
           </p>
         </div>
-        <div class="saleband__mark" aria-hidden="true">
-          <svg viewBox="0 0 100 72" fill="none">
-            <path d="M12 8h64a8 8 0 0 1 8 8v34a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8Z" stroke="currentColor" stroke-width="5"/>
-            <path d="M62 46l22 22" stroke="currentColor" stroke-width="5" stroke-linecap="square"/>
-            <rect x="22" y="24" width="44" height="18" rx="2" fill="#FFC220"/>
-          </svg>
-        </div>
+{sale_media(prefix)}
       </aside>"""
+
+
+def sale_media(prefix=""):
+    """The band's clips. Decoration, so aria-hidden and untabbable; the poster
+    is the fallback for a blocked video or reduced motion."""
+    vids = SALE.get("videos") or []
+    if not vids:
+        return '        <div class="saleband__mark" aria-hidden="true"></div>'
+    cells = []
+    for v in vids:
+        poster = f"{prefix}img/{pathlib.Path(v).stem}-poster.jpg"
+        # The poster rides on the wrapper, not the video: reduced motion hides
+        # the video, and a poster attribute would go with it.
+        cells.append(
+            f'          <span class="saleband__cell" style="background-image:url(\'{poster}\')">\n'
+            f'            <video class="saleband__clip" autoplay muted loop playsinline\n'
+            f'                   preload="none" poster="{poster}" tabindex="-1" aria-hidden="true">\n'
+            f'              <source src="{prefix}video/{v}" type="video/mp4">\n'
+            f'            </video>\n'
+            f'          </span>')
+    return ('        <div class="saleband__media" aria-hidden="true">\n'
+            + "\n".join(cells) + "\n        </div>")
 
 
 def category_cards(prefix=""):
@@ -294,7 +314,10 @@ def product_cards(cat=None, prefix=""):
         else:
             media = ('<div class="product__ph" aria-hidden="true">'
                      '<span class="spec">Photograph to follow</span></div>')
-        specs = "".join(f"<li>{_html.escape(s)}</li>" for s in p["specs"])
+        # One condensed meta line instead of a paragraph plus a bullet list.
+        # A scan grid needs image, name, price and one fact — the full blurb
+        # still reaches Google through the Product structured data.
+        meta = _html.escape(" · ".join(p["specs"][:3]))
         if on_sale(p):
             off = round((p["was"] - p["price"]) / p["was"] * 100)
             # aria-hidden on the old price: a screen reader announcing two
@@ -313,11 +336,10 @@ def product_cards(cat=None, prefix=""):
         <div class="product__body">
           <h3>{name}</h3>
           {price}
-          <p>{_html.escape(p["blurb"])}</p>
-          <ul class="product__specs">{specs}</ul>
+          <p class="product__meta">{meta}</p>
           <div class="product__actions">
             <a class="btn btn--primary" href="{wa}" target="_blank" rel="noopener">Order on WhatsApp <span class="btn__arrow">→</span></a>
-            <a class="btn btn--ghost" href="#order">Order by form</a>
+            <a class="product__alt" href="#order">Order by form</a>
           </div>
         </div>
       </article>""")

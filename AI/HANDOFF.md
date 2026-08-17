@@ -129,7 +129,11 @@ product grid — not a directory of category cards, which the rail replaced.
   page (with that category current). 44px tall, the touch-target minimum.
 - **Sale band** (`SALE` in build.py) — set `"active": False` to take it down
   without deleting the copy; the band disappears and the grid moves up. The
-  headline and eyebrow are **placeholders** pending real offer copy.
+  headline and eyebrow are **placeholders** pending real offer copy. It carries
+  two silent looping clips listed in `SALE["videos"]`; each needs a matching
+  `img/<name>-poster.jpg`. The poster rides on the wrapper `<span>` as a CSS
+  background, **not** only on the video's `poster` attribute, because reduced
+  motion hides the video and a poster attribute would vanish with it.
 - **On-sale pricing** — a product with an optional `was` price renders a
   strikethrough, a "Save N%" line and an "On offer" flag, and sorts to the front
   of the grid. The old price is `aria-hidden` so a screen reader does not read
@@ -138,8 +142,31 @@ product grid — not a directory of category cards, which the rail replaced.
   No product carries `was` yet — the path was proven by temporarily marking the
   seed product down to 33 from 44, asserting the markup, and reverting.
 
+**The product card was cut down for scanning.** It was ~840px tall on a phone,
+roughly one card per screen: image, uppercase name, price, a four-line blurb, a
+four-item bullet list and two full-width buttons. It is now **499px** — image,
+clamped two-line name, price, one truncated line joining the first three specs,
+one primary button and a quiet text link for the form. The blurb still reaches
+Google through the Product structured data; it just is not on the card.
+
 The grid uses `repeat(auto-fill, …)`, not `auto-fit`: `auto-fit` collapses empty
 tracks, which stretched a lone product card to 1137px across a desktop row.
+
+Two layout traps worth remembering, both found by measuring rather than reading:
+
+- The band's media column must be a **definite width** (`28rem`), not `auto`.
+  With `auto`, the track sized itself against a percentage-width grid inside it
+  — circular — and crushed the copy column to **0px** while the band grew to
+  1184px tall.
+- A `@media (max-width: 479px)` override must sit **after** the `860px` block,
+  since both set `inline-size` on the same selector. Placed before it, the rule
+  was silently dead CSS that looked correct.
+
+**Encode clips at the size they are displayed.** These render 218px wide at
+most, but were first encoded at 1280 — three times more pixels than the layout
+can show. Re-encoded to 720 wide at CRF 30, the products page went from
+**3.13 MB to 1.17 MB** with no visible difference. Same rule as the hero:
+`-an` for silence by construction, `+faststart`, and a poster.
 
 An empty category is handled deliberately: the grid shows a "being photographed
 and priced" line, and the whole order section is **replaced** with a WhatsApp and
