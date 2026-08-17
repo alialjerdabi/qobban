@@ -100,11 +100,30 @@ on a static site with one serverless function. WhatsApp already converts and the
 lead pipeline already works, so v1 uses those. Revisit real checkout when order
 volume actually justifies the overhead.
 
-**`PRODUCTS` in [../site/build.py](../site/build.py) is the single source.** It
-generates the cards, the order form's dropdown and the `Product`/`Offer`
-structured data together, so the page cannot drift from the price list. Add a
-product there and re-run — never hand-edit the generated block between
-`<!-- products:begin -->` and `<!-- products:end -->`.
+**Structure is a hub plus four category pages.** `products.html` is a directory
+of categories; each category lives at `products/<slug>.html` and holds its own
+grid, its own order form and its own structured data. Four categories at 5–12
+products each is 20–48 items, too many for one page.
+
+**`CATEGORIES` and `PRODUCTS` in [../site/build.py](../site/build.py) are the
+single source.** They generate the category cards, the product cards, each order
+form and all `Product`/`Offer` structured data, so no page can drift from the
+price list. Add a product there and re-run — never hand-edit a generated block.
+Which products appear on a page follows from the page's own path, so a category
+page needs no configuration beyond its filename matching a `CATEGORIES` slug.
+
+> **The four slugs are placeholders** — `category-one` … `category-four`,
+> awaiting real names. They are in `NOINDEX`, so Google never sees them and they
+> stay out of the sitemap. Renaming means editing `CATEGORIES` **and** renaming
+> the matching file in `site/products/`. Do it before launch: renaming now is
+> free, renaming after indexing costs redirects.
+
+An empty category is handled deliberately: the grid shows a "being photographed
+and priced" line, and the whole order section is **replaced** with a WhatsApp and
+contact CTA rather than rendering a `required` `<select>` with no options, which
+would be a form nobody could submit. Because that swap is destructive, the order
+section is generated rather than stored in the page — one source for all four
+category forms.
 
 Each product carries `slug`, `name`, `price` (whole BHD, `None` renders "Price on
 request"), `blurb`, `specs` and `image`. An empty `image` renders a hatched
@@ -132,13 +151,33 @@ with the `dimensions` field, which would have truncated people silently). Card
 buttons are padded to clear the 44px touch target; at the original padding they
 measured 43.
 
-Nav: Products sits after Services on all 14 nav-bearing pages, with `../` on the
-six `services/*` subpages — the first pass missed those because their nav uses
-relative paths, so verify both prefixes after any nav change. `404.html` has a
-logo-only header and deliberately has no nav. Arabic copy for the whole page,
-including the seed product, is in `js/ar.js`; **every new product needs its name,
-blurb and specs added there** or it stays English on the toggle. Asset versions
-moved to `qobban.css?v=20`, `qobban.js?v=20`, `ar.js?v=19`.
+Nav: Products sits after Services on all 18 nav-bearing pages, with `../` on the
+`services/*` and `products/*` subpages — the first pass missed those because
+their nav uses relative paths, so verify both prefixes after any nav change.
+`404.html` has a logo-only header and deliberately has no nav.
+
+Arabic for the whole page set is in `js/ar.js`. **Every new product needs its
+name, blurb and specs added there, and every renamed category needs its name**,
+or it stays English on the toggle. Asset versions are now `qobban.css?v=20`,
+`qobban.js?v=21`, `ar.js?v=20`.
+
+## Two Arabic bugs found and fixed
+
+**`ar.js` never loaded on any subpage.** `qobban.js` built its path with
+`document.currentScript && /\/services\//.test(...)`, but `currentScript` is
+always `null` inside the toggle handler, so the `../` never applied. Every
+`services/*` page requested `/services/js/ar.js`, got a 404, and stayed English
+**while `dir` still flipped to `rtl`** — English text in a right-to-left layout,
+live on six pages. This predates the products work; the pages had never been
+tested. Now the prefix is derived from the path depth, so it works at any depth,
+verified on both `services/` and `products/`.
+
+**A stale `?v=` would have frozen the dictionary forever.** `ar.js` is served
+`immutable, max-age=31536000`. It was edited twice while still pointing at
+`?v=19`, and `v=19` had already shipped — so anyone who fetched it would keep the
+old dictionary for a year. Caught only because a cached copy showed 510 keys
+against 705 in the file. **Bump the `ar.js?v=` inside `qobban.js` on every
+`ar.js` change**, and bump `qobban.js` itself so the new reference is picked up.
 
 ## Hero video
 
@@ -260,7 +299,8 @@ figures, which counted matches in the documentation folders too.
 |---|---|---|
 | `[CONFIRM]` **visible to visitors** | 2 | `contact.html` — address and hours |
 | Bare TikTok links | 2 | `index.html`, `contact.html` — go to TikTok's homepage; the handle is still unknown |
-| Product list | 1 of ~6 | Only Decorative Metal Stands has a confirmed price. Owner to supply names, prices, specs and photos for the rest |
+| Category names | 4 | `category-one`…`category-four` are placeholders. Rename in `CATEGORIES` **and** rename the file in `site/products/`, then drop them from `NOINDEX` |
+| Product list | 1 of 20–48 | Only Decorative Metal Stands has a confirmed price. Owner to supply names, prices, specs and photos, and the Arabic for each |
 | `ALLOWED_ORIGIN` | — | Confirmed unset against production; `/api/lead` accepts any origin |
 | Vercel Analytics | — | Not enabled; its script 404s on every page load |
 | `info@qobban.store` mailbox | — | Owner reports it configured and working; not independently verifiable from here |

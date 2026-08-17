@@ -461,8 +461,15 @@
     if (AR) { done(AR); return; }
     if (window.QobbanAR) { AR = window.QobbanAR; done(AR); return; }
     var s = document.createElement('script');
-    s.src = (document.currentScript && /\/services\//.test(location.pathname) ? '../' : '')
-            + 'js/ar.js?v=19';
+    /* Resolve js/ar.js from whatever depth the page sits at — /services/ and
+       /products/ are one level down, the root pages are not. The previous
+       check tested document.currentScript, which is always null inside this
+       handler, so the prefix never applied and every subpage silently stayed
+       English while `dir` still flipped to rtl. */
+    var up = location.pathname.replace(/[^/]*$/, '').split('/').filter(Boolean).length;
+    /* Bump this whenever ar.js changes. It is served immutable for a year,
+       so a stale ?v= leaves visitors on an old dictionary forever. */
+    s.src = '../'.repeat(up) + 'js/ar.js?v=20';
     s.onload = function () { AR = window.QobbanAR || {}; done(AR); };
     s.onerror = function () { AR = {}; done(AR); };   /* stay English on failure */
     document.head.appendChild(s);

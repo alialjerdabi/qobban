@@ -735,6 +735,43 @@ window.QobbanAR = {
   'Most of these can be built to your dimensions. Send the measurement and we\'ll price it.':
     'معظم هذه القطع يمكن تصنيعها بمقاساتك. أرسل المقاس ونسعّرها لك.',
 
+  /* Category pages. Category names come from CATEGORIES in build.py — each
+     one needs a pair here, including the four placeholders once renamed. */
+  'Ready-made pieces, priced per item. Same steel, same coating system and same tolerance as the commissioned work. Delivery across Bahrain.':
+    'قطع جاهزة، بسعر لكل قطعة. الفولاذ نفسه، ونظام الطلاء نفسه، والدقة نفسها المعتمدة في الأعمال المفصّلة. التوصيل داخل البحرين.',
+  'Need one of these built to your own dimensions?': 'تريد إحداها بمقاساتك الخاصة؟',
+  'Every product has a button that opens a message with the item and price already written. Tell us the quantity and where you are, and we confirm availability and delivery in the same conversation.':
+    'لكل منتج زر يفتح رسالة مكتوبًا فيها الصنف والسعر. أخبرنا بالكمية وموقعك، ونؤكد لك التوفّر والتوصيل في المحادثة نفسها.',
+  'Prefer not to use WhatsApp? Each category page has an order form that sends the same details to us directly. We reply by phone or email.':
+    'لا تفضّل واتساب؟ في كل صفحة فئة نموذج طلب يرسل إلينا التفاصيل نفسها مباشرة، ونرد عليك هاتفيًا أو بالبريد.',
+  'These are being photographed and priced.': 'يجري تصوير هذه القطع وتسعيرها.',
+  'Not listed yet': 'لم تُدرَج بعد',
+  'These pieces are being photographed and priced. Tell us what you are after and we will confirm what is available and what it costs.':
+    'يجري تصوير هذه القطع وتسعيرها. أخبرنا بما تبحث عنه ونؤكد لك المتوفر وسعره.',
+  'Ask on WhatsApp': 'اسأل عبر واتساب',
+  'Contact us': 'اتصل بنا',
+  'Ask us what is available': 'اسألنا عن المتوفر',
+  'Coming soon': 'قريبًا',
+  'View →': 'عرض ←',
+  'Placeholder. Replace with the real category name and description.':
+    'نص مؤقت. استبدله باسم الفئة ووصفها الحقيقيين.',
+  'Category One': 'الفئة الأولى',
+  'Category Two': 'الفئة الثانية',
+  'Category Three': 'الفئة الثالثة',
+  'Category Four': 'الفئة الرابعة',
+  '1 product': 'منتج واحد',
+  '2 products': 'منتجان',
+  '3 products': '٣ منتجات',
+  '4 products': '٤ منتجات',
+  '5 products': '٥ منتجات',
+  '6 products': '٦ منتجات',
+  '7 products': '٧ منتجات',
+  '8 products': '٨ منتجات',
+  '9 products': '٩ منتجات',
+  '10 products': '١٠ منتجات',
+  '11 products': '١١ منتجًا',
+  '12 products': '١٢ منتجًا',
+
   /* Seed product. Add a matching pair for every new entry in PRODUCTS. */
   'Decorative Metal Stands': 'ستاندات ديكور معدنية',
   'Three sizes, one design. Powder-coated steel stands for plants, display or storage — built to the same tolerance as the architectural work.':

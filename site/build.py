@@ -124,17 +124,37 @@ def json_ld():
 
 # ---------------------------------------------------------------- products
 # Ready-made items sold directly, as opposed to the quoted custom work under
-# SERVICES. This list is the single source: the cards, the order form's
-# dropdown and the Product structured data are all generated from it. Add a
-# product here and re-run — never hand-edit the generated block.
+# SERVICES. CATEGORIES and PRODUCTS are the single source: the category cards,
+# the product cards, each order form's dropdown and all Product structured data
+# are generated from them. Never hand-edit a generated block.
 #
-#   price  — whole BHD. Use None for "price on request".
-#   specs  — short factual lines. No marketing copy; the card is small.
-#   image  — a filename in site/img/. Empty string renders a placeholder,
-#            so a product can go live before its photograph exists.
+# CATEGORIES: `slug` becomes the filename — products/<slug>.html — so a page
+# must exist at that path. Renaming a slug means renaming the file too.
+#
+# >>> The four slugs below are PLACEHOLDERS awaiting real category names. They
+# >>> are listed in NOINDEX so Google never sees "category-one", and they must
+# >>> be renamed and removed from NOINDEX before launch. Renaming now is free;
+# >>> renaming after indexing costs redirects.
+CATEGORIES = [
+    {"slug": "category-one",   "name": "Category One",
+     "blurb": "Placeholder. Replace with the real category name and description."},
+    {"slug": "category-two",   "name": "Category Two",
+     "blurb": "Placeholder. Replace with the real category name and description."},
+    {"slug": "category-three", "name": "Category Three",
+     "blurb": "Placeholder. Replace with the real category name and description."},
+    {"slug": "category-four",  "name": "Category Four",
+     "blurb": "Placeholder. Replace with the real category name and description."},
+]
+
+#   category — must match a CATEGORIES slug, or the product appears nowhere.
+#   price    — whole BHD. Use None for "price on request".
+#   specs    — short factual lines. No marketing copy; the card is small.
+#   image    — a filename in site/img/. Empty string renders a placeholder,
+#              so a product can go live before its photograph exists.
 CURRENCY = "BHD"
 PRODUCTS = [
     {
+        "category": "category-one",
         "slug": "decorative-metal-stands",
         "name": "Decorative Metal Stands",
         "price": 33,
@@ -152,19 +172,56 @@ def money(price):
     return "Price on request" if price is None else f"BD {price}"
 
 
-def product_cards():
-    """One card per product. Image when we have one, placeholder when we
-    don't — a product without a photograph still has to be orderable."""
+def category_of(page):
+    """products/<slug>.html -> slug. Anything else -> None."""
+    rel = page.relative_to(ROOT).as_posix()
+    if rel.startswith("products/") and rel.endswith(".html"):
+        return rel[len("products/"):-len(".html")]
+    return None
+
+
+def in_category(cat):
+    return [p for p in PRODUCTS if cat is None or p.get("category") == cat]
+
+
+def category_cards(prefix=""):
+    """The hub's directory of categories. Reuses the .cards/.card pattern the
+    services page already uses, so there is no new component to maintain."""
+    import html as _html
+    out = []
+    for i, c in enumerate(CATEGORIES, 1):
+        count = len(in_category(c["slug"]))
+        tally = "Coming soon" if count == 0 else (
+            "1 product" if count == 1 else f"{count} products")
+        out.append(
+            f'      <a class="card reveal" data-delay="{(i - 1) % 3 + 1}" '
+            f'href="{prefix}products/{c["slug"]}.html">\n'
+            f'        <h3>{_html.escape(c["name"])}</h3>\n'
+            f'        <p>{_html.escape(c["blurb"])}</p>\n'
+            f'        <span class="spec">{tally}</span>\n'
+            f'        <span class="card__more">View →</span>\n'
+            f'      </a>')
+    return "\n".join(out)
+
+
+def product_cards(cat=None, prefix=""):
+    """One card per product in `cat`. Image when we have one, placeholder when
+    we don't — a product without a photograph still has to be orderable."""
     import html as _html
     import urllib.parse as _url
+    items = in_category(cat)
+    if not items:
+        return ('      <p class="muted">These are being photographed and priced. '
+                '<a href="' + prefix + 'contact.html" style="color:var(--accent-text)">'
+                'Ask us what is available</a> in the meantime.</p>')
     out = []
-    for i, p in enumerate(PRODUCTS, 1):
+    for i, p in enumerate(items, 1):
         name = _html.escape(p["name"])
         text = f'Order: {p["name"]} — {money(p["price"])}'
         wa = "https://wa.me/" + PHONE + "?text=" + _url.quote(text)
         if p["image"] and (ROOT / "img" / p["image"]).exists():
             w, h = dimensions(p["image"])
-            media = (f'<img loading="lazy" decoding="async" src="img/{p["image"]}" '
+            media = (f'<img loading="lazy" decoding="async" src="{prefix}img/{p["image"]}" '
                      f'alt="{name}" width="{w}" height="{h}">')
         else:
             media = ('<div class="product__ph" aria-hidden="true">'
@@ -186,22 +243,90 @@ def product_cards():
     return "\n".join(out)
 
 
-def product_options():
+def order_section(cat, prefix=""):
+    """The ordering explainer and form, generated so all category pages share
+    one source. When the category is empty the form is replaced outright: a
+    required <select> with no options can never be submitted."""
+    if not in_category(cat):
+        return f"""      <div class="wrap">
+        <div class="head reveal" style="max-inline-size:44rem">
+          <p class="spec">Ordering</p>
+          <h2>Not listed yet</h2>
+          <p class="lede">These pieces are being photographed and priced. Tell us what
+            you are after and we will confirm what is available and what it costs.</p>
+          <p style="margin-block-start:var(--s-4)">
+            <a class="btn btn--primary" href="https://wa.me/{PHONE}" target="_blank" rel="noopener">Ask on WhatsApp <span class="btn__arrow">→</span></a>
+            <a class="btn btn--ghost" href="{prefix}contact.html">Contact us</a>
+          </p>
+        </div>
+      </div>"""
+    return f"""      <div class="wrap split">
+        <div class="reveal">
+          <p class="spec">Ordering</p>
+          <h2 style="margin-block:var(--s-3)">Two ways, both reach the same place</h2>
+          <div class="stack">
+            <p><strong>WhatsApp is fastest.</strong> The button on each product opens a message
+              with the item and price already written. Tell us the quantity and where you are,
+              and we confirm availability and delivery in the same conversation.</p>
+            <p>Prefer not to use WhatsApp? The form sends the same details to us directly.
+              We reply by phone or email.</p>
+            <p class="muted" style="font-size:.9375rem">Prices are per item and exclude delivery,
+              which depends on where in Bahrain you are. We confirm the total before anything
+              is dispatched.</p>
+          </div>
+        </div>
+
+        <div class="reveal" data-delay="2">
+          <p class="spec">Send an order</p>
+          <h2 style="margin-block:var(--s-3)">Order by form</h2>
+          <form class="form" data-lead-form>
+            <div class="field">
+              <label for="o-name">Name</label>
+              <input id="o-name" name="Name" type="text" required>
+            </div>
+            <div class="field">
+              <label for="o-phone">Phone / WhatsApp</label>
+              <input id="o-phone" name="Phone" type="tel" inputmode="tel" placeholder="+973 …" required>
+            </div>
+            <div class="field">
+              <label for="o-product">Product</label>
+              <select id="o-product" name="Message" required>
+{product_options(cat)}
+              </select>
+            </div>
+            <div class="field">
+              <label for="o-notes">Quantity, size and area in Bahrain</label>
+              <textarea id="o-notes" name="Notes" maxlength="1500" placeholder="e.g. two of the medium size, delivered to Riffa."></textarea>
+            </div>
+            <div class="sr" aria-hidden="true">
+              <label for="o-company">Company</label>
+              <input id="o-company" name="company" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <button class="btn btn--primary" type="submit">Send Order <span class="btn__arrow">→</span></button>
+            <p class="field__hint" data-form-status role="status"></p>
+          </form>
+        </div>
+      </div>"""
+
+
+def product_options(cat=None):
     """Leading empty option so `required` actually forces a choice — without
     it the first product is preselected and silently ordered."""
     import html as _html
     return "\n".join(
         ['              <option value="">Select…</option>']
         + [f'              <option>Order: {_html.escape(p["name"])} — {money(p["price"])}</option>'
-           for p in PRODUCTS])
+           for p in in_category(cat)])
 
 
-def products_ld():
-    """ItemList of Product/Offer. This is what puts a price in the Google
-    result rather than a bare blue link."""
+def products_ld(cat):
+    """ItemList of Product/Offer for one category, plus the breadcrumb trail.
+    The Offer is what puts a price in the Google result rather than a bare
+    blue link; the breadcrumb is what shows the Products > Category path."""
     import json
+    page = f"{SITE}/products/{cat}.html"
     items = []
-    for i, p in enumerate(PRODUCTS, 1):
+    for i, p in enumerate(in_category(cat), 1):
         product = {
             "@type": "Product",
             "name": p["name"],
@@ -216,25 +341,48 @@ def products_ld():
                 "price": str(p["price"]),
                 "priceCurrency": CURRENCY,
                 "availability": "https://schema.org/InStock",
-                "url": f"{SITE}/products.html#{p['slug']}",
+                "url": f"{page}#{p['slug']}",
                 "seller": {"@type": "Organization", "name": "Qobban"},
             }
         items.append({"@type": "ListItem", "position": i, "item": product})
-    return ('<script type="application/ld+json">'
-            + json.dumps({"@context": "https://schema.org", "@type": "ItemList",
-                          "itemListElement": items},
-                         ensure_ascii=False, separators=(",", ":"))
-            + "</script>")
+
+    name = next((c["name"] for c in CATEGORIES if c["slug"] == cat), cat)
+    crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList",
+              "itemListElement": [
+                  {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"},
+                  {"@type": "ListItem", "position": 2, "name": "Products",
+                   "item": SITE + "/products.html"},
+                  {"@type": "ListItem", "position": 3, "name": name, "item": page},
+              ]}
+    out = ['<script type="application/ld+json">'
+           + json.dumps(crumbs, ensure_ascii=False, separators=(",", ":"))
+           + "</script>"]
+    if items:
+        out.append('<script type="application/ld+json">'
+                   + json.dumps({"@context": "https://schema.org",
+                                 "@type": "ItemList", "itemListElement": items},
+                                ensure_ascii=False, separators=(",", ":"))
+                   + "</script>")
+    return "\n".join(out)
 
 
 PRODUCTS_BLOCK = re.compile(
     r"<!-- products:begin -->.*?<!-- products:end -->", re.S)
 OPTIONS_BLOCK = re.compile(
     r"<!-- productoptions:begin -->.*?<!-- productoptions:end -->", re.S)
+CATEGORIES_BLOCK = re.compile(
+    r"<!-- categories:begin -->.*?<!-- categories:end -->", re.S)
+# The whole ordering section, dropped when a category has nothing to order —
+# a required <select> with no options is a form that can never be submitted.
+ORDER_BLOCK = re.compile(
+    r"<!-- order:begin -->.*?<!-- order:end -->", re.S)
 
 
 # Pages that must never be indexed or listed: no canonical, no sitemap entry.
-NOINDEX = {"404.html"}
+# The placeholder categories are here so Google never sees "category-one".
+# Remove each one as it gets a real name and real products.
+NOINDEX = {"404.html"} | {f"products/{c['slug']}.html" for c in CATEGORIES
+                          if c["slug"].startswith("category-")}
 
 
 def seo_for(page):
@@ -263,8 +411,9 @@ def seo_for(page):
              '<script defer src="/_vercel/insights/script.js"></script>']
     if rel == "index.html":
         lines.append(json_ld())
-    if rel == "products.html":
-        lines.append(products_ld())
+    cat = category_of(page)
+    if cat is not None:
+        lines.append(products_ld(cat))
     lines.append(END)
     return "\n".join(lines)
 
@@ -289,15 +438,26 @@ for page in pages:
         fixed = fixed.replace('<img ', f'<img {hint} ', 1)
         out = out.replace(tag, fixed, 1)
 
-    # Product cards, order dropdown and Product structured data are generated
-    # from PRODUCTS, so the page can never drift from the price list.
+    # Category cards, product cards, order dropdown and the Product structured
+    # data all generate from CATEGORIES/PRODUCTS, so no page can drift from the
+    # price list. Which products appear follows from the page's own path.
+    cat = category_of(page)
+    prefix = "../" if page.parent != ROOT else ""
+    if CATEGORIES_BLOCK.search(out):
+        out = CATEGORIES_BLOCK.sub(
+            lambda _: "<!-- categories:begin -->\n" + category_cards(prefix)
+                      + "\n      <!-- categories:end -->", out)
     if PRODUCTS_BLOCK.search(out):
         out = PRODUCTS_BLOCK.sub(
-            lambda _: "<!-- products:begin -->\n" + product_cards()
+            lambda _: "<!-- products:begin -->\n" + product_cards(cat, prefix)
                       + "\n      <!-- products:end -->", out)
-    if OPTIONS_BLOCK.search(out):
+    if ORDER_BLOCK.search(out):
+        out = ORDER_BLOCK.sub(
+            lambda _: "<!-- order:begin -->\n" + order_section(cat, prefix)
+                      + "\n      <!-- order:end -->", out)
+    elif OPTIONS_BLOCK.search(out):
         out = OPTIONS_BLOCK.sub(
-            lambda _: "<!-- productoptions:begin -->\n" + product_options()
+            lambda _: "<!-- productoptions:begin -->\n" + product_options(cat)
                       + "\n              <!-- productoptions:end -->", out)
 
     block = seo_for(page)
@@ -311,12 +471,12 @@ for page in pages:
         changed += 1
 
 # sitemap + robots, generated from the pages that actually exist
+listed = [p for p in pages if p.relative_to(ROOT).as_posix() not in NOINDEX]
 urls = "".join(
     f"<url><loc>{SITE}/" + ("" if p.relative_to(ROOT).as_posix() == 'index.html'
                             else p.relative_to(ROOT).as_posix())
     + "</loc></url>"
-    for p in pages
-    if p.relative_to(ROOT).as_posix() not in NOINDEX
+    for p in listed
 )
 (ROOT / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?>'
@@ -329,5 +489,6 @@ urls = "".join(
 
 missing = [f"IMG-{n:02d}" for n in range(1, 34) if f"IMG-{n:02d}" not in have]
 print(f"{len(have)} images wired, {changed}/{len(pages)} pages updated, "
-      f"sitemap has {len(pages)} urls")
+      f"sitemap has {len(listed)} urls "
+      f"({len(pages) - len(listed)} noindex: {', '.join(sorted(NOINDEX))})")
 print(f"still placeholders: {', '.join(missing) or 'none'}")
