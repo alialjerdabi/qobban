@@ -161,6 +161,25 @@ name, blurb and specs added there, and every renamed category needs its name**,
 or it stays English on the toggle. Asset versions are now `qobban.css?v=20`,
 `qobban.js?v=21`, `ar.js?v=20`.
 
+## Deployment stalled — owner action
+
+**Commit `b1accef` is on GitHub but has not deployed.** The live site is still
+`0360775`. Verified rather than assumed: `/products/category-one.html` returns
+404 even with a cache-busting query, `/js/qobban.js?v=21` serves content that
+still references `ar.js?v=19`, and `products.html` carries `Age: ~29000`
+(roughly eight hours) with `X-Vercel-Cache: HIT`. Polled for about ten minutes;
+the previous three commits each went live in under a minute.
+
+Nothing here can fix that — check Vercel → Deployments for a failed or queued
+build on `b1accef`, and that the Git integration is still connected. Note
+`/products` returns 404 while `/products.html` returns 200, so `cleanUrls` is
+off and `products.html` does not collide with the new `products/` directory —
+that was the leading hypothesis and it is ruled out.
+
+Everything in the commit is verified locally: build is idempotent, all internal
+links resolve, no mojibake, API tests pass, and both language toggles were
+exercised in a browser.
+
 ## Two Arabic bugs found and fixed
 
 **`ar.js` never loaded on any subpage.** `qobban.js` built its path with
