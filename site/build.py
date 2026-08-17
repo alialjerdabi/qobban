@@ -151,10 +151,11 @@ CATEGORIES = [
 # whole band disappears and the grid moves up.
 SALE = {
     "active": True,
+    # Deliberately three pieces of copy and no more: a label that says this is
+    # an offer, a headline, and one button. The card is a 16:9 image with text
+    # over it — anything longer stops being readable against moving video.
     "eyebrow": "Launch offer",          # PLACEHOLDER — real offer copy needed
     "headline": "Opening prices on the first run",
-    "blurb": "Introductory pricing while the first batches come out of the "
-             "workshop. Same steel and coating system as the commissioned work.",
     "cta": "See what's on offer",
     "href": "#on-sale",
     # Silent looping clips in the band. Each needs a matching
@@ -237,38 +238,42 @@ def sale_band(prefix=""):
     import html as _html
     if not SALE.get("active"):
         return "      <!-- sale inactive -->"
-    return f"""      <aside class="saleband reveal">
+    return f"""      <aside class="saleband reveal" data-sale-rotator>
+{sale_media(prefix)}
         <div class="saleband__body">
           <p class="spec">{_html.escape(SALE["eyebrow"])}</p>
           <h2>{_html.escape(SALE["headline"])}</h2>
-          <p class="lede">{_html.escape(SALE["blurb"])}</p>
-          <p style="margin-block-start:var(--s-3)">
-            <a class="btn btn--primary" href="{SALE["href"]}">{_html.escape(SALE["cta"])} <span class="btn__arrow">→</span></a>
-          </p>
+          <a class="btn btn--primary" href="{SALE["href"]}">{_html.escape(SALE["cta"])} <span class="btn__arrow">→</span></a>
         </div>
-{sale_media(prefix)}
       </aside>"""
 
 
 def sale_media(prefix=""):
-    """The band's clips. Decoration, so aria-hidden and untabbable; the poster
-    is the fallback for a blocked video or reduced motion."""
+    """The clips behind the copy. Decoration: aria-hidden and untabbable.
+
+    They play in sequence, not together, so `loop` is set only when there is a
+    single clip — with more than one, `ended` has to fire for qobban.js to
+    advance. The first poster is a background on the container so a blocked
+    video or reduced motion still leaves a picture behind the text."""
     vids = SALE.get("videos") or []
     if not vids:
-        return '        <div class="saleband__mark" aria-hidden="true"></div>'
+        return '        <div class="saleband__media" aria-hidden="true"></div>'
+    first_poster = f"{prefix}img/{pathlib.Path(vids[0]).stem}-poster.jpg"
+    loop = " loop" if len(vids) == 1 else ""
     cells = []
-    for v in vids:
+    for i, v in enumerate(vids):
         poster = f"{prefix}img/{pathlib.Path(v).stem}-poster.jpg"
-        # The poster rides on the wrapper, not the video: reduced motion hides
-        # the video, and a poster attribute would go with it.
+        active = " is-active" if i == 0 else ""
+        # Only the first clip is worth preloading; the next is fetched when
+        # the one before it ends.
+        preload = "metadata" if i == 0 else "none"
         cells.append(
-            f'          <span class="saleband__cell" style="background-image:url(\'{poster}\')">\n'
-            f'            <video class="saleband__clip" autoplay muted loop playsinline\n'
-            f'                   preload="none" poster="{poster}" tabindex="-1" aria-hidden="true">\n'
-            f'              <source src="{prefix}video/{v}" type="video/mp4">\n'
-            f'            </video>\n'
-            f'          </span>')
-    return ('        <div class="saleband__media" aria-hidden="true">\n'
+            f'          <video class="saleband__clip{active}" muted playsinline{loop}\n'
+            f'                 preload="{preload}" poster="{poster}" tabindex="-1" aria-hidden="true">\n'
+            f'            <source src="{prefix}video/{v}" type="video/mp4">\n'
+            f'          </video>')
+    return (f'        <div class="saleband__media" aria-hidden="true"'
+            f' style="background-image:url(\'{first_poster}\')">\n'
             + "\n".join(cells) + "\n        </div>")
 
 

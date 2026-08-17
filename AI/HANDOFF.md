@@ -127,13 +127,27 @@ product grid — not a directory of category cards, which the rail replaced.
   chips are just links. It bleeds to `--gutter` so it reads as scrollable rather
   than clipped. Appears on the hub (with **All** current) and on every category
   page (with that category current). 44px tall, the touch-target minimum.
-- **Sale band** (`SALE` in build.py) — set `"active": False` to take it down
-  without deleting the copy; the band disappears and the grid moves up. The
-  headline and eyebrow are **placeholders** pending real offer copy. It carries
-  two silent looping clips listed in `SALE["videos"]`; each needs a matching
-  `img/<name>-poster.jpg`. The poster rides on the wrapper `<span>` as a CSS
-  background, **not** only on the video's `poster` attribute, because reduced
-  motion hides the video and a poster attribute would vanish with it.
+- **Sale band** (`SALE` in build.py) — a **16:9 media card**: clips fill it,
+  the copy sits over them. Set `"active": False` to take it down without
+  deleting the copy. Copy is deliberately three things — an eyebrow that says
+  this is an offer, a headline, one button — because anything longer stops
+  being readable over moving video. Headline and eyebrow are **placeholders**.
+  Drops to 4:3 under 560px, where 16:9 leaves only ~190px of height; and
+  `aspect-ratio` yields to content, so the card grows rather than clipping.
+  Text is forced white in both themes: it sits on a dark scrim, and following
+  the theme tokens would put dark type on dark video in light mode.
+
+  Clips listed in `SALE["videos"]` **play one after another**, not together —
+  so the markup omits `loop` (with `loop` set, `ended` never fires and the
+  rotation cannot advance); `loop` returns automatically if there is only one
+  clip. The rotator is in `qobban.js` under `[data-sale-rotator]`. The first
+  poster is a CSS background on the container, **not** only the video's
+  `poster` attribute, because reduced motion hides the video and the attribute
+  would vanish with it.
+
+  It also re-plays on `visibilitychange`: browsers pause media in a hidden tab,
+  and a paused clip never fires `ended`, so without that the rotation died the
+  first time someone switched tabs and came back to a frozen frame.
 - **On-sale pricing** — a product with an optional `was` price renders a
   strikethrough, a "Save N%" line and an "On offer" flag, and sorts to the front
   of the grid. The old price is `aria-hidden` so a screen reader does not read
@@ -152,15 +166,22 @@ Google through the Product structured data; it just is not on the card.
 The grid uses `repeat(auto-fill, …)`, not `auto-fit`: `auto-fit` collapses empty
 tracks, which stretched a lone product card to 1137px across a desktop row.
 
-Two layout traps worth remembering, both found by measuring rather than reading:
+Layout traps worth remembering, all found by measuring rather than reading:
 
-- The band's media column must be a **definite width** (`28rem`), not `auto`.
-  With `auto`, the track sized itself against a percentage-width grid inside it
-  — circular — and crushed the copy column to **0px** while the band grew to
-  1184px tall.
-- A `@media (max-width: 479px)` override must sit **after** the `860px` block,
-  since both set `inline-size` on the same selector. Placed before it, the rule
-  was silently dead CSS that looked correct.
+- A `@media` override must sit **after** any earlier block setting the same
+  property on the same selector. One `max-width: 479px` rule sat before an
+  `860px` block and was silently dead CSS that read as correct.
+- A grid track sized `auto` around a percentage-width grid is circular; it once
+  crushed the band's copy column to **0px**. Both are moot now that the band is
+  a single overlay card, but the pattern will recur.
+
+**Video state cannot be judged in the preview pane.** It reports
+`document.visibilityState: "hidden"`, and browsers suspend media in a hidden
+document — a clip logs `play → playing → pause` immediately and sits at
+`currentTime` 0, and even a bare probe video throws `AbortError`. The
+sequencing was verified instead by dispatching `ended` directly and asserting
+the active clip walks `0 → 1 → 0 → 1 → 0` with exactly one active. Actual
+playback still needs a real device.
 
 **Encode clips at the size they are displayed.** These render 218px wide at
 most, but were first encoded at 1280 — three times more pixels than the layout

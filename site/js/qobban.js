@@ -150,6 +150,42 @@
     if (hint && !hasFinePointer) hint.textContent = 'Tilt or drag to level';
   }
 
+  /* ---------- Sale band: clips play in sequence ----------
+     One clip at a time, each handing over to the next when it ends, then
+     round again. The markup omits `loop` for exactly this reason — with loop
+     set, `ended` never fires. Reduced motion skips the whole thing and the
+     container's poster stays visible. */
+  var rotator = document.querySelector('[data-sale-rotator]');
+  if (rotator && !reduced) {
+    var clips = [].slice.call(rotator.querySelectorAll('.saleband__clip'));
+    if (clips.length) {
+      var at = 0;
+      var play = function (n) {
+        clips.forEach(function (c, i) {
+          c.classList.toggle('is-active', i === n);
+          if (i !== n && !c.paused) { c.pause(); c.currentTime = 0; }
+        });
+        var p = clips[n].play();
+        /* Autoplay can be refused; the poster underneath still reads. */
+        if (p && p.catch) p.catch(function () {});
+      };
+      clips.forEach(function (c) {
+        c.addEventListener('ended', function () {
+          at = (at + 1) % clips.length;
+          play(at);
+        });
+      });
+      play(0);
+
+      /* Browsers pause media in a hidden tab, and a paused clip never fires
+         `ended` — so without this the rotation dies the first time someone
+         switches tabs and comes back to a frozen frame. */
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && clips[at].paused) play(at);
+      });
+    }
+  }
+
   /* ---------- Sticky header ---------- */
   var header = document.querySelector('.header');
   if (header) {
