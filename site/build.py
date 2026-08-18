@@ -131,24 +131,26 @@ def json_ld():
 # CATEGORIES: `slug` becomes the filename — products/<slug>.html — so a page
 # must exist at that path. Renaming a slug means renaming the file too.
 #
-# >>> The four slugs below are PLACEHOLDERS awaiting real category names. They
-# >>> are listed in NOINDEX so Google never sees "category-one", and they must
-# >>> be renamed and removed from NOINDEX before launch. Renaming now is free;
-# >>> renaming after indexing costs redirects.
+# >>> DEMO is on: every product below is INVENTED for presentation. While it is
+# >>> True the product pages are held in NOINDEX, so Google never indexes a
+# >>> fake price or a product Qobban cannot supply. Set it False only once real
+# >>> names, prices and photographs are in.
+DEMO = True
+
 CATEGORIES = [
-    {"slug": "category-one",   "name": "Category One",
-     "blurb": "Placeholder. Replace with the real category name and description."},
-    {"slug": "category-two",   "name": "Category Two",
-     "blurb": "Placeholder. Replace with the real category name and description."},
-    {"slug": "category-three", "name": "Category Three",
-     "blurb": "Placeholder. Replace with the real category name and description."},
-    {"slug": "category-four",  "name": "Category Four",
-     "blurb": "Placeholder. Replace with the real category name and description."},
+    {"slug": "on-sale", "name": "On Sale",
+     "blurb": "Current offers across every range."},
+    {"slug": "furniture", "name": "Furniture",
+     "blurb": "Consoles, shelving, seating and stands in steel and oak."},
+    {"slug": "kitchen-bathroom", "name": "Kitchen & Bathroom",
+     "blurb": "Rails, racks and frames for the rooms that get wet."},
+    {"slug": "garden", "name": "Garden",
+     "blurb": "Planters, trellises and seating finished for salt air."},
 ]
 
 # The promotion banner on the products landing page. Set "active": False to
-# take it down without deleting the copy. Nothing else needs changing — the
-# whole band disappears and the grid moves up.
+# take it down without deleting the copy — the whole band disappears and the
+# grid moves up.
 SALE = {
     "active": True,
     # Deliberately three pieces of copy and no more: a label that says this is
@@ -158,9 +160,8 @@ SALE = {
     "headline": "Opening prices on the first run",
     "cta": "See what's on offer",
     "href": "#on-sale",
-    # Silent looping clips in the band. Each needs a matching
-    # img/<name>-poster.jpg so the card paints before the video arrives and
-    # still reads if the video is blocked or reduced motion is on.
+    # Silent clips, played one after another by qobban.js. Each needs a
+    # matching img/<name>-poster.jpg.
     "videos": ["sale-1.mp4", "sale-2.mp4"],
 }
 
@@ -169,23 +170,105 @@ SALE = {
 #   was      — optional original price. Setting it marks the product as on
 #              sale: it gets a strikethrough, a "Save N%" badge, and it sorts
 #              to the front of the landing grid. Omit for full-price items.
-#   specs    — short factual lines. No marketing copy; the card is small.
+#   specs    — short factual lines, drawn from a small shared vocabulary so the
+#              Arabic dictionary stays small. Only the first three show.
 #   image    — a filename in site/img/. Empty string renders a placeholder,
 #              so a product can go live before its photograph exists.
 CURRENCY = "BHD"
 PRODUCTS = [
-    {
-        "category": "category-one",
-        "slug": "decorative-metal-stands",
-        "name": "Decorative Metal Stands",
-        "price": 33,
-        "blurb": "Three sizes, one design. Powder-coated steel stands for "
-                 "plants, display or storage — built to the same tolerance as "
-                 "the architectural work.",
-        "specs": ["12 x 12 mm square tube", "Powder-coated steel",
-                  "Three sizes", "Indoor or shaded outdoor"],
-        "image": "",
-    },
+    # ---- On Sale (these carry `was`, so they lead the landing grid) ----
+    {"category": "on-sale", "slug": "decorative-metal-stands",
+     "name": "Decorative Metal Stands", "price": 33, "was": 44,
+     "blurb": "Three sizes, one design. Powder-coated steel stands for plants, "
+              "display or storage.",
+     "specs": ["12 x 12 mm square tube", "Powder-coated steel", "Three sizes"],
+     "image": ""},
+    {"category": "on-sale", "slug": "industrial-shelf-unit",
+     "name": "Industrial Shelf Unit", "price": 68, "was": 85,
+     "blurb": "Four-tier open shelving in mild steel with a clear lacquer finish.",
+     "specs": ["Mild steel frame", "Four tiers", "Floor standing"],
+     "image": ""},
+    {"category": "on-sale", "slug": "slim-console-table",
+     "name": "Slim Console Table", "price": 52, "was": 65,
+     "blurb": "A narrow hallway console with a solid oak top on a welded steel base.",
+     "specs": ["Solid oak top", "Powder-coated steel", "Indoor use"],
+     "image": ""},
+    {"category": "on-sale", "slug": "hanging-pot-rack",
+     "name": "Hanging Pot Rack", "price": 29, "was": 38,
+     "blurb": "Ceiling-mounted rack with eight hooks for pans and utensils.",
+     "specs": ["Stainless steel", "Eight hooks", "Ceiling mounted"],
+     "image": ""},
+
+    # ---- Furniture ----
+    {"category": "furniture", "slug": "steel-frame-console",
+     "name": "Steel Frame Console", "price": 74,
+     "blurb": "Welded steel console with a solid oak top, sized for an entrance hall.",
+     "specs": ["Solid oak top", "Powder-coated steel", "Indoor use"],
+     "image": ""},
+    {"category": "furniture", "slug": "open-shelving-unit",
+     "name": "Open Shelving Unit", "price": 96,
+     "blurb": "Five-tier shelving for books, plants or storage boxes.",
+     "specs": ["Mild steel frame", "Five tiers", "Floor standing"],
+     "image": ""},
+    {"category": "furniture", "slug": "entry-coat-stand",
+     "name": "Entry Coat Stand", "price": 41,
+     "blurb": "A weighted coat stand that does not tip when it is fully loaded.",
+     "specs": ["Powder-coated steel", "Weighted base", "Floor standing"],
+     "image": ""},
+    {"category": "furniture", "slug": "oak-seat-bench",
+     "name": "Bench with Oak Seat", "price": 88,
+     "blurb": "Steel bench frame with a solid oak seat, for a hallway or a terrace.",
+     "specs": ["Solid oak top", "Powder-coated steel", "Two sizes"],
+     "image": ""},
+    {"category": "furniture", "slug": "bar-stool-pair",
+     "name": "Bar Stool, Set of Two", "price": 62,
+     "blurb": "A pair of counter-height stools with footrests and oak seats.",
+     "specs": ["Solid oak top", "Powder-coated steel", "Set of two"],
+     "image": ""},
+
+    # ---- Kitchen & Bathroom ----
+    {"category": "kitchen-bathroom", "slug": "wall-pot-rail",
+     "name": "Wall Pot Rail", "price": 24,
+     "blurb": "A wall rail with six movable hooks for pans, tools and utensils.",
+     "specs": ["Stainless steel", "Six hooks", "Wall mounted"],
+     "image": ""},
+    {"category": "kitchen-bathroom", "slug": "towel-ladder",
+     "name": "Towel Ladder", "price": 36,
+     "blurb": "A leaning ladder rail for bath towels, finished for humidity.",
+     "specs": ["Stainless steel", "Four rungs", "Floor standing"],
+     "image": ""},
+    {"category": "kitchen-bathroom", "slug": "under-sink-frame",
+     "name": "Under-Sink Frame", "price": 45,
+     "blurb": "An open frame that turns the space under a basin into usable storage.",
+     "specs": ["Stainless steel", "Two tiers", "Floor standing"],
+     "image": ""},
+    {"category": "kitchen-bathroom", "slug": "spice-shelf-three-tier",
+     "name": "Spice Shelf, Three Tier", "price": 28,
+     "blurb": "A compact three-tier shelf for jars and bottles beside the hob.",
+     "specs": ["Stainless steel", "Three tiers", "Wall mounted"],
+     "image": ""},
+
+    # ---- Garden ----
+    {"category": "garden", "slug": "planter-box",
+     "name": "Planter Box", "price": 54,
+     "blurb": "A raised steel planter with a drainage base, coated for salt air.",
+     "specs": ["Powder-coated steel", "Outdoor rated", "Two sizes"],
+     "image": ""},
+    {"category": "garden", "slug": "climbing-trellis",
+     "name": "Climbing Trellis", "price": 39,
+     "blurb": "A wall-fixed trellis for jasmine, bougainvillea or vines.",
+     "specs": ["Powder-coated steel", "Outdoor rated", "Wall mounted"],
+     "image": ""},
+    {"category": "garden", "slug": "garden-bench",
+     "name": "Garden Bench", "price": 92,
+     "blurb": "A two-seat bench built to stay outside through a Bahrain summer.",
+     "specs": ["Powder-coated steel", "Outdoor rated", "Two sizes"],
+     "image": ""},
+    {"category": "garden", "slug": "hose-reel-stand",
+     "name": "Hose Reel Stand", "price": 31,
+     "blurb": "A free-standing reel that keeps the hose off the ground.",
+     "specs": ["Powder-coated steel", "Outdoor rated", "Floor standing"],
+     "image": ""},
 ]
 
 
@@ -322,7 +405,12 @@ def product_cards(cat=None, prefix=""):
         # One condensed meta line instead of a paragraph plus a bullet list.
         # A scan grid needs image, name, price and one fact — the full blurb
         # still reaches Google through the Product structured data.
-        meta = _html.escape(" · ".join(p["specs"][:3]))
+        #
+        # Each spec is its own <span>, not one joined string: the Arabic
+        # dictionary matches whole text nodes, so a pre-joined
+        # "Stainless steel · Six hooks" could never be translated. The
+        # separator is drawn by CSS between the spans.
+        meta = "".join(f"<span>{_html.escape(s)}</span>" for s in p["specs"][:3])
         if on_sale(p):
             off = round((p["was"] - p["price"]) / p["was"] * 100)
             # aria-hidden on the old price: a screen reader announcing two
@@ -423,7 +511,11 @@ def product_options(cat=None):
     import html as _html
     return "\n".join(
         ['              <option value="">Select…</option>']
-        + [f'              <option>Order: {_html.escape(p["name"])} — {money(p["price"])}</option>'
+        # The label is the bare product name so it is a single text node the
+        # Arabic dictionary can match; the value keeps the full English string
+        # with the price, which is what reaches the sheet.
+        + [f'              <option value="Order: {_html.escape(p["name"])} —'
+           f' {money(p["price"])}">{_html.escape(p["name"])}</option>'
            for p in in_category(cat)])
 
 
@@ -491,10 +583,13 @@ ORDER_BLOCK = re.compile(
 
 
 # Pages that must never be indexed or listed: no canonical, no sitemap entry.
-# The placeholder categories are here so Google never sees "category-one".
-# Remove each one as it gets a real name and real products.
-NOINDEX = {"404.html"} | {f"products/{c['slug']}.html" for c in CATEGORIES
-                          if c["slug"].startswith("category-")}
+# While DEMO is True every product page joins them, along with the landing
+# page, because the catalogue is invented — indexing a fake price, or letting
+# someone find a product Qobban cannot supply, is worse than not ranking yet.
+NOINDEX = {"404.html"}
+if DEMO:
+    NOINDEX |= {"products.html"}
+    NOINDEX |= {f"products/{c['slug']}.html" for c in CATEGORIES}
 
 
 def seo_for(page):

@@ -112,82 +112,17 @@ price list. Add a product there and re-run — never hand-edit a generated block
 Which products appear on a page follows from the page's own path, so a category
 page needs no configuration beyond its filename matching a `CATEGORIES` slug.
 
-> **The four slugs are placeholders** — `category-one` … `category-four`,
-> awaiting real names. They are in `NOINDEX`, so Google never sees them and they
-> stay out of the sitemap. Renaming means editing `CATEGORIES` **and** renaming
-> the matching file in `site/products/`. Do it before launch: renaming now is
-> free, renaming after indexing costs redirects.
+> **The catalogue is DEMO data.** `DEMO = True` in build.py: all 17 products
+> are invented for presentation, so the landing page **and** all four category
+> pages sit in `NOINDEX`. Google therefore never indexes a fake price, and
+> nobody can find a product Qobban cannot supply. Flip `DEMO` to `False` once
+> real names, prices and photographs are in — that one switch restores them to
+> the sitemap and drops the `noindex`.
 
-**The landing page is laid out like a shop**, following two reference stores the
-owner supplied: a horizontal category rail, then a promotion band, then the
-product grid — not a directory of category cards, which the rail replaced.
-
-- **Category rail** (`.chips`) — plain `overflow-x` with `scroll-snap`, no
-  carousel and no JavaScript, so it keeps working with a keyboard because the
-  chips are just links. It bleeds to `--gutter` so it reads as scrollable rather
-  than clipped. Appears on the hub (with **All** current) and on every category
-  page (with that category current). 44px tall, the touch-target minimum.
-- **Sale band** (`SALE` in build.py) — a **16:9 media card**: clips fill it,
-  the copy sits over them. Set `"active": False` to take it down without
-  deleting the copy. Copy is deliberately three things — an eyebrow that says
-  this is an offer, a headline, one button — because anything longer stops
-  being readable over moving video. Headline and eyebrow are **placeholders**.
-  Drops to 4:3 under 560px, where 16:9 leaves only ~190px of height; and
-  `aspect-ratio` yields to content, so the card grows rather than clipping.
-  Text is forced white in both themes: it sits on a dark scrim, and following
-  the theme tokens would put dark type on dark video in light mode.
-
-  Clips listed in `SALE["videos"]` **play one after another**, not together —
-  so the markup omits `loop` (with `loop` set, `ended` never fires and the
-  rotation cannot advance); `loop` returns automatically if there is only one
-  clip. The rotator is in `qobban.js` under `[data-sale-rotator]`. The first
-  poster is a CSS background on the container, **not** only the video's
-  `poster` attribute, because reduced motion hides the video and the attribute
-  would vanish with it.
-
-  It also re-plays on `visibilitychange`: browsers pause media in a hidden tab,
-  and a paused clip never fires `ended`, so without that the rotation died the
-  first time someone switched tabs and came back to a frozen frame.
-- **On-sale pricing** — a product with an optional `was` price renders a
-  strikethrough, a "Save N%" line and an "On offer" flag, and sorts to the front
-  of the grid. The old price is `aria-hidden` so a screen reader does not read
-  two numbers in a row, and the percentage sits in its own element so **Save**
-  is a whole text node the Arabic dictionary can match; `Save 25%` never could.
-  No product carries `was` yet — the path was proven by temporarily marking the
-  seed product down to 33 from 44, asserting the markup, and reverting.
-
-**The product card was cut down for scanning.** It was ~840px tall on a phone,
-roughly one card per screen: image, uppercase name, price, a four-line blurb, a
-four-item bullet list and two full-width buttons. It is now **499px** — image,
-clamped two-line name, price, one truncated line joining the first three specs,
-one primary button and a quiet text link for the form. The blurb still reaches
-Google through the Product structured data; it just is not on the card.
-
-The grid uses `repeat(auto-fill, …)`, not `auto-fit`: `auto-fit` collapses empty
-tracks, which stretched a lone product card to 1137px across a desktop row.
-
-Layout traps worth remembering, all found by measuring rather than reading:
-
-- A `@media` override must sit **after** any earlier block setting the same
-  property on the same selector. One `max-width: 479px` rule sat before an
-  `860px` block and was silently dead CSS that read as correct.
-- A grid track sized `auto` around a percentage-width grid is circular; it once
-  crushed the band's copy column to **0px**. Both are moot now that the band is
-  a single overlay card, but the pattern will recur.
-
-**Video state cannot be judged in the preview pane.** It reports
-`document.visibilityState: "hidden"`, and browsers suspend media in a hidden
-document — a clip logs `play → playing → pause` immediately and sits at
-`currentTime` 0, and even a bare probe video throws `AbortError`. The
-sequencing was verified instead by dispatching `ended` directly and asserting
-the active clip walks `0 → 1 → 0 → 1 → 0` with exactly one active. Actual
-playback still needs a real device.
-
-**Encode clips at the size they are displayed.** These render 218px wide at
-most, but were first encoded at 1280 — three times more pixels than the layout
-can show. Re-encoded to 720 wide at CRF 30, the products page went from
-**3.13 MB to 1.17 MB** with no visible difference. Same rule as the hero:
-`-an` for silence by construction, `+faststart`, and a poster.
+Categories are now real: **On Sale, Furniture, Kitchen & Bathroom, Garden**, at
+`products/on-sale.html`, `furniture.html`, `kitchen-bathroom.html` and
+`garden.html`. `On Sale` holds the four products carrying a `was` price, so it
+doubles as the discount list; those four also lead the landing grid.
 
 An empty category is handled deliberately: the grid shows a "being photographed
 and priced" line, and the whole order section is **replaced** with a WhatsApp and
@@ -250,6 +185,25 @@ that was the leading hypothesis and it is ruled out.
 Everything in the commit is verified locally: build is idempotent, all internal
 links resolve, no mojibake, API tests pass, and both language toggles were
 exercised in a browser.
+
+## Two more i18n traps, from the demo catalogue
+
+The Arabic dictionary matches **whole text nodes**, which quietly breaks any
+string built by joining parts. Two cases surfaced once there were real products
+to look at, and both are fixed the same way — keep translatable text in its own
+node:
+
+- The card's spec line was one joined string
+  (`"Stainless steel · Six hooks · Wall mounted"`), which no key could ever
+  match. Each spec is now its own `<span>` and the separator is drawn by CSS.
+- The order dropdown read `Order: Wall Pot Rail — BD 24`, equally unmatchable.
+  The `<option>` **label** is now just the product name, which is a dictionary
+  key, while its **value** keeps the full English string with the price — so
+  the sheet still receives complete, consistent English data regardless of the
+  language the customer was browsing in.
+
+The same rule already applied to `Save 25%`. Whenever new copy interpolates a
+value, split the value out or it will not translate.
 
 ## Two Arabic bugs found and fixed
 
