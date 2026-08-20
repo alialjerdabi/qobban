@@ -186,6 +186,60 @@ Everything in the commit is verified locally: build is idempotent, all internal
 links resolve, no mojibake, API tests pass, and both language toggles were
 exercised in a browser.
 
+## Arabic is now crawlable — /ar/ pages
+
+**The site could not rank for a single Arabic word.** Measured, not guessed:
+every page carried exactly **two** Arabic strings, the logo `قبان` and the
+toggle label `ع`. All 578 translations lived in `ar.js`, which was referenced
+**zero times** in the HTML — fetched by JavaScript only after a click. Googlebot
+does not click toggles. `<html lang="en">`, no `hreflang`, no Arabic URL.
+
+`build.py` now generates real Arabic HTML at **`/ar/`**, mirroring the English
+tree. 18 pages, 177–676 Arabic text runs each, **zero leftover English**.
+
+- **The mirror is the trick.** `/ar/` reproduces the English structure exactly,
+  so relative *page* links need no rewriting — `ar/index.html → services.html`
+  resolves to `ar/services.html` by itself. Only **asset** paths gain a `../`,
+  which is why `_deepen()` rewrites anything not ending in `.html`.
+- **One dictionary, two consumers.** `ar_dict()` parses `js/ar.js` from Python,
+  so the static pages and the runtime toggle can never disagree.
+- `AR_META` holds a hand-written Arabic `<title>` and description per page,
+  carrying the terms customers actually search — حدادة, بوابات, أثاث, ديكور,
+  صيانة — rather than machine translation.
+- **The toggle becomes a link.** On `/ar/` pages the button is replaced by an
+  anchor to the English twin, which gives a crawler a path between versions and,
+  because `qobban.js` guards on `if (langBtn)`, disables the runtime translation
+  entirely there. Confirmed: `ar.js` is not fetched on an `/ar/` page.
+  The link is **depth-aware** — `/ar/x.html` needs one `../`, `/ar/products/x.html`
+  needs two. The first version pointed at itself.
+- `hreflang` en/ar/x-default on both sides, plus `xhtml:link` alternates in the
+  sitemap, so Google reads the pair as a translation and not duplicate content.
+- **`ar/` is excluded from the source glob.** Without that, the next run treated
+  generated Arabic pages as English source and produced `ar/ar/`.
+
+Still English on the Arabic pages: prices render `BD 33`. `BD` is normal in
+Bahrain, and the string is a composite the dictionary cannot match — see the
+i18n trap below. Left deliberately.
+
+**Known wart:** there are now two routes to Arabic — the `/ar/` pages, and the
+old JS toggle still on English pages. Both work; only `/ar/` is visible to
+Google. The clean end state is to make the English toggle a link to `/ar/` too
+and delete the runtime translation from `qobban.js` plus the language restore
+from `boot.js`. Not done yet: it touches working code and wanted its own pass.
+
+## Ranking: what is and is not possible
+
+**No one can promise a #1 ranking**, and the honest blockers were measured:
+the domain is days old, has zero backlinks, and is **not indexed at all**.
+`لحام` appears **0 times** on the site in any language. `اثاث`/`ديكور` point at
+the demo catalogue, which is `noindex` by design. LocalBusiness schema is
+missing street address, locality, geo, opening hours, `sameAs` and price range —
+all blocked on the `[CONFIRM]` address.
+
+For local Bahrain queries the **map pack sits above every organic result**, so a
+**Google Business Profile is the single biggest lever** — free, owner-only, and
+it needs the real address. That outranks everything else on this list.
+
 ## Two more i18n traps, from the demo catalogue
 
 The Arabic dictionary matches **whole text nodes**, which quietly breaks any

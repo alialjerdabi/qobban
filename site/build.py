@@ -601,8 +601,15 @@ def seo_for(page):
                           '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
                           '<meta name="theme-color" content="#111111">',
                           END])
+    ar_url = SITE + "/ar/" + ("" if rel == "index.html" else rel)
     lines = [BEGIN,
              f'<link rel="canonical" href="{url}">',
+             # Each page declares its Arabic twin, and the pair declares a
+             # default. Without this Google treats /ar/ as duplicate content
+             # rather than a translation.
+             f'<link rel="alternate" hreflang="en" href="{url}">',
+             f'<link rel="alternate" hreflang="ar" href="{ar_url}">',
+             f'<link rel="alternate" hreflang="x-default" href="{url}">',
              f'<meta property="og:url" content="{url}">',
              f'<meta property="og:image" content="{SITE}/img/{OG_IMAGE}">',
              '<meta property="og:site_name" content="Qobban">',
@@ -626,7 +633,10 @@ def seo_for(page):
 
 
 # ---------------------------------------------------------------- run
-pages = sorted(list(ROOT.glob("*.html")) + list(ROOT.glob("*/*.html")))
+# ar/ holds generated output, not source. Without this exclusion the next
+# run treats the Arabic pages as English source and writes ar/ar/.
+pages = sorted(p for p in list(ROOT.glob("*.html")) + list(ROOT.glob("*/*.html"))
+               if p.relative_to(ROOT).parts[0] != "ar")
 changed = 0
 
 for page in pages:
@@ -687,23 +697,215 @@ for page in pages:
 
 # sitemap + robots, generated from the pages that actually exist
 listed = [p for p in pages if p.relative_to(ROOT).as_posix() not in NOINDEX]
-urls = "".join(
-    f"<url><loc>{SITE}/" + ("" if p.relative_to(ROOT).as_posix() == 'index.html'
-                            else p.relative_to(ROOT).as_posix())
-    + "</loc></url>"
-    for p in listed
-)
+
+
+def _loc(rel, prefix=""):
+    return f"{SITE}/{prefix}" + ("" if rel == "index.html" else rel)
+
+
+# Both languages are listed. Each entry declares the other as its hreflang
+# alternate, which is how Google learns the pair is a translation rather than
+# duplicate content.
+def _entry(rel):
+    en, ar = _loc(rel), _loc(rel, "ar/")
+    alts = (f'<xhtml:link rel="alternate" hreflang="en" href="{en}"/>'
+            f'<xhtml:link rel="alternate" hreflang="ar" href="{ar}"/>'
+            f'<xhtml:link rel="alternate" hreflang="x-default" href="{en}"/>')
+    return (f"<url><loc>{en}</loc>{alts}</url>"
+            f"<url><loc>{ar}</loc>{alts}</url>")
+
+
+urls = "".join(_entry(p.relative_to(ROOT).as_posix()) for p in listed)
 (ROOT / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?>'
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+    ' xmlns:xhtml="http://www.w3.org/1999/xhtml">'
     + urls + "</urlset>\n", encoding="utf-8")
 
 (ROOT / "robots.txt").write_text(
     f"User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: {SITE}/sitemap.xml\n",
     encoding="utf-8")
 
+# ---------------------------------------------------------------- arabic
+# Arabic used to exist only as a JavaScript dictionary applied after a click,
+# so a crawler saw two Arabic strings on the whole site — the logo and the
+# toggle label. Nothing could ever rank for an Arabic query. These pages are
+# real HTML at /ar/, mirroring the English tree one level down, which means
+# internal page links need no rewriting: ar/index.html -> services.html
+# resolves to ar/services.html on its own. Only asset paths gain a level.
+AR_ROOT = ROOT / "ar"
+
+# Arabic <title> and meta description per page. Written rather than machine
+# translated, carrying the terms Bahraini customers actually search for.
+AR_META = {
+    "index.html": ("قبان — أعمال معدنية وحدادة في البحرين | بوابات، مظلات، درابزين",
+                   "حدادة وأعمال معدنية في البحرين: بوابات، برجولات، مظلات، درابزين وتصنيع حسب الطلب. قياس في الموقع ومواصفات مكتوبة قبل التنفيذ."),
+    "services.html": ("خدماتنا — حدادة وتصنيع معدني في البحرين | قبان",
+                      "ست تخصصات: بوابات، برجولات ومظلات، درابزين، مظلات سيارات، تصنيع حسب الطلب، وصيانة وإصلاح. للفلل والمنشآت التجارية والصناعية في البحرين."),
+    "products.html": ("متجر قبان — أثاث معدني وديكور جاهز في البحرين",
+                      "قطع معدنية جاهزة بأسعار معلنة: أثاث، ستاندات ديكور، رفوف، وقطع للمطبخ والحمّام والحديقة. توصيل داخل البحرين."),
+    "projects.html": ("أعمالنا — مشاريع حدادة ومعادن في البحرين | قبان",
+                      "مختارات من بوابات وبرجولات ودرابزين نفذتها قبان في البحرين."),
+    "process.html": ("آلية العمل — من الاستشارة إلى التسليم | قبان",
+                     "خمس مراحل واضحة: استشارة، قياس في الموقع، نطاق عمل مكتوب، تصنيع، وتركيب. بلا مفاجآت بين عرض السعر والتسليم."),
+    "about.html": ("من نحن — ورشة حدادة وأعمال معدنية في البحرين | قبان",
+                   "قبان ورشة أعمال معدنية في مملكة البحرين. الدقة معيارنا: نقيس قبل التصنيع، ونوثّق المواصفات والضمان خطيًا."),
+    "contact.html": ("اتصل بنا — حدادة وأعمال معدنية في البحرين | قبان",
+                     "تواصل مع قبان عبر واتساب أو الهاتف أو البريد. أرسل صورة ومقاسًا تقريبيًا لنبدأ."),
+    "quote.html": ("اطلب عرض سعر — أعمال معدنية في البحرين | قبان",
+                   "أخبرنا بالمساحة والمقاسات ونرسل عرض سعر مكتوبًا يوضّح الخامة ونظام الطلاء ومدة الضمان."),
+    "services/gates.html": ("بوابات حديد في البحرين — سحب، مفصلية وأوتوماتيكية | قبان",
+                            "بوابات مداخل مصنّعة حسب الطلب في البحرين: سحب، مفصلية، وأوتوماتيكية. حديد وألمنيوم بطلاء يقاوم الحرارة والرطوبة."),
+    "services/pergolas.html": ("برجولات ومظلات في البحرين — ألمنيوم وحديد | قبان",
+                               "برجولات ثابتة ومتحركة ومظلات خارجية مصممة للاستخدام الفعلي في صيف البحرين."),
+    "services/railings.html": ("درابزين في البحرين — للدرج والشرفات والزجاج | قبان",
+                               "درابزين للسلالم والشرفات والتراسات بالحديد والستانلس ودمج الزجاج مع المعدن."),
+    "services/canopies.html": ("مظلات سيارات ومداخل في البحرين | قبان",
+                               "مظلات سيارات ومداخل وممرات مصممة لتحمّل الرياح والأشعة على المدى الطويل."),
+    "services/custom-fabrication.html": ("تصنيع معدني حسب الطلب في البحرين — حواجز وألواح وسلالم | قبان",
+                                         "حواجز خصوصية، ألواح مقصوصة بالليزر، سلالم وقطع معمارية خاصة، من المخطط إلى التركيب."),
+    "services/maintenance.html": ("صيانة وإصلاح أعمال معدنية في البحرين — معالجة صدأ | قبان",
+                                  "معالجة الصدأ وإعادة الطلاء وضبط المحاذاة وصيانة أنظمة البوابات — حتى للأعمال التي لم ننفذها."),
+    "products/on-sale.html": ("تخفيضات — عروض على الأثاث والديكور المعدني | قبان",
+                              "العروض الحالية على القطع المعدنية الجاهزة في البحرين."),
+    "products/furniture.html": ("أثاث معدني في البحرين — كونسول ورفوف ومقاعد | قبان",
+                                "أثاث معدني جاهز بأسعار معلنة: كونسول، وحدات رفوف، مقاعد وحوامل بالحديد والبلوط."),
+    "products/kitchen-bathroom.html": ("المطبخ والحمّام — رفوف وقضبان معدنية | قبان",
+                                       "قضبان وحوامل ورفوف بالستانلس للمطبخ والحمّام، مصنّعة لتقاوم الرطوبة."),
+    "products/garden.html": ("الحديقة — أحواض نباتات وتعريشات ومقاعد | قبان",
+                             "قطع حديقة معدنية بطلاء يقاوم الهواء المالح: أحواض نباتات، تعريشات تسلّق ومقاعد."),
+}
+
+
+def ar_dict():
+    """Read the runtime Arabic dictionary out of js/ar.js, so the static pages
+    and the toggle can never disagree — one source feeds both."""
+    text = (ROOT / "js" / "ar.js").read_text(encoding="utf-8")
+    text = text[text.index("{"):text.rindex("}") + 1]
+    pairs = re.findall(r"'((?:[^'\\]|\\.)*)'\s*:\s*'((?:[^'\\]|\\.)*)'", text, re.S)
+    out = {}
+    for k, v in pairs:
+        key = k.replace("\\'", "'").replace("\\\\", "\\")
+        val = v.replace("\\'", "'").replace("\\\\", "\\")
+        out[" ".join(key.split())] = val
+    return out
+
+
+AR_TAGS = re.compile(r"(<[^>]+>)")
+AR_ATTRS = re.compile(r'\b(alt|aria-label|placeholder)="([^"]*)"')
+AR_URLISH = re.compile(r'\b(src|href|poster)="([^"]+)"')
+AR_CSS_URL = re.compile(r"url\('([^']+)'\)")
+
+
+def _deepen(url):
+    """A page moved from / to /ar/ sits one level lower, so its *asset* paths
+    need another `../`. Page links are left alone: the /ar/ tree mirrors the
+    English one, so relative links between pages still resolve on their own."""
+    if url.startswith(("http://", "https://", "//", "/", "#", "mailto:", "tel:", "data:")):
+        return url
+    if url.split("?")[0].split("#")[0].endswith(".html"):
+        return url
+    return "../" + url
+
+
+def to_arabic(html_text, dic):
+    import html as _h
+    out, depth = [], 0
+    for part in AR_TAGS.split(html_text):
+        if part.startswith("<") and part.endswith(">"):
+            low = part.lower()
+            if low.startswith("<script") or low.startswith("<style"):
+                depth += 1
+            elif low.startswith("</script") or low.startswith("</style"):
+                depth = max(0, depth - 1)
+            part = AR_URLISH.sub(lambda m: '%s="%s"' % (m.group(1), _deepen(m.group(2))), part)
+            part = AR_CSS_URL.sub(lambda m: "url('%s')" % _deepen(m.group(1)), part)
+
+            def _attr(m):
+                hit = dic.get(" ".join(_h.unescape(m.group(2)).split()))
+                return '%s="%s"' % (m.group(1), _h.escape(hit, quote=True)) if hit else m.group(0)
+            part = AR_ATTRS.sub(_attr, part)
+            out.append(part)
+            continue
+        if depth or not part.strip():
+            out.append(part)
+            continue
+        hit = dic.get(" ".join(_h.unescape(part).split()))
+        if hit:
+            lead = part[:len(part) - len(part.lstrip())]
+            tail = part[len(part.rstrip()):]
+            out.append(lead + _h.escape(hit, quote=False) + tail)
+        else:
+            out.append(part)
+    return "".join(out)
+
+
+def ar_seo(rel):
+    en_url = SITE + "/" + ("" if rel == "index.html" else rel)
+    ar_url = SITE + "/ar/" + ("" if rel == "index.html" else rel)
+    lines = [BEGIN]
+    if rel in NOINDEX:
+        lines.append('<meta name="robots" content="noindex">')
+    else:
+        lines.append('<link rel="canonical" href="%s">' % ar_url)
+    lines += [
+        '<link rel="alternate" hreflang="en" href="%s">' % en_url,
+        '<link rel="alternate" hreflang="ar" href="%s">' % ar_url,
+        '<link rel="alternate" hreflang="x-default" href="%s">' % en_url,
+        '<meta property="og:url" content="%s">' % ar_url,
+        '<meta property="og:image" content="%s/img/%s">' % (SITE, OG_IMAGE),
+        '<meta property="og:site_name" content="Qobban">',
+        '<meta property="og:locale" content="ar_BH">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        '<meta name="theme-color" content="#111111">',
+        '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
+        '<script defer src="/_vercel/insights/script.js"></script>',
+    ]
+    if rel == "index.html":
+        lines.append(json_ld())
+    lines.append(END)
+    return "\n".join(lines)
+
+
+AR_TITLE = re.compile(r"<title>.*?</title>", re.S)
+AR_DESC = re.compile(r'<meta name="description" content="[^"]*">')
+AR_LANGBTN = re.compile(r'<button class="ctrl" data-lang-toggle.*?</button>', re.S)
+
+_dic = ar_dict()
+ar_written = 0
+ar_pages = []
+for page in pages:
+    rel = page.relative_to(ROOT).as_posix()
+    if rel == "404.html":
+        continue
+    ar_pages.append(rel)
+    doc = to_arabic(page.read_text(encoding="utf-8"), _dic)
+    doc = doc.replace('<html lang="en" dir="ltr">', '<html lang="ar" dir="rtl">', 1)
+
+    title_desc = AR_META.get(rel)
+    if title_desc:
+        doc = AR_TITLE.sub("<title>%s</title>" % title_desc[0], doc, count=1)
+        doc = AR_DESC.sub('<meta name="description" content="%s">' % title_desc[1], doc, count=1)
+
+    doc = SEO_BLOCK.sub(lambda _: ar_seo(rel), doc, count=1)
+
+    # The toggle becomes a link to the English page. It gives a crawler a path
+    # between the two versions, and because the button is gone qobban.js skips
+    # its runtime translation entirely on these pages.
+    # Depth matters: /ar/x.html needs one ../, /ar/products/x.html needs two.
+    back = "../" * (rel.count("/") + 1) + ("" if rel == "index.html" else rel)
+    doc = AR_LANGBTN.sub(
+        '<a class="ctrl" href="%s" hreflang="en" aria-label="Switch to English">'
+        '<span class="ctrl__lang">EN</span></a>' % back, doc, count=1)
+
+    target = AR_ROOT / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if not target.exists() or target.read_text(encoding="utf-8") != doc:
+        target.write_text(doc, encoding="utf-8")
+        ar_written += 1
+
 missing = [f"IMG-{n:02d}" for n in range(1, 34) if f"IMG-{n:02d}" not in have]
 print(f"{len(have)} images wired, {changed}/{len(pages)} pages updated, "
-      f"sitemap has {len(listed)} urls "
+      f"sitemap has {len(listed) * 2} urls (en+ar), {ar_written} arabic pages written, "
       f"({len(pages) - len(listed)} noindex: {', '.join(sorted(NOINDEX))})")
 print(f"still placeholders: {', '.join(missing) or 'none'}")
