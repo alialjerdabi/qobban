@@ -4,14 +4,14 @@ import { route, HttpError, need } from "./router.js";
 import { q } from "./db.js";
 import { audit } from "./auth.js";
 import { bhd } from "./pricing.js";
+import { normPhone } from "./phone.js";
 
 const clean = (v, max) => String(v ?? "").trim().slice(0, max) || null;
-// Bahrain mobiles are 8 digits; accept an optional +973 and strip spacing so the
-// same person typed two ways is still one client.
-const normPhone = (v) => {
-  const d = String(v ?? "").replace(/[^\d]/g, "").replace(/^973/, "");
+// One shared reading of a phone number — see src/phone.js for why.
+const requirePhone = (v) => {
+  const d = normPhone(v);
   if (d.length < 6) throw new HttpError(400, "a phone number is required");
-  return d.slice(0, 15);
+  return d;
 };
 
 route("GET", "/api/clients", async ({ user, url }) => {
@@ -45,7 +45,7 @@ route("GET", "/api/clients/:id", async ({ user, params }) => {
 
 route("POST", "/api/clients", async ({ user, data }) => {
   need(user, "owner", "manager");
-  const phone = normPhone(data.phone);
+  const phone = requirePhone(data.phone);
   const [dupe] = await q("SELECT id, name FROM customers WHERE phone = ?", [phone]);
   // One client per phone, so say who already has it rather than failing obscurely.
   if (dupe) throw new HttpError(409, `${dupe.name} already uses ${phone}`);
@@ -68,7 +68,7 @@ route("PUT", "/api/clients/:id", async ({ user, params, data }) => {
   need(user, "owner", "manager");
   const [c] = await q("SELECT id FROM customers WHERE id = ?", [params.id]);
   if (!c) throw new HttpError(404, "client not found");
-  const phone = normPhone(data.phone);
+  const phone = requirePhone(data.phone);
   const [dupe] = await q("SELECT id, name FROM customers WHERE phone = ? AND id <> ?", [phone, params.id]);
   if (dupe) throw new HttpError(409, `${dupe.name} already uses ${phone}`);
 

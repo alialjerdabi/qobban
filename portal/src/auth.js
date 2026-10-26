@@ -4,6 +4,7 @@
 import { scrypt, randomBytes, timingSafeEqual, createHash } from "node:crypto";
 import { promisify } from "node:util";
 import { q } from "./db.js";
+import { normPhone } from "./phone.js";
 
 const scryptAsync = promisify(scrypt);
 const N = 16384, KEYLEN = 64;
@@ -29,8 +30,9 @@ const sha = (t) => createHash("sha256").update(t).digest("hex");
 // with passwords. The PIN is hashed with the same scrypt cost as a password, and the
 // brake in server.js is what actually makes a 4-digit secret survivable.
 export async function login(phone, pin, ip) {
+  // Normalised, so +973 3566 5422 and 35665422 are the same person.
   const [u] = await q(
-    "SELECT id, name_en, pin_hash, active FROM users WHERE phone = ? LIMIT 1", [String(phone).trim()]);
+    "SELECT id, name_en, pin_hash, active FROM users WHERE phone = ? LIMIT 1", [normPhone(phone)]);
   // same work whether or not the user exists, so timing cannot reveal which phones are registered
   const ok = u ? await verifySecret(pin, u.pin_hash) : (await hashSecret(pin), false);
   if (!u || !ok || !u.active) return null;

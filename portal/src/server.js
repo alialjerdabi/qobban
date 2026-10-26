@@ -46,6 +46,7 @@ route("POST", "/api/login", async ({ req, res, data }) => {
     tries.get(ip).push(Date.now());
     throw new HttpError(401, "wrong phone or PIN");
   }
+  tries.delete(ip);          // a good login wipes the slate
   setCookie(res, s.token, s.maxAge);
   return { ok: true };
 });
