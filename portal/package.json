@@ -1,0 +1,17 @@
+{
+  "name": "qobban-portal",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/start.cjs",
+    "migrate": "node src/migrate.js",
+    "test": "node --test",
+    "smoke": "node scripts/api-smoke.mjs"
+  },
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}

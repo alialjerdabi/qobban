@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>قبان — بوابة الموظفين</title>
+<link rel="icon" href="/assets/logo-stacked.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/staff/staff.css?v=2">
+</head>
+<body>
+
+<!-- Login. Phone and PIN: these are workshop staff on phones, not desk users. -->
+<div id="login" class="login" hidden>
+  <form class="card" id="loginForm">
+    <img src="/assets/logo-stacked.svg" alt="قبان" class="login__logo">
+    <h1 class="login__h">بوابة الموظفين</h1>
+    <label for="phone">رقم الهاتف</label>
+    <input id="phone" name="phone" inputmode="numeric" autocomplete="username" required>
+    <label for="pin">الرمز السري</label>
+    <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <button class="btn btn--primary" type="submit">دخول</button>
+    <p class="err" id="loginErr" role="alert"></p>
+  </form>
+</div>
+
+<!-- The portal itself -->
+<div id="app" hidden>
+  <header class="top">
+    <img src="/assets/logo-lockup.svg" alt="قبان" class="top__logo">
+    <nav class="tabs" id="tabs">
+      <button class="tab is-on" data-view="quotes">عروض الأسعار</button>
+      <button class="tab" data-view="clients">العملاء</button>
+      <button class="tab" data-view="pricelist">قائمة الأسعار</button>
+    </nav>
+    <div class="top__right">
+      <span class="who" id="who"></span>
+      <button class="btn btn--quiet" id="lang" type="button">EN</button>
+      <button class="btn btn--quiet" id="out" type="button">خروج</button>
+    </div>
+  </header>
+
+  <main id="view" class="wrap"></main>
+</div>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script src="/staff/staff.js?v=1" defer></script>
+</body>
+</html>

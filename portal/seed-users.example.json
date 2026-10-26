@@ -1,0 +1,6 @@
+{
+  "_comment": "Copy to seed-users.json (gitignored) and put the real PINs in it. The seed script hashes them with scrypt and never stores the PIN itself. Never commit the real file.",
+  "users": [
+    { "phone": "00000000", "pin": "0000", "name_en": "Example Owner", "name_ar": "مالك", "roles": ["owner"], "placeholder": false }
+  ]
+}
