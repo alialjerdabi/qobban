@@ -143,6 +143,27 @@ These are the things that must never be wrong, each with its own test:
 - **Online card payment.** Payments are recorded, not taken.
 - **Public-site changes.** The portal is separate; the Vercel site keeps working.
 
+## 5b. The demo at qobban.store/staff
+
+So the owner can see and try the screens before a database exists, the portal UI is
+also served from the public site at **/staff**, backed by
+`api/portal/[...path].mjs` — a Vercel function holding practice data in memory.
+
+It imports the **real** pricing module rather than a copy, so the arithmetic shown is
+the arithmetic the real system will do. Everything else is a stand-in:
+
+- **Nothing is saved.** Each cold start reseeds, and two requests can hit different
+  instances, so a quote may vanish. Shape and maths are real; persistence is not.
+- **The login brake cannot exist.** It counts attempts in memory and serverless gives
+  each invocation its own. So the demo uses a **published demo PIN**, never an owner's
+  real one — this repository is public, and a four-digit secret in it protects nothing.
+- **No `/q/<token>` customer page**, because issuing one means storing it.
+
+`site/staff/` is excluded from the public build (`NOT_SITE` in build.py): no SEO block,
+no Arabic twin, no sitemap entry, and `noindex` on the page.
+
+Delete the whole thing once the real portal is on a subdomain. It is scaffolding.
+
 ## 6. Deployment
 
 Not part of a phase, and nothing moves without your explicit go-ahead.

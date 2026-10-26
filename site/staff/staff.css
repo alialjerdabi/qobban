@@ -1,0 +1,160 @@
+/* Qobban staff portal.
+   Brand tokens come from the public site (site/css/qobban.css) so the two read as one
+   company. Two notes:
+   - The accent on light backgrounds is #8A5D00, not the brand yellow: #FFC220 as text
+     on white measures 1.46:1 and fails AA. Yellow stays a fill behind dark text.
+   - Fonts are the system stack, not Montserrat. The CSP here is font-src 'self', so
+     Google Fonts cannot load; self-hosting the woff2 is the follow-up.
+   All spacing uses logical properties — the portal is Arabic-first and runs RTL. */
+
+:root {
+  --black:   #1A1A1A;
+  --yellow:  #FFC220;
+  --surface: #111111;
+  --raised:  #1A1A1A;
+  --line:    #2A2A2A;
+  --hover:   #202020;
+  --text:    #FFFFFF;
+  --body:    #D6D6D6;
+  --muted:   #8A8A8A;
+  --accent:  var(--yellow);
+  --danger:  #ff6b6b;
+  --ok:      #4ade80;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --s1: .5rem; --s2: 1rem; --s3: 1.5rem; --s4: 2rem;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--surface); color: var(--body);
+  font: 16px/1.6 var(--font);
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;                     /* nothing may scroll sideways on a phone */
+}
+h1, h2, h3 { color: var(--text); line-height: 1.2; margin: 0; }
+a { color: var(--accent); }
+img, svg { display: block; max-width: 100%; }
+
+/* ---------------------------------------------------------------- controls */
+button, input, select, textarea { font: inherit; color: inherit; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 44px; padding: .65rem 1.25rem;       /* 44px is the touch-target floor */
+  border: 1px solid transparent; cursor: pointer;
+  font-weight: 700; font-size: .9375rem;
+  background: var(--hover); color: var(--text);
+}
+.btn--primary { background: var(--yellow); color: var(--black); }
+.btn--primary:hover { background: #ffcf4d; }
+.btn--quiet { background: transparent; border-color: var(--line); color: var(--body); }
+.btn--quiet:hover { border-color: var(--yellow); color: var(--text); }
+.btn--danger { background: transparent; border-color: var(--line); color: var(--danger); }
+.btn:disabled { opacity: .5; cursor: default; }
+/* Smaller type, but the tap target still has to clear 44px on a phone. */
+.btn--sm { min-height: 44px; padding: .35rem .9rem; font-size: .8125rem; }
+
+label { display: block; font-size: .8125rem; color: var(--muted); margin-block: var(--s2) .35rem; }
+input, select, textarea {
+  inline-size: 100%; min-height: 44px; padding: .6rem .75rem;
+  background: var(--surface); border: 1px solid var(--line); color: var(--text);
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--yellow); outline-offset: 1px; }
+textarea { min-height: 88px; }
+
+/* ---------------------------------------------------------------- login */
+.login { min-block-size: 100dvh; display: grid; place-items: center; padding: var(--s3); }
+.login .card { inline-size: min(100%, 24rem); background: var(--raised);
+               border: 1px solid var(--line); padding: var(--s4); }
+.login__logo { inline-size: 120px; margin-inline: auto; }
+.login__h { text-align: center; font-size: 1.125rem; margin-block: var(--s2) var(--s3); }
+.login .btn { inline-size: 100%; margin-block-start: var(--s3); }
+.err { color: var(--danger); font-size: .875rem; min-height: 1.4em; margin-block-start: .5rem; }
+
+/* ---------------------------------------------------------------- chrome */
+.top {
+  position: sticky; inset-block-start: 0; z-index: 10;
+  display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap;
+  padding: .6rem var(--s2); background: var(--raised); border-block-end: 1px solid var(--line);
+}
+.top__logo { inline-size: 104px; flex: none; }
+.top__right { margin-inline-start: auto; display: flex; align-items: center; gap: .5rem; }
+.who { color: var(--muted); font-size: .8125rem; }
+
+.tabs { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto; min-height: 44px; padding: .5rem 1rem; cursor: pointer;
+  background: transparent; border: 1px solid transparent; color: var(--body);
+  font-size: .875rem; white-space: nowrap;
+}
+.tab.is-on { border-color: var(--yellow); color: var(--text); font-weight: 700; }
+
+.wrap { max-inline-size: 72rem; margin-inline: auto; padding: var(--s3) var(--s2) var(--s4); }
+.head { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; margin-block-end: var(--s3); }
+.head h2 { font-size: 1.25rem; }
+.head .btn { margin-inline-start: auto; }
+.muted { color: var(--muted); font-size: .875rem; }
+
+/* ---------------------------------------------------------------- tables
+   A table cannot shrink below its content, so on a phone each row becomes a card
+   instead of forcing the page sideways. */
+.rows { display: grid; gap: .5rem; }
+.row {
+  display: grid; gap: .25rem .75rem; padding: .75rem;
+  background: var(--raised); border: 1px solid var(--line);
+  grid-template-columns: 1fr auto;
+}
+.row:hover { border-color: #3a3a3a; }
+.row__main { color: var(--text); font-weight: 600; }
+.row__sub { color: var(--muted); font-size: .8125rem; }
+.row__right { text-align: end; white-space: nowrap; }
+.row__amt { color: var(--text); font-weight: 700; }
+
+.pill { display: inline-block; padding: .1rem .5rem; font-size: .6875rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .04em; border: 1px solid var(--line); }
+.pill--draft { color: var(--muted); }
+.pill--sent { color: var(--yellow); border-color: var(--yellow); }
+.pill--accepted { color: var(--ok); border-color: var(--ok); }
+.pill--cancelled, .pill--void { color: var(--danger); border-color: var(--danger); }
+
+/* ---------------------------------------------------------------- quote builder */
+.panel { background: var(--raised); border: 1px solid var(--line); padding: var(--s3); margin-block-end: var(--s3); }
+.grid2 { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.lines { display: grid; gap: var(--s2); }
+.line { border: 1px solid var(--line); padding: var(--s2); background: var(--surface); }
+.line__top { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.line__top select { inline-size: auto; min-inline-size: 9rem; }
+.line__amt { margin-inline-start: auto; font-weight: 700; color: var(--text); }
+/* The build-up is internal. The tint is the signal that the customer never sees it. */
+.buildup { margin-block-start: .75rem; padding: .75rem; border: 1px dashed #4a3c12; background: #1d1a10; }
+.buildup__h { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--yellow); }
+
+.totals { display: grid; gap: .3rem; margin-inline-start: auto; max-inline-size: 22rem; }
+.totals div { display: flex; justify-content: space-between; gap: var(--s2); }
+.totals .grand { border-block-start: 2px solid var(--yellow); margin-block-start: .4rem;
+                 padding-block-start: .5rem; font-size: 1.15rem; font-weight: 700; color: var(--text); }
+
+/* The label is the tap target — clicking it toggles the box — so the row, not the
+   20px box, is what must clear 44px. */
+.terms label { display: flex; align-items: center; gap: .6rem; margin-block: 0;
+               min-height: 44px; padding-block: .25rem; cursor: pointer;
+               color: var(--body); font-size: .875rem; }
+.terms input { inline-size: 22px; min-height: 22px; flex: none; }
+
+.toast {
+  position: fixed; inset-block-end: 1rem; inset-inline: 1rem; margin-inline: auto;
+  max-inline-size: 26rem; padding: .9rem 1.1rem; z-index: 50;
+  background: var(--yellow); color: var(--black); font-weight: 700; text-align: center;
+}
+.toast--bad { background: var(--danger); color: #fff; }
+
+.empty { padding: var(--s4); text-align: center; color: var(--muted);
+         border: 1px dashed var(--line); }
+
+/* A placeholder figure the owner must replace before anything reaches a customer. */
+.warn { background: #3a2d09; border: 1px solid #7a5f10; color: #ffd978;
+        padding: .7rem .9rem; font-size: .875rem; margin-block-end: var(--s3); }
+
+/* Demo build only: the portal proper has no such hint. */
+.demo-hint { margin-block-start: var(--s2); text-align: center; font-size: .8125rem;
+             color: var(--muted); line-height: 1.8; }

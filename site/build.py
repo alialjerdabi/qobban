@@ -633,10 +633,13 @@ def seo_for(page):
 
 
 # ---------------------------------------------------------------- run
-# ar/ holds generated output, not source. Without this exclusion the next
-# run treats the Arabic pages as English source and writes ar/ar/.
+# ar/ holds generated output, not source: without this the next run treats the
+# Arabic pages as English source and writes ar/ar/.
+# staff/ is the staff portal demo — a private app, not a page of the public site.
+# It must get no SEO block, no Arabic twin and no sitemap entry.
+NOT_SITE = {"ar", "staff"}
 pages = sorted(p for p in list(ROOT.glob("*.html")) + list(ROOT.glob("*/*.html"))
-               if p.relative_to(ROOT).parts[0] != "ar")
+               if p.relative_to(ROOT).parts[0] not in NOT_SITE)
 changed = 0
 
 for page in pages:
