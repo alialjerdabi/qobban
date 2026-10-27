@@ -78,51 +78,14 @@ import { call, reset } from "./demo-data.js";
   var me = null;
 
   async function boot() {
-    // Enabling the button is how the page proves the script ran. boot.js watches for
-    // this and complains on screen if it never happens.
-    var btn = $("#loginBtn");
-    if (btn) { btn.disabled = false; btn.textContent = "دخول"; }
-    try {
-      me = await api("GET", "/api/me");
-      showApp();
-    } catch (e) {
-      $("#login").hidden = false;
-    }
+    me = await api("GET", "/api/me");
+    showApp();
   }
 
-  $("#loginForm").addEventListener("submit", async function (ev) {
-    ev.preventDefault();
-    var btn = $("#loginBtn");
-    var label = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = lang ? "Signing in…" : "جارٍ الدخول…";
-    $("#loginErr").style.color = "";
-    $("#loginErr").textContent = "";
-    // The first login after a quiet spell wakes a sleeping server. Say so, rather
-    // than showing a dead-looking button for several seconds.
-    var slow = setTimeout(function () {
-      $("#loginErr").style.color = "var(--muted)";
-      $("#loginErr").textContent = lang ? "Waking the server, one moment…"
-                                        : "جارٍ تشغيل الخادم، لحظة…";
-    }, 2500);
-    try {
-      await api("POST", "/api/login", { phone: $("#phone").value.trim(), pin: $("#pin").value });
-      me = await api("GET", "/api/me");
-      $("#login").hidden = true;
-      showApp();
-    } catch (e) {
-      $("#loginErr").style.color = "";
-      $("#loginErr").textContent = e.message;
-    } finally {
-      // Give the button back whatever happened, so it can always be pressed again.
-      clearTimeout(slow);
-      btn.disabled = false;
-      btn.textContent = label;
-    }
-  });
 
   function showApp() {
-    $("#login").hidden = true;
+    var login = $("#login");
+    if (login) login.hidden = true;            // the demo has no login screen
     $("#app").hidden = false;
     $("#who").textContent = me.user.name_ar || me.user.name_en;
     // This build runs on the public site with no database behind it. Say so plainly,
@@ -146,7 +109,8 @@ import { call, reset } from "./demo-data.js";
     go("quotes");
   }
 
-  $("#out").addEventListener("click", async function () {
+  var outBtn = $("#out");
+  if (outBtn) outBtn.addEventListener("click", async function () {
     await api("POST", "/api/logout", {});
     location.reload();
   });

@@ -5,36 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>قبان — بوابة الموظفين (تجريبي)</title>
-<link rel="icon" href="/staff/assets/logo-stacked.svg?v=7" type="image/svg+xml">
-<link rel="stylesheet" href="/staff/staff.css?v=7">
+<link rel="icon" href="/staff/assets/logo-stacked.svg?v=8" type="image/svg+xml">
+<link rel="stylesheet" href="/staff/staff.css?v=8">
 </head>
 <body>
 
-<!-- Login. Phone and PIN: these are workshop staff on phones, not desk users.
-     The button starts disabled and says "loading". If the script does not run, that
-     is what stays on screen — a dead button that explains itself, instead of one
-     that silently does nothing when pressed. -->
-<div id="login" class="login">
-  <form class="card" id="loginForm">
-    <img src="/staff/assets/logo-stacked.svg?v=7" alt="قبان" class="login__logo">
-    <h1 class="login__h">بوابة الموظفين</h1>
-    <label for="phone">رقم الهاتف</label>
-    <input id="phone" name="phone" inputmode="numeric" autocomplete="username" required>
-    <label for="pin">الرمز السري</label>
-    <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
-    <button class="btn btn--primary" id="loginBtn" type="submit" disabled>جارٍ التحميل…</button>
-    <p class="err" id="loginErr" role="alert"></p>
-    <!-- A demo PIN, not an owner's real one: this repository is public, so a
-         four-digit secret committed to it would protect nothing. -->
-    <p class="demo-hint">نسخة تجريبية · 35665422 أو 39949004 · الرمز 2468</p>
-    <p class="demo-hint" id="buildTag"></p>
-  </form>
-</div>
-
-<!-- The portal itself -->
-<div id="app" hidden>
+<!-- No login. The demo holds no real data, so a door on it only ever cost time. -->
+<div id="app">
   <header class="top">
-    <img src="/staff/assets/logo-lockup.svg?v=7" alt="قبان" class="top__logo">
+    <img src="/staff/assets/logo-lockup.svg?v=8" alt="قبان" class="top__logo">
     <nav class="tabs" id="tabs">
       <button class="tab is-on" data-view="quotes">عروض الأسعار</button>
       <button class="tab" data-view="clients">العملاء</button>
@@ -43,18 +22,21 @@
     <div class="top__right">
       <span class="who" id="who"></span>
       <button class="btn btn--quiet" id="lang" type="button">EN</button>
-      <button class="btn btn--quiet" id="out" type="button">خروج</button>
     </div>
   </header>
 
-  <main id="view" class="wrap"></main>
+  <!-- Replaced by the app as soon as the script runs. If this text is still here,
+       the script did not run — which is a far more useful thing to see than a
+       button that silently does nothing. -->
+  <main id="view" class="wrap">
+    <p class="muted" id="bootMsg">جارٍ التحميل…</p>
+  </main>
 </div>
 
 <div id="toast" class="toast" role="status" hidden></div>
 
-<!-- Loaded before app.js so it can catch a failure in app.js itself. Any error now
-     lands on the page in red rather than only in a console nobody opens. -->
-<script src="/staff/boot.js?v=7"></script>
-<script src="/staff/app.js?v=7"></script>
+<!-- First, so it can report a failure in app.js itself. -->
+<script src="/staff/boot.js?v=8"></script>
+<script src="/staff/app.js?v=8"></script>
 </body>
 </html>

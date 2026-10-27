@@ -117,7 +117,10 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (raw) { memory = JSON.parse(raw); return memory; }
   } catch (e) { /* fall through to a fresh set */ }
-  memory = { clients: seedClients(), quotes: seedQuotes(), nextClient: 6, nextQuote: 3, user: null };
+  // Signed in from the start. The demo holds no real data, so a login gate added
+  // nothing but a way for this to fail.
+  memory = { clients: seedClients(), quotes: seedQuotes(), nextClient: 6, nextQuote: 3,
+             user: USERS[0] };
   return memory;
 }
 
@@ -174,7 +177,8 @@ const shapeLines = (p, src) => p.lines.map((l, i) => ({
  */
 export async function call(method, path, body = {}) {
   const db = load();
-  const needUser = () => { if (!db.user) fail(401, "not logged in"); };
+  if (!db.user) db.user = USERS[0];          // the demo is always "signed in"
+  const needUser = () => {};
 
   if (path === "/api/login" && method === "POST") {
     const who = USERS.find((u) => u.phone === normPhone(body.phone));
