@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  var BUILD = "v8";
+  var BUILD = "v9";
 
   function say(message, bad) {
     var box = document.getElementById("bootMsg");
@@ -34,7 +34,7 @@
   // Stamp the build into the header, so one glance says whether this browser has the
   // current files or a cached older set.
   document.addEventListener("DOMContentLoaded", function () {
-    var who = document.getElementById("who");
+    var who = document.getElementById("uname");
     if (who && !who.textContent) who.textContent = "build " + BUILD;
 
     // app.js replaces #bootMsg. If it is still sitting there, say so plainly.

@@ -2,41 +2,62 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>قبان — بوابة الموظفين (تجريبي)</title>
-<link rel="icon" href="/staff/assets/logo-stacked.svg?v=8" type="image/svg+xml">
-<link rel="stylesheet" href="/staff/staff.css?v=8">
+<meta name="theme-color" content="#1A1A1A">
+<title>قبان — بوابة الموظفين</title>
+<link rel="icon" href="/staff/assets/logo-stacked.svg?v=9" type="image/svg+xml">
+<link rel="stylesheet" href="/staff/staff.css?v=9">
 </head>
 <body>
 
-<!-- No login. The demo holds no real data, so a door on it only ever cost time. -->
-<div id="app">
-  <header class="top">
-    <img src="/staff/assets/logo-lockup.svg?v=8" alt="قبان" class="top__logo">
-    <nav class="tabs" id="tabs">
-      <button class="tab is-on" data-view="quotes">عروض الأسعار</button>
-      <button class="tab" data-view="clients">العملاء</button>
-      <button class="tab" data-view="pricelist">قائمة الأسعار</button>
-    </nav>
-    <div class="top__right">
-      <span class="who" id="who"></span>
-      <button class="btn btn--quiet" id="lang" type="button">EN</button>
-    </div>
-  </header>
+<!-- No login. The demo holds only practice data, so a door on it only ever cost time. -->
+<div class="s-app">
 
-  <!-- Replaced by the app as soon as the script runs. If this text is still here,
-       the script did not run — which is a far more useful thing to see than a
-       button that silently does nothing. -->
-  <main id="view" class="wrap">
-    <p class="muted" id="bootMsg">جارٍ التحميل…</p>
-  </main>
+  <aside class="s-side" id="side">
+    <div class="s-brand">
+      <img src="/staff/assets/logo-lockup.svg?v=9" alt="قبان">
+    </div>
+    <!-- Filled by the app, so the labels follow the language toggle. -->
+    <nav id="nav" aria-label="الأقسام"></nav>
+    <div class="s-user">
+      <span class="avatar" id="avatar" aria-hidden="true"></span>
+      <div>
+        <b id="uname"></b>
+        <small id="urole"></small>
+      </div>
+    </div>
+  </aside>
+
+  <div class="s-main">
+    <header class="s-top">
+      <button class="icon-btn s-menu" id="menu" type="button" aria-label="القائمة">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <h1 id="title">الرئيسية</h1>
+      <div class="s-top-act">
+        <button class="btn btn--quiet btn--sm" id="lang" type="button">English</button>
+      </div>
+    </header>
+
+    <!-- Says once, at the top, that this is practice data. -->
+    <div id="warn" style="padding: 14px 26px 0"></div>
+
+    <!-- Replaced by the app as soon as the script runs. If this text is still here,
+         the script did not run — far more useful to see than a page that silently
+         does nothing. -->
+    <main id="view" class="s-body">
+      <p class="empty" id="bootMsg">جارٍ التحميل…</p>
+    </main>
+  </div>
 </div>
 
+<div class="scrim" id="scrim" hidden></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
 <!-- First, so it can report a failure in app.js itself. -->
-<script src="/staff/boot.js?v=8"></script>
-<script src="/staff/app.js?v=8"></script>
+<script src="/staff/boot.js?v=9"></script>
+<script src="/staff/app.js?v=9"></script>
 </body>
 </html>
