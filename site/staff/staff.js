@@ -78,6 +78,10 @@ import { call, reset } from "./demo-data.js";
   var me = null;
 
   async function boot() {
+    // Enabling the button is how the page proves the script ran. boot.js watches for
+    // this and complains on screen if it never happens.
+    var btn = $("#loginBtn");
+    if (btn) { btn.disabled = false; btn.textContent = "دخول"; }
     try {
       me = await api("GET", "/api/me");
       showApp();
@@ -88,7 +92,7 @@ import { call, reset } from "./demo-data.js";
 
   $("#loginForm").addEventListener("submit", async function (ev) {
     ev.preventDefault();
-    var btn = $("#loginForm button");
+    var btn = $("#loginBtn");
     var label = btn.textContent;
     btn.disabled = true;
     btn.textContent = lang ? "Signing in…" : "جارٍ الدخول…";
