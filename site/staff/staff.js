@@ -77,7 +77,10 @@
   async function api(method, path, body) {
     var r;
     try {
-      r = await fetch(API + path, {
+      // Call sites keep the portal's own paths ("/api/quotes") so this file stays
+      // diffable against portal/web/staff/staff.js. Swap the prefix here, once —
+      // prefixing without stripping produced /api/portal/api/login, which 404s.
+      r = await fetch(API + path.replace(/^\/api/, ""), {
         method: method,
         headers: { "Content-Type": "application/json" },
         body: body === undefined ? undefined : JSON.stringify(body),
