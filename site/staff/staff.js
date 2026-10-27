@@ -1,3 +1,5 @@
+import { call, reset } from "./demo-data.js";
+
 /* Qobban staff portal — the screens.
    Vanilla, no framework and no build step, like the rest of the stack.
    The browser never computes a total it then stores: every figure shown comes back
@@ -60,51 +62,16 @@
     toast._t = setTimeout(function () { box.hidden = true; }, 3200);
   }
 
-  // On qobban.store the portal talks to a demo API under /api/portal, kept separate
-  // from the public site's own /api/lead function.
-  var API = "/api/portal";
-
-  // "error 404" tells nobody anything. Say what went wrong and what to do about it.
-  function failure(status) {
-    if (status === 404 || status === 502 || status === 503) {
-      return lang ? "Service not reachable. Reload the page (Ctrl+Shift+R)."
-                  : "الخدمة غير متاحة. حدّث الصفحة (Ctrl+Shift+R).";
-    }
-    if (status >= 500) return lang ? "Server error. Try again." : "خطأ في الخادم. حاول مرة أخرى.";
-    return lang ? "Something went wrong (" + status + ")." : "حدث خطأ (" + status + ").";
-  }
-
+  // No network. The demo answers from demo-data.js in this browser, so there is
+  // nothing to cold-start, nothing to 404 and nothing to hang. Same signature as the
+  // fetch wrapper it replaces, so every call site below is unchanged and this file
+  // stays diffable against the real portal's.
   async function api(method, path, body) {
-    var r;
-    // A hosted function that has gone to sleep takes seconds to wake. Without a
-    // deadline, a stalled request leaves a dead button and no explanation — which
-    // is exactly what it looked like when this was reported as "not opening".
-    var stop = new AbortController();
-    var timer = setTimeout(function () { stop.abort(); }, 20000);
     try {
-      // Call sites keep the portal's own paths ("/api/quotes") so this file stays
-      // diffable against portal/web/staff/staff.js. Swap the prefix here, once —
-      // prefixing without stripping produced /api/portal/api/login, which 404s.
-      r = await fetch(API + path.replace(/^\/api/, ""), {
-        signal: stop.signal,
-        method: method,
-        headers: { "Content-Type": "application/json" },
-        body: body === undefined ? undefined : JSON.stringify(body),
-      });
+      return await call(method, path, body || {});
     } catch (e) {
-      clearTimeout(timer);
-      if (e && e.name === "AbortError") {
-        throw new Error(lang ? "The server took too long. Try again."
-                             : "استغرق الخادم وقتًا طويلًا. حاول مرة أخرى.");
-      }
-      throw new Error(lang ? "Cannot reach the server. Check your connection."
-                           : "تعذّر الوصول إلى الخادم. تحقّق من الاتصال.");
+      throw new Error(e.message || "something went wrong");
     }
-    clearTimeout(timer);
-    var data = await r.json().catch(function () { return {}; });
-    // The server's own message when it sent one — it is written for a person.
-    if (!r.ok) throw new Error(data.error || failure(r.status));
-    return data;
   }
 
   // ------------------------------------------------------------ session
@@ -466,7 +433,7 @@
         } catch (e) { toast(e.message, true); }
       } }, [t("send")]) : null,
       q && q.token ? el("button", { class: "btn btn--quiet", onclick: function () {
-        var link = location.origin + "/api/portal/q/" + q.token;
+        var link = location.origin + "/q/" + q.token;
         navigator.clipboard.writeText(link).then(function () { toast(t("copied")); },
           function () { prompt(t("copy"), link); });
       } }, [t("copy")]) : null,
