@@ -76,20 +76,31 @@
 
   async function api(method, path, body) {
     var r;
+    // A hosted function that has gone to sleep takes seconds to wake. Without a
+    // deadline, a stalled request leaves a dead button and no explanation — which
+    // is exactly what it looked like when this was reported as "not opening".
+    var stop = new AbortController();
+    var timer = setTimeout(function () { stop.abort(); }, 20000);
     try {
       // Call sites keep the portal's own paths ("/api/quotes") so this file stays
       // diffable against portal/web/staff/staff.js. Swap the prefix here, once —
       // prefixing without stripping produced /api/portal/api/login, which 404s.
       r = await fetch(API + path.replace(/^\/api/, ""), {
+        signal: stop.signal,
         method: method,
         headers: { "Content-Type": "application/json" },
         body: body === undefined ? undefined : JSON.stringify(body),
       });
     } catch (e) {
-      // No response at all: offline, or the server is not running.
+      clearTimeout(timer);
+      if (e && e.name === "AbortError") {
+        throw new Error(lang ? "The server took too long. Try again."
+                             : "استغرق الخادم وقتًا طويلًا. حاول مرة أخرى.");
+      }
       throw new Error(lang ? "Cannot reach the server. Check your connection."
                            : "تعذّر الوصول إلى الخادم. تحقّق من الاتصال.");
     }
+    clearTimeout(timer);
     var data = await r.json().catch(function () { return {}; });
     // The server's own message when it sent one — it is written for a person.
     if (!r.ok) throw new Error(data.error || failure(r.status));
@@ -111,16 +122,31 @@
   $("#loginForm").addEventListener("submit", async function (ev) {
     ev.preventDefault();
     var btn = $("#loginForm button");
+    var label = btn.textContent;
     btn.disabled = true;
+    btn.textContent = lang ? "Signing in…" : "جارٍ الدخول…";
+    $("#loginErr").style.color = "";
     $("#loginErr").textContent = "";
+    // The first login after a quiet spell wakes a sleeping server. Say so, rather
+    // than showing a dead-looking button for several seconds.
+    var slow = setTimeout(function () {
+      $("#loginErr").style.color = "var(--muted)";
+      $("#loginErr").textContent = lang ? "Waking the server, one moment…"
+                                        : "جارٍ تشغيل الخادم، لحظة…";
+    }, 2500);
     try {
       await api("POST", "/api/login", { phone: $("#phone").value.trim(), pin: $("#pin").value });
       me = await api("GET", "/api/me");
       $("#login").hidden = true;
       showApp();
     } catch (e) {
+      $("#loginErr").style.color = "";
       $("#loginErr").textContent = e.message;
+    } finally {
+      // Give the button back whatever happened, so it can always be pressed again.
+      clearTimeout(slow);
       btn.disabled = false;
+      btn.textContent = label;
     }
   });
 
