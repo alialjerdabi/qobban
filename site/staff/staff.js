@@ -64,14 +64,32 @@
   // from the public site's own /api/lead function.
   var API = "/api/portal";
 
+  // "error 404" tells nobody anything. Say what went wrong and what to do about it.
+  function failure(status) {
+    if (status === 404 || status === 502 || status === 503) {
+      return lang ? "Service not reachable. Reload the page (Ctrl+Shift+R)."
+                  : "الخدمة غير متاحة. حدّث الصفحة (Ctrl+Shift+R).";
+    }
+    if (status >= 500) return lang ? "Server error. Try again." : "خطأ في الخادم. حاول مرة أخرى.";
+    return lang ? "Something went wrong (" + status + ")." : "حدث خطأ (" + status + ").";
+  }
+
   async function api(method, path, body) {
-    var r = await fetch(API + path, {
-      method: method,
-      headers: { "Content-Type": "application/json" },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
+    var r;
+    try {
+      r = await fetch(API + path, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: body === undefined ? undefined : JSON.stringify(body),
+      });
+    } catch (e) {
+      // No response at all: offline, or the server is not running.
+      throw new Error(lang ? "Cannot reach the server. Check your connection."
+                           : "تعذّر الوصول إلى الخادم. تحقّق من الاتصال.");
+    }
     var data = await r.json().catch(function () { return {}; });
-    if (!r.ok) throw new Error(data.error || ("error " + r.status));
+    // The server's own message when it sent one — it is written for a person.
+    if (!r.ok) throw new Error(data.error || failure(r.status));
     return data;
   }
 
