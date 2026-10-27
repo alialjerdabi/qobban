@@ -94,7 +94,23 @@ const SEED_CLIENTS = [
 
 // Module scope: survives while an instance stays warm, and resets when it does not.
 // That is the honest limit of a demo with no database.
-const store = { clients: SEED_CLIENTS.map((c) => ({ ...c })), quotes: [], nextClient: 6, nextQuote: 1 };
+// Two finished quotes so the list shows something on a cold instance — otherwise
+// the first thing the owner sees is an empty screen that looks broken.
+const SEED_QUOTES = [
+  { id: 1, no: "Q-1", version: 1, status: "sent", customer_id: 1,
+    customer_name: "[PRACTICE] Ahmed Al Dosari", subject: "بوابة سحب ودرابزين",
+    total: 1080.475, created_at: new Date(Date.now() - 864e5).toISOString() },
+  { id: 2, no: "Q-2", version: 1, status: "accepted", customer_id: 3,
+    customer_name: "[PRACTICE] Gulf Contracting", subject: "مظلة سيارات ٤٠ م٢",
+    total: 1232.000, created_at: new Date(Date.now() - 1728e5).toISOString() },
+];
+
+const store = {
+  clients: SEED_CLIENTS.map((c) => ({ ...c })),
+  quotes: SEED_QUOTES.map((q) => ({ ...q, lines: [], terms: [], delivery: 0,
+    subtotal: q.total, discount: 0, vatAmt: 0, vat_on: true, valid_days: 14, lang: "ar" })),
+  nextClient: 6, nextQuote: 3,
+};
 
 const norm = (v) => {
   const d = String(v ?? "").replace(/\D/g, "");

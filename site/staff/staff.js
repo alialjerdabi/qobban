@@ -426,7 +426,10 @@
           var r = id ? await api("PUT", "/api/quotes/" + id, payload())
                      : await api("POST", "/api/quotes", payload());
           toast(t("saved") + " · " + money(r.total));
-          editQuote(r.id || id);
+          // With no database, the quote may have been saved on an instance this
+          // next request never reaches. Going back to the list avoids presenting
+          // that as "not found" straight after a successful save.
+          if (me && me.demo) viewQuotes(); else editQuote(r.id || id);
         } catch (e) { toast(e.message, true); this.disabled = false; }
       } }, [t("save")]),
       q && q.status === "draft" ? el("button", { class: "btn", onclick: async function () {
